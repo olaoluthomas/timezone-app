@@ -108,16 +108,16 @@ EOF
 
 # Create PR using GitHub CLI
 # Note: eval needed for label args to work properly
-eval gh pr create \
+PR_URL=$(eval gh pr create \
   --title \"$PR_TITLE\" \
   --body \"$PR_BODY\" \
   --base \"$BASE_BRANCH\" \
   --head \"$CURRENT_BRANCH\" \
   --reviewer \"olaoluthomas\" \
-  $LABEL_ARGS \
-  --web
+  $LABEL_ARGS)
 
 echo ""
 echo "✅ Pull Request created!"
 echo "📋 Labels applied: ${LABELS[*]}"
 echo "👤 Reviewer assigned: olaoluthomas"
+echo "🔗 PR URL: $PR_URL"
