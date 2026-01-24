@@ -175,12 +175,7 @@ describe('API Smoke Tests', () => {
 
   describe('Security Middleware Stack', () => {
     it('all endpoints should have complete security headers', async () => {
-      const endpoints = [
-        '/health',
-        '/health/ready',
-        '/api/timezone',
-        '/',
-      ];
+      const endpoints = ['/health', '/health/ready', '/api/timezone', '/'];
 
       for (const endpoint of endpoints) {
         const response = await request(app).get(endpoint);

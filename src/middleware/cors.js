@@ -1,3 +1,26 @@
+/**
+ * CORS Middleware Configuration
+ *
+ * Provides Cross-Origin Resource Sharing (CORS) configuration with
+ * environment-based origin validation.
+ *
+ * Development Mode:
+ * - Allows all origins
+ * - Enables rapid local testing
+ *
+ * Production Mode:
+ * - Validates origins against ALLOWED_ORIGINS env variable
+ * - Comma-separated whitelist
+ * - Rejects unauthorized origins with CORS error
+ *
+ * Configuration:
+ * - Methods: GET, OPTIONS (read-only API)
+ * - Credentials: Disabled (no auth)
+ * - Max Age: 24 hours (cache preflight)
+ *
+ * @module middleware/cors
+ */
+
 const cors = require('cors');
 
 /**

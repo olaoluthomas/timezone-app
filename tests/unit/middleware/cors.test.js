@@ -47,10 +47,7 @@ describe('CORS Middleware', () => {
         const allowedOriginsList = allowedOrigins ? allowedOrigins.split(',') : [];
 
         // Allow if origin is in whitelist or whitelist includes '*'
-        if (
-          allowedOriginsList.indexOf(origin) !== -1 ||
-          allowedOriginsList.includes('*')
-        ) {
+        if (allowedOriginsList.indexOf(origin) !== -1 || allowedOriginsList.includes('*')) {
           callback(null, true);
         } else {
           callback(new Error('Not allowed by CORS'));

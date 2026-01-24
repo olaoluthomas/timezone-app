@@ -1,5 +1,12 @@
 # Timezone App
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
+[![Test Coverage](https://img.shields.io/badge/coverage-98.9%25-brightgreen)](https://github.com/olaoluthomas/timezone-app)
+[![Tests](https://img.shields.io/badge/tests-133%20passing-brightgreen)](https://github.com/olaoluthomas/timezone-app)
+[![Built with Claude Code](https://img.shields.io/badge/built%20with-Claude%20Code-5A67D8)](https://github.com/anthropics/claude-code)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
 A high-performance, production-ready application that automatically detects and displays the current date, time, and timezone based on the user's geographical location and IP address.
 
 ## Overview
@@ -23,7 +30,7 @@ This application leverages IP geolocation technology to determine a user's physi
 - **Fast Response Times**: Sub-10ms response times for cached requests
 
 ### Developer Experience
-- **Comprehensive Testing**: 100% test coverage with 125 tests (unit, integration, smoke)
+- **Comprehensive Testing**: 98.9% test coverage with 133 tests (unit, integration, smoke)
 - **Code Quality Tools**: ESLint and Prettier for consistent code formatting
 - **CI/CD Ready**: Automated testing workflows for continuous integration
 - **Well-Documented**: Clean, maintainable code with inline documentation
@@ -271,6 +278,19 @@ NODE_ENV=production
 - **Code Formatter**: Prettier
 - **Dev Server**: Nodemon (hot-reload)
 
+### Built With AI Assistance
+This project was developed using **Claude Code** (Anthropic's official CLI) and **Claude Code Router** for intelligent model orchestration:
+
+**Local Models** (for fast iteration and cost efficiency):
+- **Llama 3.2 1B Instruct** - Quick edits, code formatting, documentation
+- **QWEN 3 Coder 30B** - Complex refactoring, architectural decisions
+
+**Anthropic API Models** (for advanced reasoning):
+- **Claude Sonnet 4.5** - Architecture design, test strategy, complex implementations
+- **Claude Haiku 4.5** - Quick validations, minor fixes, code reviews
+
+The combination of local and API models enabled rapid, cost-effective development while maintaining high code quality and comprehensive test coverage. See [docs/DEVELOPMENT_TOOLS.md](docs/DEVELOPMENT_TOOLS.md) for details on the AI-assisted development workflow.
+
 ## Project Structure
 
 ```
@@ -303,14 +323,14 @@ timezone/
 
 ## Testing
 
-The application includes comprehensive test coverage with 125 tests across three categories:
+The application includes comprehensive test coverage with 133 tests across three categories:
 
 ### Test Coverage
 
-- **Overall Coverage**: 100% (statements, branches, functions, lines)
-- **Total Tests**: 125 passing
+- **Overall Coverage**: 98.9% (statements, branches, functions, lines)
+- **Total Tests**: 133 passing
 - **Unit Tests**: 67 tests for services and middleware
-- **Integration Tests**: 47 tests for API endpoints and security
+- **Integration Tests**: 55 tests for API endpoints and security
 - **Smoke Tests**: 11 quick end-to-end validation tests
 - **Mocking**: External API calls mocked with Nock
 
@@ -418,7 +438,7 @@ The application is optimized for performance and reliability:
 ### Reliability
 - **Health Checks**: Automated monitoring of external dependencies
 - **Graceful Degradation**: Proper error handling for API failures
-- **Test Coverage**: 100% coverage ensures reliability
+- **Test Coverage**: 98.9% coverage ensures reliability
 
 ## Privacy Considerations
 
@@ -501,13 +521,14 @@ PORT=3000
 
 ### Completed ✅
 - [x] Intelligent caching layer (24-hour TTL, 10k entries)
-- [x] Comprehensive test suite (100% coverage)
+- [x] Comprehensive test suite (98.9% coverage, 133 tests)
 - [x] Health check endpoints (liveness/readiness)
 - [x] Code quality tools (ESLint, Prettier)
 - [x] Production-ready error handling
+- [x] Security middleware (CORS, rate limiting, Helmet)
+- [x] Automated git workflow (Husky, Commitlint, pre-push testing)
 
 ### Planned Features
-- [ ] Rate limiting middleware
 - [ ] Structured logging with Winston
 - [ ] CI/CD pipeline (GitHub Actions)
 - [ ] Multiple timezone comparisons

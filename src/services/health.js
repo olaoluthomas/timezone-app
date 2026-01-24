@@ -1,3 +1,31 @@
+/**
+ * Health Check Service Module
+ *
+ * Provides comprehensive health checking for external dependencies:
+ *
+ * 1. Geolocation API Check:
+ *    - Verifies ipapi.co is accessible
+ *    - 2-second timeout
+ *    - Measures response time
+ *    - Accepts 4xx (API up, auth/quota issues)
+ *
+ * 2. Cache Service Check:
+ *    - Verifies cache is operational
+ *    - Reports cache statistics
+ *    - Calculates hit rate
+ *
+ * Health Status:
+ * - "healthy": All checks passed
+ * - "degraded": One or more checks failed
+ *
+ * Used By:
+ * - Kubernetes readiness probes
+ * - Docker health checks
+ * - Monitoring systems
+ *
+ * @module services/health
+ */
+
 const axios = require('axios');
 const cache = require('./cache');
 

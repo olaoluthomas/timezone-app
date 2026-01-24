@@ -42,14 +42,10 @@ describe('CORS Production Mode Integration', () => {
       app.use(corsMiddleware);
       app.get('/test', (req, res) => res.json({ ok: true }));
 
-      const response = await request(app)
-        .get('/test')
-        .set('Origin', 'https://app.example.com');
+      const response = await request(app).get('/test').set('Origin', 'https://app.example.com');
 
       expect(response.status).toBe(200);
-      expect(response.headers['access-control-allow-origin']).toBe(
-        'https://app.example.com'
-      );
+      expect(response.headers['access-control-allow-origin']).toBe('https://app.example.com');
     });
 
     it('should reject non-whitelisted origin', async () => {
@@ -63,9 +59,7 @@ describe('CORS Production Mode Integration', () => {
       app.use(corsMiddleware);
       app.get('/test', (req, res) => res.json({ ok: true }));
 
-      const response = await request(app)
-        .get('/test')
-        .set('Origin', 'https://evil.com');
+      const response = await request(app).get('/test').set('Origin', 'https://evil.com');
 
       // CORS should reject the request
       expect(response.status).not.toBe(200);
@@ -84,31 +78,19 @@ describe('CORS Production Mode Integration', () => {
       app.get('/test', (req, res) => res.json({ ok: true }));
 
       // Test each allowed origin
-      const response1 = await request(app)
-        .get('/test')
-        .set('Origin', 'https://app1.example.com');
+      const response1 = await request(app).get('/test').set('Origin', 'https://app1.example.com');
 
-      const response2 = await request(app)
-        .get('/test')
-        .set('Origin', 'https://app2.example.com');
+      const response2 = await request(app).get('/test').set('Origin', 'https://app2.example.com');
 
-      const response3 = await request(app)
-        .get('/test')
-        .set('Origin', 'https://app3.example.com');
+      const response3 = await request(app).get('/test').set('Origin', 'https://app3.example.com');
 
       expect(response1.status).toBe(200);
       expect(response2.status).toBe(200);
       expect(response3.status).toBe(200);
 
-      expect(response1.headers['access-control-allow-origin']).toBe(
-        'https://app1.example.com'
-      );
-      expect(response2.headers['access-control-allow-origin']).toBe(
-        'https://app2.example.com'
-      );
-      expect(response3.headers['access-control-allow-origin']).toBe(
-        'https://app3.example.com'
-      );
+      expect(response1.headers['access-control-allow-origin']).toBe('https://app1.example.com');
+      expect(response2.headers['access-control-allow-origin']).toBe('https://app2.example.com');
+      expect(response3.headers['access-control-allow-origin']).toBe('https://app3.example.com');
     });
 
     it('should reject origin not in comma-separated list', async () => {
@@ -140,9 +122,7 @@ describe('CORS Production Mode Integration', () => {
       app.use(corsMiddleware);
       app.get('/test', (req, res) => res.json({ ok: true }));
 
-      const response = await request(app)
-        .get('/test')
-        .set('Origin', 'https://any-domain.com');
+      const response = await request(app).get('/test').set('Origin', 'https://any-domain.com');
 
       expect(response.status).toBe(200);
       expect(response.headers['access-control-allow-origin']).toBe('https://any-domain.com');
@@ -159,9 +139,7 @@ describe('CORS Production Mode Integration', () => {
       app.use(corsMiddleware);
       app.get('/test', (req, res) => res.json({ ok: true }));
 
-      const response = await request(app)
-        .get('/test')
-        .set('Origin', 'https://random-domain.com');
+      const response = await request(app).get('/test').set('Origin', 'https://random-domain.com');
 
       expect(response.status).toBe(200);
     });
@@ -179,9 +157,7 @@ describe('CORS Production Mode Integration', () => {
       app.use(corsMiddleware);
       app.get('/test', (req, res) => res.json({ ok: true }));
 
-      const response = await request(app)
-        .get('/test')
-        .set('Origin', 'https://any-domain.com');
+      const response = await request(app).get('/test').set('Origin', 'https://any-domain.com');
 
       expect(response.status).not.toBe(200);
     });
@@ -197,9 +173,7 @@ describe('CORS Production Mode Integration', () => {
       app.use(corsMiddleware);
       app.get('/test', (req, res) => res.json({ ok: true }));
 
-      const response = await request(app)
-        .get('/test')
-        .set('Origin', 'https://any-domain.com');
+      const response = await request(app).get('/test').set('Origin', 'https://any-domain.com');
 
       expect(response.status).not.toBe(200);
     });
@@ -242,9 +216,7 @@ describe('CORS Production Mode Integration', () => {
         .set('Access-Control-Request-Method', 'GET');
 
       expect(response.status).toBe(204);
-      expect(response.headers['access-control-allow-origin']).toBe(
-        'https://app.example.com'
-      );
+      expect(response.headers['access-control-allow-origin']).toBe('https://app.example.com');
       expect(response.headers['access-control-allow-methods']).toContain('GET');
     });
 
