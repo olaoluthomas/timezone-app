@@ -1,0 +1,91 @@
+const NodeCache = require('node-cache');
+
+/**
+ * Cache service for storing geolocation lookup results
+ * Reduces external API calls and improves response times
+ */
+class CacheService {
+  constructor() {
+    this.cache = new NodeCache({
+      stdTTL: 86400, // 24 hours in seconds
+      checkperiod: 3600, // Check for expired keys every hour
+      maxKeys: 10000, // Maximum number of cached entries
+      useClones: false, // Return direct references (faster)
+    });
+  }
+
+  /**
+   * Get a value from cache
+   * @param {string} key - Cache key
+   * @returns {*} Cached value or undefined if not found
+   */
+  get(key) {
+    const value = this.cache.get(key);
+    if (value !== undefined) {
+      console.log(`Cache HIT for key: ${key}`);
+    } else {
+      console.log(`Cache MISS for key: ${key}`);
+    }
+    return value;
+  }
+
+  /**
+   * Set a value in cache
+   * @param {string} key - Cache key
+   * @param {*} value - Value to cache
+   * @param {number} ttl - Optional TTL in seconds (overrides default)
+   * @returns {boolean} Success status
+   */
+  set(key, value, ttl) {
+    const success = this.cache.set(key, value, ttl);
+    if (success) {
+      console.log(`Cache SET for key: ${key}`);
+    }
+    return success;
+  }
+
+  /**
+   * Delete a specific key from cache
+   * @param {string} key - Cache key
+   * @returns {number} Number of deleted entries
+   */
+  delete(key) {
+    return this.cache.del(key);
+  }
+
+  /**
+   * Clear all cached entries
+   */
+  flush() {
+    this.cache.flushAll();
+    console.log('Cache flushed');
+  }
+
+  /**
+   * Get cache statistics
+   * @returns {Object} Statistics object
+   */
+  getStats() {
+    const stats = this.cache.getStats();
+    return {
+      keys: stats.keys,
+      hits: stats.hits,
+      misses: stats.misses,
+      hitRate: stats.hits > 0 ? ((stats.hits / (stats.hits + stats.misses)) * 100).toFixed(2) : 0,
+      ksize: stats.ksize,
+      vsize: stats.vsize,
+    };
+  }
+
+  /**
+   * Get number of cached keys
+   * @returns {number} Number of keys
+   */
+  getKeyCount() {
+    return this.cache.keys().length;
+  }
+}
+
+// Export singleton instance
+const cacheService = new CacheService();
+module.exports = cacheService;

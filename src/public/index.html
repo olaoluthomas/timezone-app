@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timezone App - Current Time & Location</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            font-size: 2em;
+            margin: 0;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .info-item {
+            background: #f7f7f7;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-label {
+            font-size: 0.85em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.3em;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .time-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .time-display .info-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .time-display .info-value {
+            color: white;
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .coordinates {
+            display: flex;
+            gap: 10px;
+        }
+
+        .coordinates .info-item {
+            flex: 1;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .time-display .info-value {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="logo.svg" alt="Timezone App Logo" class="logo">
+            <h1>Timezone Detector</h1>
+        </div>
+        <div id="content">
+            <div class="loading">Loading your location...</div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchTimezoneInfo() {
+            try {
+                const response = await fetch('/api/timezone');
+                if (!response.ok) throw new Error('Failed to fetch timezone data');
+
+                const data = await response.json();
+                displayTimezoneInfo(data);
+
+                // Update time every second
+                setInterval(() => updateCurrentTime(data.timezone), 1000);
+            } catch (error) {
+                document.getElementById('content').innerHTML = `
+                    <div class="error">
+                        ⚠️ Unable to load timezone information. Please try again later.
+                    </div>
+                `;
+            }
+        }
+
+        function displayTimezoneInfo(data) {
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <div class="time-display">
+                    <div class="info-label">Current Time</div>
+                    <div class="info-value" id="current-time">Loading...</div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Location</div>
+                        <div class="info-value">${data.city}, ${data.region}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Country</div>
+                        <div class="info-value">${data.country}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Timezone</div>
+                        <div class="info-value">${data.timezone}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">UTC Offset</div>
+                        <div class="info-value">${data.utcOffset}</div>
+                    </div>
+
+                    <div class="coordinates">
+                        <div class="info-item">
+                            <div class="info-label">Latitude</div>
+                            <div class="info-value">${data.latitude}°</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Longitude</div>
+                            <div class="info-value">${data.longitude}°</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">IP Address</div>
+                        <div class="info-value">${data.ip}</div>
+                    </div>
+                </div>
+            `;
+
+            updateCurrentTime(data.timezone);
+        }
+
+        function updateCurrentTime(timezone) {
+            const now = new Date();
+            const options = {
+                timeZone: timezone,
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            };
+
+            const formatter = new Intl.DateTimeFormat('en-US', options);
+            const timeElement = document.getElementById('current-time');
+            if (timeElement) {
+                timeElement.textContent = formatter.format(now);
+            }
+        }
+
+        // Load timezone info on page load
+        fetchTimezoneInfo();
+    </script>
+</body>
+</html>

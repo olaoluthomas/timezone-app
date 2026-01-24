@@ -1,0 +1,70 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient for the main circle (day to night transition) -->
+    <linearGradient id="circleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#14b8a6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Gradient for the inner ring -->
+    <linearGradient id="ringGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0284c7;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#0891b2;stop-opacity:0.6" />
+    </linearGradient>
+
+    <!-- Radial gradient for depth effect -->
+    <radialGradient id="depthGradient">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.1" />
+    </radialGradient>
+  </defs>
+
+  <!-- Outer glow effect -->
+  <circle cx="60" cy="60" r="58" fill="url(#circleGradient)" opacity="0.15"/>
+
+  <!-- Main gradient circle -->
+  <circle cx="60" cy="60" r="50" fill="url(#circleGradient)"/>
+
+  <!-- Depth overlay -->
+  <circle cx="60" cy="60" r="50" fill="url(#depthGradient)"/>
+
+  <!-- Timezone meridian lines (vertical) -->
+  <g stroke="#f1f5f9" stroke-width="0.8" opacity="0.4">
+    <!-- Prime meridian -->
+    <line x1="60" y1="10" x2="60" y2="110" />
+
+    <!-- Left lines -->
+    <ellipse cx="60" cy="60" rx="40" ry="50" fill="none" stroke="#f1f5f9" stroke-width="0.8" opacity="0.3"/>
+    <ellipse cx="60" cy="60" rx="30" ry="50" fill="none" stroke="#f1f5f9" stroke-width="0.8" opacity="0.3"/>
+    <ellipse cx="60" cy="60" rx="20" ry="50" fill="none" stroke="#f1f5f9" stroke-width="0.8" opacity="0.3"/>
+    <ellipse cx="60" cy="60" rx="10" ry="50" fill="none" stroke="#f1f5f9" stroke-width="0.8" opacity="0.3"/>
+  </g>
+
+  <!-- Latitude lines (horizontal) -->
+  <g stroke="#f1f5f9" stroke-width="0.8" opacity="0.4">
+    <!-- Equator -->
+    <line x1="10" y1="60" x2="110" y2="60" />
+
+    <!-- Other latitude lines -->
+    <ellipse cx="60" cy="60" rx="50" ry="35" fill="none" stroke="#f1f5f9" stroke-width="0.8" opacity="0.3"/>
+    <ellipse cx="60" cy="60" rx="50" ry="25" fill="none" stroke="#f1f5f9" stroke-width="0.8" opacity="0.3"/>
+  </g>
+
+  <!-- Location pin (representing geolocation) -->
+  <g transform="translate(60, 45)">
+    <path d="M 0,-8 C -4,-8 -7,-5 -7,-1 C -7,3 0,10 0,10 C 0,10 7,3 7,-1 C 7,-5 4,-8 0,-8 Z"
+          fill="#475569" opacity="0.9"/>
+    <circle cx="0" cy="-1" r="2" fill="#f1f5f9"/>
+  </g>
+
+  <!-- Clock hand accent (subtle) -->
+  <g transform="translate(60, 60)" opacity="0.6">
+    <line x1="0" y1="0" x2="0" y2="-20" stroke="#475569" stroke-width="2" stroke-linecap="round"/>
+    <line x1="0" y1="0" x2="12" y2="8" stroke="#475569" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="0" cy="0" r="3" fill="#64748b"/>
+  </g>
+
+  <!-- Outer border ring -->
+  <circle cx="60" cy="60" r="50" fill="none" stroke="url(#ringGradient)" stroke-width="1.5"/>
+</svg>
