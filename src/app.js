@@ -1,3 +1,26 @@
+/**
+ * Express Application Configuration
+ *
+ * Configures the Express.js application with:
+ * - Security middleware (Helmet, CORS, rate limiting)
+ * - Request parsing and timeout handling
+ * - Health check endpoints (liveness and readiness probes)
+ * - Main API endpoint for timezone lookup
+ * - Static file serving
+ *
+ * Middleware Stack (in order):
+ * 1. Trust proxy (for accurate IP extraction)
+ * 2. Helmet (security headers)
+ * 3. CORS (cross-origin resource sharing)
+ * 4. JSON parser (1KB limit)
+ * 5. Request timeout (30 seconds)
+ * 6. Static files (no rate limiting)
+ * 7. Health endpoints (lenient rate limiting)
+ * 8. API endpoints (strict rate limiting)
+ *
+ * @module app
+ */
+
 const express = require('express');
 const path = require('path');
 const helmet = require('helmet');

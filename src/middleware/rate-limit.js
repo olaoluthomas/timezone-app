@@ -1,3 +1,27 @@
+/**
+ * Rate Limiting Middleware
+ *
+ * Implements IP-based rate limiting with two separate limiters:
+ *
+ * 1. API Limiter (Strict):
+ *    - 100 requests per 15 minutes
+ *    - Protects external API quota
+ *    - Applied to /api/* endpoints
+ *
+ * 2. Health Limiter (Lenient):
+ *    - 300 requests per 15 minutes
+ *    - Allows frequent monitoring checks
+ *    - Applied to /health* endpoints
+ *
+ * Features:
+ * - Automatic proxy support (X-Forwarded-For)
+ * - IPv6 and IPv4 support
+ * - Standard RateLimit-* headers
+ * - Graceful error messages
+ *
+ * @module middleware/rate-limit
+ */
+
 const rateLimit = require('express-rate-limit');
 
 /**
