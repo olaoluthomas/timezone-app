@@ -64,7 +64,7 @@ else
 fi
 
 # Step 8: Generate full coverage report
-run_step "📊 Generating full coverage report" "npm test -- --coverage --silent"
+run_step "📊 Generating full coverage report" "npm test -- --silent"
 
 # Final summary
 echo -e "${BLUE}============================================================${NC}"
