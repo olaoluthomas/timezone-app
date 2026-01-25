@@ -1,9 +1,10 @@
 # Timezone App
 
+[![CI](https://github.com/olaoluthomas/timezone-app/workflows/CI/badge.svg)](https://github.com/olaoluthomas/timezone-app/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
-[![Test Coverage](https://img.shields.io/badge/coverage-98.9%25-brightgreen)](https://github.com/olaoluthomas/timezone-app)
-[![Tests](https://img.shields.io/badge/tests-133%20passing-brightgreen)](https://github.com/olaoluthomas/timezone-app)
+[![Test Coverage](https://img.shields.io/badge/coverage-96.06%25-brightgreen)](https://github.com/olaoluthomas/timezone-app)
+[![Tests](https://img.shields.io/badge/tests-167%20passing-brightgreen)](https://github.com/olaoluthomas/timezone-app)
 [![Built with Claude Code](https://img.shields.io/badge/built%20with-Claude%20Code-5A67D8)](https://github.com/anthropics/claude-code)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
