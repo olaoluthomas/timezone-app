@@ -24,6 +24,7 @@
  */
 
 const NodeCache = require('node-cache');
+const logger = require('../utils/logger');
 
 /**
  * Cache service for storing geolocation lookup results
@@ -47,9 +48,9 @@ class CacheService {
   get(key) {
     const value = this.cache.get(key);
     if (value !== undefined) {
-      console.log(`Cache HIT for key: ${key}`);
+      logger.debug('Cache hit', { key });
     } else {
-      console.log(`Cache MISS for key: ${key}`);
+      logger.debug('Cache miss', { key });
     }
     return value;
   }
@@ -64,7 +65,7 @@ class CacheService {
   set(key, value, ttl) {
     const success = this.cache.set(key, value, ttl);
     if (success) {
-      console.log(`Cache SET for key: ${key}`);
+      logger.debug('Cache set', { key });
     }
     return success;
   }
@@ -83,7 +84,7 @@ class CacheService {
    */
   flush() {
     this.cache.flushAll();
-    console.log('Cache flushed');
+    logger.info('Cache flushed');
   }
 
   /**

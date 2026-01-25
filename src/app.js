@@ -29,6 +29,7 @@ const { apiLimiter, healthLimiter } = require('./middleware/rate-limit');
 const timeoutMiddleware = require('./middleware/timeout');
 const geolocationService = require('./services/geolocation');
 const healthService = require('./services/health');
+const logger = require('./utils/logger');
 
 const app = express();
 
@@ -95,7 +96,7 @@ app.get('/api/timezone', apiLimiter, async (req, res) => {
     const timezoneInfo = await geolocationService.getTimezoneByIP(clientIP);
     res.json(timezoneInfo);
   } catch (error) {
-    console.error('Error fetching timezone:', error);
+    logger.error('Timezone API error', { error: error.message, ip: req.ip });
     res.status(500).json({ error: 'Failed to fetch timezone information' });
   }
 });

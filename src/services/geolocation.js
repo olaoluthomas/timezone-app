@@ -33,6 +33,7 @@
 
 const axios = require('axios');
 const cache = require('./cache');
+const logger = require('../utils/logger');
 
 /**
  * Fetches timezone and location information from the API (uncached)
@@ -75,7 +76,7 @@ async function getTimezoneByIP(ip) {
     // This handles ::ffff:192.168.1.1 → 192.168.1.1
     const normalizedIP = normalizeIP(ip);
 
-    console.log(`[Geolocation] Original IP: ${ip}, Normalized IP: ${normalizedIP}`);
+    logger.debug('IP normalization', { originalIP: ip, normalizedIP });
 
     // Check if IP is localhost or private and should use server's public IP
     const isLocalhost =
@@ -89,7 +90,11 @@ async function getTimezoneByIP(ip) {
     // For localhost/private IPs, use empty string (server's public IP)
     const lookupIP = isLocalhost || isPrivate ? '' : normalizedIP;
 
-    console.log(`[Geolocation] Lookup IP: ${lookupIP || 'server public IP'}`);
+    logger.debug('Geolocation lookup', {
+      lookupIP: lookupIP || 'server public IP',
+      isLocalhost,
+      isPrivate,
+    });
 
     // Create cache key from the lookup IP
     const cacheKey = `geo:${lookupIP || 'default'}`;
@@ -145,7 +150,7 @@ async function getTimezoneByIP(ip) {
       cached: false,
     };
   } catch (error) {
-    console.error('Geolocation API error:', error.message);
+    logger.error('Geolocation API error', { error: error.message, stack: error.stack });
     throw new Error('Unable to determine location from IP address');
   }
 }
