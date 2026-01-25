@@ -12,9 +12,10 @@
  */
 
 const app = require('./app');
+const logger = require('./utils/logger');
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Timezone app running on http://localhost:${PORT}`);
+  logger.info('Server started', { port: PORT, url: `http://localhost:${PORT}` });
 });
