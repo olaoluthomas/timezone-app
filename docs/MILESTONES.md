@@ -12,10 +12,12 @@
 **Current Status:** 8/9 Milestones Complete
 **Next Milestone:** Milestone 9 - Graceful Shutdown
 **Overall Progress:** 89%
+**Last Updated:** 2026-01-26
 
 **Test Status:** ✅ 167/167 tests passing
 **Coverage:** ✅ 96.06%
 **Linting:** ✅ 0 errors, 0 warnings
+**Refactoring:** 3 opportunities completed (Winston Logger, Constants, Compression)
 
 ---
 
@@ -398,15 +400,75 @@ None currently. Ready to start Milestone 9.
 ---
 
 ### Milestone 9: Graceful Shutdown
-**Status:** 📋 PLANNED
+**Status:** 📋 PLANNED (Next Priority)
 **Estimated Duration:** 2 hours
+**Priority:** Critical - Required for production deployments
+
+**Objective:**
+Implement graceful shutdown handlers to ensure zero-downtime deployments in Kubernetes/Docker environments and allow in-flight requests to complete.
 
 **Planned Deliverables:**
-- [ ] SIGTERM handler
-- [ ] SIGINT handler
+- [ ] SIGTERM handler (Kubernetes sends this for graceful termination)
+- [ ] SIGINT handler (Ctrl+C in development)
+- [ ] Uncaught exception handler
 - [ ] 30-second graceful shutdown timeout
+- [ ] Server.close() implementation
 - [ ] Connection cleanup
-- [ ] Shutdown tests
+- [ ] Shutdown logging
+- [ ] Shutdown tests (5+ tests)
+
+**Implementation Details:**
+```javascript
+// src/index.js
+const server = app.listen(PORT, () => {
+  logger.info('Server started', { port: PORT });
+});
+
+function gracefulShutdown(signal) {
+  logger.info('Shutdown signal received', { signal });
+
+  server.close(() => {
+    logger.info('HTTP server closed');
+    process.exit(0);
+  });
+
+  // Force shutdown after 30 seconds
+  setTimeout(() => {
+    logger.error('Forced shutdown after timeout');
+    process.exit(1);
+  }, 30000);
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('uncaughtException', (err) => {
+  logger.error('Uncaught exception', { error: err.message, stack: err.stack });
+  gracefulShutdown('UNCAUGHT_EXCEPTION');
+});
+```
+
+**Testing Requirements:**
+- [ ] Test SIGTERM handling
+- [ ] Test SIGINT handling
+- [ ] Test timeout after 30 seconds
+- [ ] Test server closes properly
+- [ ] Test in-flight requests complete
+- [ ] Test with Docker container
+- [ ] Verify Kubernetes compatibility
+
+**Benefits:**
+- Zero-downtime deployments
+- Data integrity during shutdown
+- Better container orchestration
+- Professional production requirement
+- Kubernetes-compatible
+
+**Success Criteria:**
+- [ ] All tests pass
+- [ ] Coverage maintained (≥96%)
+- [ ] Docker container shuts down gracefully
+- [ ] No errors during shutdown
+- [ ] Shutdown logs captured correctly
 
 ---
 
@@ -512,23 +574,59 @@ After each milestone, verify:
 
 ## Next Steps
 
-**Immediate:** Begin Milestone 9 - Graceful Shutdown
+### Immediate Priority (Sprint 1 - This Week)
 
-**Current Status:**
+**1. Milestone 9 - Graceful Shutdown** (Critical - 2 hours)
+   - SIGTERM/SIGINT/uncaughtException handlers
+   - 30-second timeout
+   - Server.close() implementation
+   - Production deployment requirement
+
+**2. Refactoring: Extract Controllers** (High Priority - 3 hours)
+   - Create `src/controllers/` directory
+   - Extract healthController.js (liveness, readiness)
+   - Extract timezoneController.js
+   - Add controller unit tests
+   - Clean MVC architecture
+
+**Sprint 1 Total:** 5 hours
+
+### Next Priority (Sprint 2 - Next Week)
+
+**3. Consolidate IP Validation** (2 hours)
+   - Create `src/utils/ip-validator.js`
+   - Extract IP normalization logic
+   - Add comprehensive tests
+
+**4. Extract Test Helper Utilities** (2 hours)
+   - Create `tests/helpers/nock-mocks.js`
+   - Reduce 49 duplicate nock setups
+   - Save ~200 lines of test code
+
+**5. Centralized Error Handler** (2 hours)
+   - Create `src/middleware/error-handler.js`
+   - Consistent error responses
+   - Better error logging
+
+**Sprint 2 Total:** 6 hours
+
+### Current Status (2026-01-26)
 1. ✅ Milestone 8 (CI/CD Pipeline) complete
 2. ✅ GitHub Actions workflow active (.github/workflows/ci.yml)
 3. ✅ 7 CI jobs running on every push/PR
 4. ✅ Multi-version testing (Node 18.x & 20.x)
 5. ✅ 167 tests passing with 96.06% coverage
-6. ✅ Ready for Milestone 9 (final milestone)
+6. ✅ Winston Logger implemented (Milestone 6)
+7. ✅ Constants extracted to config/constants.js
+8. ✅ Compression middleware added
+9. ⏳ Ready for Milestone 9 (final milestone)
+10. ⏳ 5 high-priority refactoring opportunities identified
 
-**Upcoming: Milestone 9 - Graceful Shutdown**
-1. Implement SIGTERM handler
-2. Implement SIGINT handler
-3. Add 30-second graceful shutdown timeout
-4. Clean up connections and resources
-5. Add shutdown tests
-6. Update documentation
+### Recent Improvements
+- **Winston Logger**: Structured logging with daily rotation (95.83% coverage)
+- **Constants Extraction**: Centralized config for timeouts, rate limits, cache
+- **Compression**: Gzip for responses >1KB
+- **Refactoring Analysis**: Updated status document with 33 opportunities tracked
 
 **Note:** With automated workflow, Winston logger, and CI/CD in place, all work benefits from:
 - Automatic code formatting and linting
@@ -537,6 +635,10 @@ After each milestone, verify:
 - Structured logging for better observability
 - Automated PR creation
 - CI/CD validation on every push
+
+**See Also:**
+- `docs/REFACTORING_STATUS_2026-01-26.md` - Detailed refactoring plan
+- `docs/REFACTORING_OPPORTUNITIES.md` - Original analysis (2026-01-24)
 
 ---
 
