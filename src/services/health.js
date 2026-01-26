@@ -28,6 +28,7 @@
 
 const axios = require('axios');
 const cache = require('./cache');
+const CONSTANTS = require('../config/constants');
 
 /**
  * Check if external geolocation API is accessible
@@ -40,7 +41,7 @@ async function checkGeolocationAPI() {
     // Use a lightweight endpoint check (not full geolocation)
     // Just verify the API is reachable
     await axios.get('https://ipapi.co/json/', {
-      timeout: 2000, // 2 second timeout
+      timeout: CONSTANTS.HEALTH_CHECK_TIMEOUT, // 2 second timeout
       validateStatus: (status) => status < 500, // Accept 4xx as "API is up"
     });
 
