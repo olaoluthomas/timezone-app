@@ -199,6 +199,30 @@ Kept for historical reference. Shows original analysis with 28 opportunities.
 
 ---
 
+#### [DEPENDABOT-WORKFLOW.md](./DEPENDABOT-WORKFLOW.md) - **SOP for Dependabot PRs**
+**Purpose:** Standard operating procedure for handling automated dependency updates
+**Updated:** 2026-01-26
+
+**Highlights:**
+- Weekly Dependabot PR review workflow
+- Local testing procedures before merge
+- Decision matrix for merge vs. block
+- Automated label management
+
+**Quick Stats:**
+- 3 PRs merged (axios, supertest, commitlint)
+- 2 PRs blocked (eslint, nock) - require migration work
+- 60% auto-merge success rate
+
+**Sections:**
+- Automated Label Usage
+- Step-by-step Testing Workflow
+- Decision Matrix
+- Current PR Status
+- Weekly Review Checklist
+
+---
+
 ## Document Relationships
 
 ```
