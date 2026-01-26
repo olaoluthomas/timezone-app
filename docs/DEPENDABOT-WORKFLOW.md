@@ -11,7 +11,8 @@
 - ✅ Dependabot configured (weekly updates)
 - ✅ "automated" label created for bot PRs
 - ✅ 3 PRs merged successfully (2026-01-26)
-- ⚠️ 2 PRs blocked (require manual intervention)
+- ✅ 1 PR resolved via manual migration (ESLint 9)
+- ⚠️ 1 PR blocked (requires manual intervention)
 
 ---
 
@@ -144,26 +145,30 @@ gh issue create --title "Migration: <package> to v<version>" --body "..." --labe
 
 ---
 
-### ⚠️ Blocked PRs (Require Manual Work)
+### ✅ Resolved PRs (Manual Migration)
 
-#### PR #12: ESLint 8 → 9 (BLOCKED)
+#### PR #12: ESLint 8 → 9 (RESOLVED - 2026-01-26)
 
-**Status:** ❌ BLOCKED - Config migration required
-**Reason:** ESLint 9 uses new flat config format
-**Impact:** Will break linting and pre-push hooks
-**Required Work:**
-1. Migrate `.eslintrc.js` to `eslint.config.js`
-2. Update ESLint plugins to v9-compatible versions
-3. Test linting across entire codebase
-4. Update documentation
+**Status:** ✅ RESOLVED - Migration completed manually
+**Reason:** ESLint 9 required new flat config format
+**Completed Work:**
+1. ✅ Migrated `.eslintrc.js` to `eslint.config.js` (flat config)
+2. ✅ Installed globals package for environment definitions
+3. ✅ Added `"type": "module"` to package.json
+4. ✅ Renamed config files to `.cjs` (jest, commitlint)
+5. ✅ Updated no-unused-vars rule for catch blocks
+6. ✅ Fixed unused error variable in logger.js
+7. ✅ All 184 tests passing
+8. ✅ Pre-commit and pre-push hooks working
 
-**Estimated Effort:** 1-2 hours
-**Priority:** Medium (dev tooling, not critical)
-**Migration Guide:** https://eslint.org/docs/latest/use/configure/migration-guide
-
-**Action:** Create issue for ESLint 9 migration, keep PR open for reference
+**Commit:** a598155
+**Time Spent:** ~45 minutes
+**Result:** ESLint 9.39.2 active with flat config format
+**PR Action:** Closed with explanation (migration completed)
 
 ---
+
+### ⚠️ Blocked PRs (Require Manual Work)
 
 #### PR #13: Nock 13 → 14 (BLOCKED)
 
@@ -252,14 +257,17 @@ Run this checklist weekly (or when Dependabot creates new PRs):
 
 **PRs Processed:** 5
 **PRs Merged:** 3 (60%)
-**PRs Blocked:** 2 (40%)
+**PRs Resolved (Manual):** 1 (20%)
+**PRs Blocked:** 1 (20%)
 **Testing Time:** ~25 minutes
+**Migration Time:** ~45 minutes (ESLint 9)
 **Merge Time:** ~2 minutes
-**Time Saved:** ~18 minutes net benefit
+**Total Time:** ~72 minutes
 
-**Blocking Reasons:**
-- Config migration: 1 (20%)
-- Test failures: 1 (20%)
+**Resolution Methods:**
+- Direct merge: 3 (60%)
+- Manual migration: 1 (20%)
+- Still blocked: 1 (20%)
 
 **Categories:**
 - Production dependencies: 1 (20%)
