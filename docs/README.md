@@ -169,8 +169,33 @@ Kept for historical reference. Shows original analysis with 28 opportunities.
 - ✅ Pre-commit/pre-push hooks
 - ✅ PR automation
 - ✅ Code quality tools
+- ✅ PR labeling standards
 - ⏳ Automated changelog
 - ⏳ Release automation
+
+---
+
+#### [PR-LABELING-GUIDE.md](./PR-LABELING-GUIDE.md) - **SOP for PR Labels**
+**Purpose:** Standard operating procedure for PR labeling
+**Updated:** 2026-01-26
+
+**Highlights:**
+- Automated label detection from commit messages
+- File path analysis for area labels
+- Decision trees for manual labeling
+- Complete label reference with examples
+
+**Quick Reference:**
+- Type labels: `enhancement`, `bug`, `documentation`, `refactor`, `tests`
+- Area labels: `code`, `tests`, `middleware`, `services`, `dependencies`
+- Automation: `npm run create-pr` applies labels automatically
+
+**Sections:**
+- Label Categories and Descriptions
+- Automated Labeling Logic
+- Manual Labeling Guide
+- Common Scenarios
+- Best Practices
 
 ---
 

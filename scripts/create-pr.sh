@@ -22,6 +22,7 @@ echo ""
 PR_TITLE=$(git log $BASE_BRANCH..HEAD --pretty=format:"%s" | head -1)
 
 # Determine PR type from title (for labels)
+# Based on Conventional Commits specification
 PR_TYPE=""
 if [[ "$PR_TITLE" =~ ^feat ]]; then
   PR_TYPE="enhancement"
@@ -33,41 +34,56 @@ elif [[ "$PR_TITLE" =~ ^test ]]; then
   PR_TYPE="tests"
 elif [[ "$PR_TITLE" =~ ^refactor ]]; then
   PR_TYPE="refactor"
+elif [[ "$PR_TITLE" =~ ^chore ]]; then
+  # chore commits get area labels but no type label
+  PR_TYPE=""
 fi
 
 # Analyze changed files for automatic labels
 CHANGED_FILES=$(git diff $BASE_BRANCH...HEAD --name-only)
 LABELS=()
 
-# Add type label
+# Add type label (primary classification)
 if [ -n "$PR_TYPE" ]; then
   LABELS+=("$PR_TYPE")
 fi
 
-# Add area labels based on changed files
-if echo "$CHANGED_FILES" | grep -q "^src/"; then
+# Add area labels based on changed files (can have multiple)
+# Code changes
+if echo "$CHANGED_FILES" | grep -q "^src/.*\.js$"; then
   LABELS+=("code")
 fi
 
+# Test changes
 if echo "$CHANGED_FILES" | grep -q "^tests/"; then
   LABELS+=("tests")
 fi
 
-if echo "$CHANGED_FILES" | grep -q "^docs/\|\.md$"; then
-  LABELS+=("documentation")
+# Documentation changes
+if echo "$CHANGED_FILES" | grep -q "^docs/\|README\.md\|\.md$"; then
+  # Only add if not already added by PR_TYPE
+  if [[ ! " ${LABELS[@]} " =~ " documentation " ]]; then
+    LABELS+=("documentation")
+  fi
 fi
 
-if echo "$CHANGED_FILES" | grep -q "package.json\|package-lock.json"; then
+# Dependency updates
+if echo "$CHANGED_FILES" | grep -q "package\.json\|package-lock\.json"; then
   LABELS+=("dependencies")
 fi
 
+# Middleware changes
 if echo "$CHANGED_FILES" | grep -q "^src/middleware/"; then
   LABELS+=("middleware")
 fi
 
+# Service changes
 if echo "$CHANGED_FILES" | grep -q "^src/services/"; then
   LABELS+=("services")
 fi
+
+# Remove duplicate labels
+LABELS=($(echo "${LABELS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
 # Build label string for gh CLI
 LABEL_ARGS=""

@@ -68,6 +68,85 @@ npm run create-pr                   # Create PR with auto-labels
 
 ---
 
+### PR Labeling Standards
+- **Implemented:** 2026-01-26
+- **Duration:** 1 hour
+- **Impact:** Medium
+- **Time Saved:** ~2 hours/month
+
+**Features Implemented:**
+
+- Automated label detection based on commit messages
+- Multi-label support for complex PRs
+- File path analysis for area labels
+- Comprehensive labeling guide documentation
+- Label deduplication logic
+
+**Label Categories:**
+
+1. **Type Labels (Primary):** `enhancement`, `bug`, `documentation`, `refactor`, `tests`
+2. **Area Labels (Secondary):** `code`, `tests`, `documentation`, `dependencies`, `middleware`, `services`
+3. **Special Labels:** `help wanted`, `good first issue`, `question`
+
+**Automation Logic:**
+
+```bash
+# Commit message analysis
+feat: → enhancement
+fix: → bug
+docs: → documentation
+refactor: → refactor
+test: → tests
+
+# File path analysis
+src/**/*.js → code
+tests/** → tests
+docs/** → documentation
+src/middleware/** → middleware
+src/services/** → services
+package.json → dependencies
+```
+
+**Results:**
+
+- Consistent PR labeling across all PRs
+- Easy filtering and searching
+- Better release note generation
+- Clear PR classification at a glance
+- Automatic detection reduces manual work
+
+**Files:**
+
+- `scripts/create-pr.sh` (updated with enhanced logic)
+- `docs/PR-LABELING-GUIDE.md` (new comprehensive guide)
+
+**Documentation:**
+
+See **[PR-LABELING-GUIDE.md](./PR-LABELING-GUIDE.md)** for:
+- Complete label reference
+- Decision trees for manual labeling
+- Common scenarios and examples
+- Best practices and anti-patterns
+- Integration with automation
+
+**Example:**
+
+PR #8 automatically labeled with:
+- `documentation` (primary - 10 new doc files)
+- `refactor` (extracted constants)
+- `code` (src/ changes)
+- `tests` (new tests)
+
+**Commands:**
+
+```bash
+npm run create-pr                              # Auto-labels applied
+gh pr edit 8 --add-label "label1,label2"      # Manual label addition
+gh pr list --label "refactor"                  # Filter by label
+```
+
+---
+
 ### Code Quality Tools
 
 - **Implemented:** 2026-01-23
