@@ -32,6 +32,7 @@ const timeoutMiddleware = require('./middleware/timeout');
 const geolocationService = require('./services/geolocation');
 const healthService = require('./services/health');
 const logger = require('./utils/logger');
+const CONSTANTS = require('./config/constants');
 
 const app = express();
 
@@ -57,12 +58,12 @@ app.use(corsMiddleware);
 // 4. Request parsing with limits
 app.use(
   express.json({
-    limit: '1kb', // Timezone API doesn't need large payloads
+    limit: CONSTANTS.REQUEST_SIZE_LIMIT, // Timezone API doesn't need large payloads
   })
 );
 
 // 5. Request timeout (30 seconds)
-app.use(timeoutMiddleware(30000));
+app.use(timeoutMiddleware(CONSTANTS.REQUEST_TIMEOUT));
 
 // 6. Static files (no rate limiting)
 app.use(express.static(path.join(__dirname, 'public')));

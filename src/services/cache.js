@@ -25,6 +25,7 @@
 
 const NodeCache = require('node-cache');
 const logger = require('../utils/logger');
+const CONSTANTS = require('../config/constants');
 
 /**
  * Cache service for storing geolocation lookup results
@@ -33,9 +34,9 @@ const logger = require('../utils/logger');
 class CacheService {
   constructor() {
     this.cache = new NodeCache({
-      stdTTL: 86400, // 24 hours in seconds
-      checkperiod: 3600, // Check for expired keys every hour
-      maxKeys: 10000, // Maximum number of cached entries
+      stdTTL: CONSTANTS.CACHE_TTL, // 24 hours in seconds
+      checkperiod: CONSTANTS.CACHE_CHECK_PERIOD, // Check for expired keys every hour
+      maxKeys: CONSTANTS.CACHE_MAX_KEYS, // Maximum number of cached entries
       useClones: false, // Return direct references (faster)
     });
   }

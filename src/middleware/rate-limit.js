@@ -23,6 +23,7 @@
  */
 
 const rateLimit = require('express-rate-limit');
+const CONSTANTS = require('../config/constants');
 
 /**
  * API rate limiter - Strict limits for main API endpoints
@@ -30,8 +31,8 @@ const rateLimit = require('express-rate-limit');
  * With 80-90% cache hit rate, can serve 150k-300k requests/month
  */
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: CONSTANTS.RATE_LIMIT_WINDOW, // 15 minutes
+  max: CONSTANTS.API_RATE_LIMIT, // limit each IP to 100 requests per windowMs
   message: {
     error: 'Too many requests from this IP, please try again later.',
     retryAfter: '15 minutes',
@@ -47,8 +48,8 @@ const apiLimiter = rateLimit({
  * Allows Kubernetes, Docker, and monitoring systems to check frequently
  */
 const healthLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300, // Higher limit for health checks
+  windowMs: CONSTANTS.RATE_LIMIT_WINDOW, // 15 minutes
+  max: CONSTANTS.HEALTH_RATE_LIMIT, // Higher limit for health checks
   message: {
     error: 'Health check rate limit exceeded',
   },

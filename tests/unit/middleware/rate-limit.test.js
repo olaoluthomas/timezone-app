@@ -42,12 +42,11 @@ describe('Rate Limit Middleware', () => {
   describe('source code configuration validation', () => {
     /**
      * These tests validate the configuration by reading the source code
-     * and verifying that values match the expected configuration.
+     * and verifying that it uses the centralized constants.
      *
-     * This approach tests configuration without relying on internal
-     * express-rate-limit implementation details.
+     * This ensures magic numbers have been properly extracted.
      */
-    it('apiLimiter should have 15-minute window (900000ms)', () => {
+    it('should import CONSTANTS module', () => {
       const fs = require('fs');
       const path = require('path');
       const sourceCode = fs.readFileSync(
@@ -55,11 +54,11 @@ describe('Rate Limit Middleware', () => {
         'utf-8'
       );
 
-      // Verify the source contains the correct windowMs value
-      expect(sourceCode).toContain('15 * 60 * 1000');
+      // Verify the source imports CONSTANTS
+      expect(sourceCode).toContain("require('../config/constants')");
     });
 
-    it('apiLimiter should have max 100 requests', () => {
+    it('apiLimiter should use CONSTANTS.RATE_LIMIT_WINDOW', () => {
       const fs = require('fs');
       const path = require('path');
       const sourceCode = fs.readFileSync(
@@ -67,13 +66,13 @@ describe('Rate Limit Middleware', () => {
         'utf-8'
       );
 
-      // Verify apiLimiter has max: 100
-      const apiLimiterMatch = sourceCode.match(/const apiLimiter[\s\S]*?max:\s*(\d+)/);
-      expect(apiLimiterMatch).not.toBeNull();
-      expect(parseInt(apiLimiterMatch[1])).toBe(100);
+      // Verify apiLimiter uses the constant
+      expect(sourceCode).toMatch(
+        /const apiLimiter[\s\S]*?windowMs:\s*CONSTANTS\.RATE_LIMIT_WINDOW/
+      );
     });
 
-    it('healthLimiter should have max 300 requests', () => {
+    it('apiLimiter should use CONSTANTS.API_RATE_LIMIT', () => {
       const fs = require('fs');
       const path = require('path');
       const sourceCode = fs.readFileSync(
@@ -81,10 +80,20 @@ describe('Rate Limit Middleware', () => {
         'utf-8'
       );
 
-      // Verify healthLimiter has max: 300
-      const healthLimiterMatch = sourceCode.match(/const healthLimiter[\s\S]*?max:\s*(\d+)/);
-      expect(healthLimiterMatch).not.toBeNull();
-      expect(parseInt(healthLimiterMatch[1])).toBe(300);
+      // Verify apiLimiter uses the constant
+      expect(sourceCode).toMatch(/const apiLimiter[\s\S]*?max:\s*CONSTANTS\.API_RATE_LIMIT/);
+    });
+
+    it('healthLimiter should use CONSTANTS.HEALTH_RATE_LIMIT', () => {
+      const fs = require('fs');
+      const path = require('path');
+      const sourceCode = fs.readFileSync(
+        path.join(__dirname, '../../../src/middleware/rate-limit.js'),
+        'utf-8'
+      );
+
+      // Verify healthLimiter uses the constant
+      expect(sourceCode).toMatch(/const healthLimiter[\s\S]*?max:\s*CONSTANTS\.HEALTH_RATE_LIMIT/);
     });
 
     it('both limiters should use standardHeaders: true', () => {
@@ -130,7 +139,7 @@ describe('Rate Limit Middleware', () => {
   describe('configuration integrity', () => {
     it('should have consistent configuration between limiters', () => {
       // This test verifies that both limiters share the same window duration
-      // by checking they both use "15 * 60 * 1000"
+      // by checking they both use CONSTANTS.RATE_LIMIT_WINDOW
       const fs = require('fs');
       const path = require('path');
       const sourceCode = fs.readFileSync(
@@ -138,23 +147,16 @@ describe('Rate Limit Middleware', () => {
         'utf-8'
       );
 
-      // Both should use the same window calculation
-      const windowMatches = sourceCode.match(/windowMs:\s*15\s*\*\s*60\s*\*\s*1000/g);
+      // Both should use the same constant
+      const windowMatches = sourceCode.match(/windowMs:\s*CONSTANTS\.RATE_LIMIT_WINDOW/g);
       expect(windowMatches).toHaveLength(2);
     });
 
-    it('healthLimiter max should be 3x apiLimiter max (300 vs 100)', () => {
-      const fs = require('fs');
-      const path = require('path');
-      const sourceCode = fs.readFileSync(
-        path.join(__dirname, '../../../src/middleware/rate-limit.js'),
-        'utf-8'
-      );
+    it('healthLimiter max should be 3x apiLimiter max (verified via constants)', () => {
+      const CONSTANTS = require('../../../src/config/constants');
 
-      const apiMax = sourceCode.match(/const apiLimiter[\s\S]*?max:\s*(\d+)/)[1];
-      const healthMax = sourceCode.match(/const healthLimiter[\s\S]*?max:\s*(\d+)/)[1];
-
-      expect(parseInt(healthMax)).toBe(parseInt(apiMax) * 3);
+      // Verify the relationship between the two limits
+      expect(CONSTANTS.HEALTH_RATE_LIMIT).toBe(CONSTANTS.API_RATE_LIMIT * 3);
     });
   });
 });
