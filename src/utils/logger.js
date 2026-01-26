@@ -100,7 +100,7 @@ if (process.env.NODE_ENV !== 'test') {
         format: prodFormat,
       })
     );
-  } catch (error) {
+  } catch (_error) {
     // DailyRotateFile may not be available in some environments
     // Fallback to standard file transport is sufficient
     console.warn('DailyRotateFile transport not available, using standard file transports');
