@@ -36,8 +36,17 @@
 
 ## Related Issues
 
-<!-- Link to related issues -->
+<!-- ⚠️ REQUIRED: All PRs must reference a GitHub issue -->
+<!-- Use one of: Closes #N, Fixes #N, or Resolves #N -->
+<!-- This automatically closes the issue when the PR is merged -->
+
 Closes #
+
+<!-- Exception: If no pre-existing issue exists (typos, urgent hotfixes only), explain why:
+## No Pre-existing Issue
+This PR addresses [brief description] discovered during [context].
+An issue was not created beforehand because: [reason - typo fix, urgent hotfix, etc.]
+-->
 
 ## Screenshots (if applicable)
 

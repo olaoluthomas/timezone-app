@@ -1,7 +1,7 @@
 # Workflow Improvements Tracker
 
 **Project:** Timezone Web App
-**Last Updated:** 2026-01-25
+**Last Updated:** 2026-01-26
 **Status:** Active tracking
 
 ---
@@ -14,7 +14,28 @@ Track development workflow improvements, automation opportunities, tooling enhan
 
 ## In Progress 🚧
 
-*None currently*
+### Issue-First Workflow Enforcement
+- **Started:** 2026-01-26
+- **Duration:** 2 hours (estimated)
+- **Impact:** High
+- **Status:** Documentation updates in progress
+
+**Description:**
+Enforce mandatory GitHub issue creation before starting work on bugs, features, and enhancements. This improves tracking, provides discussion context, and enables automated PR/issue linking.
+
+**Implementation:**
+- [ ] Update CONTRIBUTING.md with mandatory requirements
+- [ ] Update CLAUDE.md with workflow for AI assistants
+- [ ] Add section to WORKFLOW-IMPROVEMENTS.md
+- [ ] Update PR template to require issue reference
+- [ ] Document branch naming convention with issue numbers
+- [ ] Add examples for common scenarios
+
+**Expected Benefits:**
+- Better tracking and searchability
+- Clear context for all changes
+- Automated PR/issue linking
+- Improved project history
 
 ---
 
