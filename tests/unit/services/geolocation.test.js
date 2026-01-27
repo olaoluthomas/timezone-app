@@ -265,4 +265,113 @@ describe('GeolocationService', () => {
       expect(result.cached).toBe(false);
     });
   });
+
+  describe('development fallback', () => {
+    const originalEnv = process.env.NODE_ENV;
+
+    beforeEach(() => {
+      clearCache();
+      nock.cleanAll();
+    });
+
+    afterEach(() => {
+      process.env.NODE_ENV = originalEnv;
+    });
+
+    test('should use fallback data for localhost when API fails in development', async () => {
+      process.env.NODE_ENV = 'development';
+      nock('https://ipapi.co').get('/json/').reply(429, { error: 'Rate limited' });
+
+      const result = await getTimezoneByIP('127.0.0.1');
+
+      expect(result).toHaveProperty('ip', '127.0.0.1');
+      expect(result).toHaveProperty('city', 'San Francisco');
+      expect(result).toHaveProperty('timezone', 'America/Los_Angeles');
+      expect(result).toHaveProperty('fallback', true);
+      expect(result.cached).toBe(false);
+    });
+
+    test('should use fallback data for private IP when API fails in development', async () => {
+      process.env.NODE_ENV = 'development';
+      nock('https://ipapi.co').get('/json/').reply(500, { error: 'Server error' });
+
+      const result = await getTimezoneByIP('192.168.1.1');
+
+      expect(result).toHaveProperty('fallback', true);
+      expect(result).toHaveProperty('timezone', 'America/Los_Angeles');
+    });
+
+    test('should use fallback for any IP in development when API fails', async () => {
+      process.env.NODE_ENV = 'development';
+      nock('https://ipapi.co').get('/8.8.8.8/json/').reply(429);
+
+      const result = await getTimezoneByIP('8.8.8.8');
+
+      expect(result).toHaveProperty('fallback', true);
+      expect(result).toHaveProperty('timezone', 'America/Los_Angeles');
+    });
+
+    test('should NOT use fallback in production mode', async () => {
+      process.env.NODE_ENV = 'production';
+      nock('https://ipapi.co').get('/json/').reply(429);
+
+      await expect(getTimezoneByIP('127.0.0.1')).rejects.toThrow(
+        'Unable to determine location from IP address'
+      );
+    });
+
+    test('should NOT use fallback in QA/test environment', async () => {
+      process.env.NODE_ENV = 'qa';
+      nock('https://ipapi.co').get('/json/').reply(429);
+
+      await expect(getTimezoneByIP('127.0.0.1')).rejects.toThrow(
+        'Unable to determine location from IP address'
+      );
+    });
+
+    test('should NOT use fallback in staging environment', async () => {
+      process.env.NODE_ENV = 'staging';
+      nock('https://ipapi.co').get('/json/').reply(429);
+
+      await expect(getTimezoneByIP('127.0.0.1')).rejects.toThrow(
+        'Unable to determine location from IP address'
+      );
+    });
+
+    test('should cache fallback data like normal responses', async () => {
+      process.env.NODE_ENV = 'development';
+      nock('https://ipapi.co').get('/json/').reply(429);
+
+      // First call uses fallback
+      const result1 = await getTimezoneByIP('127.0.0.1');
+      expect(result1.fallback).toBe(true);
+      expect(result1.cached).toBe(false);
+
+      // Second call should be cached (no new nock needed)
+      const result2 = await getTimezoneByIP('127.0.0.1');
+      expect(result2.cached).toBe(true);
+      expect(result2.city).toBe('San Francisco');
+    });
+
+    test('should include all required fields in fallback response', async () => {
+      process.env.NODE_ENV = 'development';
+      nock('https://ipapi.co').get('/json/').reply(429);
+
+      const result = await getTimezoneByIP('127.0.0.1');
+
+      expect(result).toHaveProperty('ip');
+      expect(result).toHaveProperty('city');
+      expect(result).toHaveProperty('region');
+      expect(result).toHaveProperty('country');
+      expect(result).toHaveProperty('countryCode');
+      expect(result).toHaveProperty('latitude');
+      expect(result).toHaveProperty('longitude');
+      expect(result).toHaveProperty('timezone');
+      expect(result).toHaveProperty('utcOffset');
+      expect(result).toHaveProperty('currentTime');
+      expect(result).toHaveProperty('timestamp');
+      expect(result).toHaveProperty('cached');
+      expect(result).toHaveProperty('fallback');
+    });
+  });
 });
