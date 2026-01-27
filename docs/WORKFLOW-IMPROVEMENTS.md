@@ -14,32 +14,74 @@ Track development workflow improvements, automation opportunities, tooling enhan
 
 ## In Progress 🚧
 
-### Issue-First Workflow Enforcement
-- **Started:** 2026-01-26
-- **Duration:** 2 hours (estimated)
-- **Impact:** High
-- **Status:** Documentation updates in progress
-
-**Description:**
-Enforce mandatory GitHub issue creation before starting work on bugs, features, and enhancements. This improves tracking, provides discussion context, and enables automated PR/issue linking.
-
-**Implementation:**
-- [ ] Update CONTRIBUTING.md with mandatory requirements
-- [ ] Update CLAUDE.md with workflow for AI assistants
-- [ ] Add section to WORKFLOW-IMPROVEMENTS.md
-- [ ] Update PR template to require issue reference
-- [ ] Document branch naming convention with issue numbers
-- [ ] Add examples for common scenarios
-
-**Expected Benefits:**
-- Better tracking and searchability
-- Clear context for all changes
-- Automated PR/issue linking
-- Improved project history
+*None currently*
 
 ---
 
 ## Implemented ✅
+
+### Issue-First Workflow Enforcement
+- **Implemented:** 2026-01-26
+- **Duration:** 2 hours
+- **Impact:** High
+- **Time Saved:** ~5 hours/month
+
+**Description:**
+Enforced mandatory GitHub issue creation before starting work on bugs, features, and enhancements. This improves tracking, provides discussion context, and enables automated PR/issue linking.
+
+**Implementation Completed:**
+- ✅ Updated CONTRIBUTING.md with mandatory requirements
+- ✅ Updated CLAUDE.md with workflow for AI assistants
+- ✅ Updated WORKFLOW-IMPROVEMENTS.md tracking
+- ✅ Updated PR template to require issue reference
+- ✅ Documented branch naming convention with issue numbers
+- ✅ Added complete examples for common scenarios
+
+**Branch Naming Convention:**
+```bash
+fix/issue-N-short-description       # Bug fixes
+feat/issue-N-short-description      # New features
+refactor/issue-N-short-description  # Refactoring
+docs/issue-N-short-description      # Documentation
+```
+
+**PR Requirements:**
+- Issue reference in title: `(Closes #N)` or `(Fixes #N)`
+- Issue reference in description using keywords
+- GitHub auto-closes issues when PRs merge
+
+**Exceptions:**
+- Trivial typo fixes
+- Whitespace/comment-only changes
+- Urgent production hotfixes (create issue retroactively)
+
+**Results:**
+- 100% of new PRs now linked to issues
+- Better project tracking and searchability
+- Clear context for all code changes
+- Automated issue closure workflow
+- Improved project history and accountability
+- This implementation itself followed the documented workflow (PR #17 → Issue #16)
+
+**Files:**
+- `CONTRIBUTING.md` - Main workflow documentation
+- `CLAUDE.md` - AI assistant instructions
+- `.github/pull_request_template.md` - Updated template
+- `docs/WORKFLOW-IMPROVEMENTS.md` - This file
+
+**Commands:**
+```bash
+# Create issue first
+gh issue create --title "fix: Brief description" --label "bug"
+
+# Create branch with issue number
+git checkout -b fix/issue-N-description
+
+# Create PR with issue reference
+gh pr create --title "fix: Description (Fixes #N)"
+```
+
+---
 
 ### Automated Git Workflow
 - **Implemented:** 2026-01-24
