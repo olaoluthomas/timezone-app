@@ -308,18 +308,23 @@ npm run test:watch          # Watch mode
 
 **Title Format:**
 ```
-<type>: <short description>
+<type>: <short description> (<Closes|Fixes|Resolves> #issue-number)
 
 Examples:
-feat: add timezone converter endpoint
-fix: resolve cache key collision issue
-docs: improve API documentation
+feat: add timezone converter endpoint (Closes #42)
+fix: resolve cache key collision issue (Fixes #14)
+docs: improve API documentation (Closes #88)
 ```
 
 **PR Description Template:**
 ```markdown
 ## Description
 Brief description of changes
+
+## Related Issue
+Closes #123
+<!-- Use one of: Closes #N, Fixes #N, or Resolves #N -->
+<!-- This auto-closes the issue when PR is merged -->
 
 ## Type of Change
 - [ ] Bug fix
@@ -340,6 +345,14 @@ Brief description of changes
 - [ ] No new warnings generated
 - [ ] Tests pass locally
 - [ ] CI checks pass
+- [ ] Issue number referenced in PR title and description
+```
+
+**For PRs without a pre-existing issue** (exceptions only):
+```markdown
+## No Pre-existing Issue
+This PR addresses [describe the issue] which was discovered during [context].
+An issue was not created beforehand because: [valid reason - typo fix, urgent hotfix, etc.]
 ```
 
 ### 3. Review Process
@@ -418,33 +431,105 @@ timezone/
 └── scripts/               # Utility scripts
 ```
 
+## Issue-First Workflow (Mandatory)
+
+**⚠️ IMPORTANT: All code changes MUST have an associated GitHub issue.**
+
+Before starting work on bug fixes, features, or enhancements, you **must** create a GitHub issue. This ensures:
+- Proper tracking and searchability
+- Discussion before implementation
+- Clear context for future developers
+- Automated PR/issue linking
+
+### Branch Naming Convention
+
+All branches must reference their issue number:
+
+```bash
+fix/issue-16-short-description       # Bug fixes
+feat/issue-42-add-authentication     # New features
+refactor/issue-67-extract-constants  # Refactoring
+docs/issue-88-update-readme          # Documentation
+```
+
+**Benefits:**
+- GitHub auto-links branches to issues
+- Easy to identify what a branch addresses
+- Clear PR context at a glance
+
+### Exceptions
+
+Issue creation is **optional** for:
+- Typo fixes or formatting (use `chore:` prefix)
+- Trivial whitespace/comment changes
+- Urgent production hotfixes (create issue retroactively)
+
 ## Common Contribution Scenarios
 
 ### Adding a New Feature
 
-1. Create an issue describing the feature
-2. Wait for maintainer feedback
-3. Create a feature branch
+1. **Create a GitHub issue** describing the feature (mandatory)
+2. Wait for maintainer feedback on approach
+3. Create a feature branch: `feat/issue-N-short-description`
 4. Write tests first (TDD)
 5. Implement the feature
 6. Update documentation
-7. Submit PR
+7. Submit PR with "Closes #N" in description
+
+**Example:**
+```bash
+# 1. Create issue via GitHub UI or CLI
+gh issue create --title "feat: Add timezone converter" --label "enhancement"
+# Returns: Created issue #42
+
+# 2. Create branch
+git checkout -b feat/issue-42-timezone-converter
+
+# 3. Make changes, commit, push
+
+# 4. Create PR that references the issue
+gh pr create --title "feat: Add timezone converter (Closes #42)"
+```
 
 ### Fixing a Bug
 
-1. Create an issue (if none exists)
-2. Create a bugfix branch
-3. Write a failing test that reproduces the bug
-4. Fix the bug
-5. Ensure test passes
-6. Submit PR
+1. **Create a GitHub issue** describing the bug (mandatory)
+   - Include: steps to reproduce, expected vs actual behavior, environment
+2. Wait for maintainer acknowledgment (if not urgent)
+3. Create a bugfix branch: `fix/issue-N-short-description`
+4. Write a failing test that reproduces the bug
+5. Fix the bug
+6. Ensure test passes
+7. Submit PR with "Fixes #N" in description
+
+**Example:**
+```bash
+# 1. Create issue
+gh issue create --title "fix: Rate limiting not working for localhost" --label "bug"
+# Returns: Created issue #14
+
+# 2. Create branch
+git checkout -b fix/issue-14-rate-limiting-localhost
+
+# 3. Write failing test, fix bug, commit
+
+# 4. Create PR
+gh pr create --title "fix: Rate limiting for localhost (Fixes #14)"
+```
 
 ### Updating Documentation
 
-1. Create a docs branch
+**For significant documentation updates** (new guides, major rewrites):
+1. **Create a GitHub issue** describing the documentation need
+2. Create a docs branch: `docs/issue-N-short-description`
+3. Make your changes
+4. Verify formatting and links
+5. Submit PR with "Closes #N" in description
+
+**For minor updates** (typos, formatting, broken links):
+1. Create a branch: `chore/fix-typo-in-readme`
 2. Make your changes
-3. Verify formatting and links
-4. Submit PR
+3. Submit PR (no issue required)
 
 ### Improving Tests
 
