@@ -22,6 +22,13 @@ module.exports = {
    */
   HEALTH_CHECK_TIMEOUT: 2 * 1000, // 2 seconds
 
+  /**
+   * Maximum time to wait for graceful shutdown
+   * After this timeout, force shutdown occurs
+   * Matches Kubernetes terminationGracePeriodSeconds default
+   */
+  GRACEFUL_SHUTDOWN_TIMEOUT: 30 * 1000, // 30 seconds
+
   // ============================================
   // Rate Limiting
   // ============================================
