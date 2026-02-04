@@ -471,27 +471,61 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Deployment
 
-The application is production-ready and can be deployed to various platforms:
+The application is production-ready and can be deployed to various platforms.
 
-### Docker Deployment
+## Docker Deployment
 
-```dockerfile
-FROM node:20-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --production
-COPY src ./src
-EXPOSE 3000
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
-  CMD node -e "require('http').get('http://localhost:3000/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1) })"
-CMD ["node", "src/index.js"]
+### Quick Start with Docker
+
+#### Pull and run pre-built image
+```bash
+docker pull ghcr.io/olaoluthomas/timezone-app:latest
+docker run -d -p 3000:3000 --name timezone-app ghcr.io/olaoluthomas/timezone-app:latest
 ```
+
+#### Build and run locally
+```bash
+# Build image
+docker build -t timezone-app .
+
+# Run container
+docker run -d -p 3000:3000 --name timezone-app timezone-app
+
+# View logs
+docker logs -f timezone-app
+
+# Stop container
+docker stop timezone-app
+```
+
+#### Using Docker Compose
+
+**Production mode:**
+```bash
+docker-compose up -d
+```
+
+**Development mode (with hot-reload):**
+```bash
+docker-compose --profile dev up timezone-app-dev
+```
+
+### Environment Variables
+
+- `PORT` - Server port (default: 3000)
+- `NODE_ENV` - Environment mode (development/production)
+- `LOG_LEVEL` - Logging verbosity (debug/info/warn/error)
+- `ALLOWED_ORIGINS` - CORS whitelist (comma-separated, production only)
+
+### Health Checks
+
+The container includes built-in health checks:
+- **Liveness**: `GET /health` (checks if app is running)
+- **Readiness**: `GET /health/ready` (checks if app and dependencies are ready)
 
 ### Kubernetes Deployment
 
-Use the health endpoints for probes:
-- **Liveness Probe**: `GET /health`
-- **Readiness Probe**: `GET /health/ready`
+See `docs/ARCHITECTURE.md` for Kubernetes manifests with liveness/readiness probes.
 
 Example:
 ```yaml
@@ -510,13 +544,13 @@ readinessProbe:
   periodSeconds: 15
 ```
 
-### Environment Variables
+### Image Details
 
-Set these for production deployment:
-```bash
-NODE_ENV=production
-PORT=3000
-```
+- **Base Image**: `node:20-alpine`
+- **Image Size**: ~150MB (production)
+- **User**: Non-root (nodejs:1001)
+- **Platforms**: linux/amd64, linux/arm64
+- **Registry**: GitHub Container Registry (ghcr.io)
 
 ## Roadmap
 

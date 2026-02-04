@@ -1,0 +1,43 @@
+# Node modules (will be installed in container)
+node_modules
+npm-debug.log*
+
+# Git files
+.git
+.gitignore
+.github
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Test files
+tests
+coverage
+.nyc_output
+jest.config.js
+
+# Development files
+.vscode
+.idea
+*.log
+.DS_Store
+
+# Environment files (use docker-compose or K8s for env vars)
+.env
+.env.*
+
+# CI/CD files
+.husky
+scripts
+
+# Prettier/ESLint configs (not needed in container)
+.prettierrc
+.prettierignore
+.eslintrc.js
+
+# Misc
+*.swp
+*.swo
+*~
