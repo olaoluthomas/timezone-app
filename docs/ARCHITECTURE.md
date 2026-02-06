@@ -514,6 +514,10 @@ CMD ["node", "src/index.js"]
 
 ### Kubernetes Deployment
 
+**Note:** Full Kubernetes manifest files are planned for future implementation. See `docs/CI-CD-IMPROVEMENTS.md` for tracking.
+
+**Health Probe Configuration:**
+
 ```yaml
 livenessProbe:
   httpGet:
@@ -529,6 +533,13 @@ readinessProbe:
   initialDelaySeconds: 10
   periodSeconds: 15
 ```
+
+**Planned Manifest Files:**
+- Deployment (with replicas, resources, probes)
+- Service (LoadBalancer/ClusterIP)
+- ConfigMap (environment variables)
+- HorizontalPodAutoscaler (auto-scaling)
+- Ingress (optional - external access)
 
 ### Environment Configuration
 

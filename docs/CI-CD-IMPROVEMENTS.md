@@ -117,6 +117,76 @@ Implement dependency caching to speed up CI builds.
 - Reduced API rate limit usage
 - Lower infrastructure costs
 
+### Kubernetes Manifest Files
+- **Status:** Planned
+- **Priority:** Medium
+- **Effort:** 3-4 hours
+- **Owner:** Unassigned
+
+**Description:**
+Create comprehensive Kubernetes manifest files for production-ready container orchestration.
+
+**Implementation:**
+- [ ] Create `k8s/deployment.yaml` - Application deployment with replicas
+- [ ] Create `k8s/service.yaml` - Service for load balancing
+- [ ] Create `k8s/configmap.yaml` - Environment configuration
+- [ ] Create `k8s/hpa.yaml` - Horizontal Pod Autoscaler
+- [ ] Create `k8s/ingress.yaml` (optional) - External access
+- [ ] Add health probes (liveness, readiness)
+- [ ] Configure resource limits (CPU, memory)
+- [ ] Add security context (non-root user)
+- [ ] Document deployment steps
+- [ ] Test locally with minikube/kind
+
+**Manifest Structure:**
+```
+k8s/
+├── deployment.yaml     # Main application deployment
+├── service.yaml        # LoadBalancer or ClusterIP
+├── configmap.yaml      # Environment variables
+├── hpa.yaml           # Auto-scaling rules
+├── ingress.yaml       # Optional: External access
+└── README.md          # Deployment instructions
+```
+
+**Key Features:**
+- **Replicas:** 3 pods for high availability
+- **Resource Limits:**
+  - CPU: 100m-500m
+  - Memory: 128Mi-512Mi
+- **Health Probes:**
+  - Liveness: `/health` (every 10s)
+  - Readiness: `/health/ready` (every 15s)
+- **Auto-scaling:** 2-10 pods based on CPU (70% threshold)
+- **Security:** Non-root user (nodejs:1001), read-only filesystem
+
+**Benefits:**
+- Production-ready orchestration
+- High availability with replicas
+- Auto-scaling based on load
+- Proper health monitoring
+- Infrastructure as code
+- Easy rollback capabilities
+
+**Dependencies:**
+- Docker image published to GHCR (completed in container.yml)
+- Kubernetes cluster (local: minikube/kind, cloud: GKE/EKS/AKS)
+
+**Testing:**
+```bash
+# Local testing with minikube
+minikube start
+kubectl apply -f k8s/
+kubectl get pods
+kubectl get svc
+kubectl logs <pod-name>
+```
+
+**Documentation Updates:**
+- Update `docs/ARCHITECTURE.md` with full manifest examples
+- Add deployment guide to `README.md`
+- Create `k8s/README.md` with instructions
+
 ---
 
 ## Completed ✅
@@ -208,8 +278,9 @@ npm run create-pr
   - Effort: 2 hours
 
 - [ ] **Deployment Automation**
-  - Automated deploy to Render/Vercel
+  - Automated deploy to Render/Vercel/Kubernetes
   - Rollback automation
+  - Depends on: Kubernetes manifest files (see Planned section)
   - Effort: 6 hours
 
 - [ ] **Test Parallelization**
