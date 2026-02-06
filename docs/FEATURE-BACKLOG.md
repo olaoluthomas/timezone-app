@@ -360,6 +360,7 @@ Allow users to register webhooks that fire when timezone rules change (rare but 
 - [ ] API documentation page
 - [ ] Historical timezone data
 - [ ] GitHub Actions CI/CD
+- [ ] Kubernetes manifest files (see CI-CD-IMPROVEMENTS.md)
 - [ ] Deployment to production
 
 ### Q3 2026
