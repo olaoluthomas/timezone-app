@@ -501,15 +501,22 @@ express.json({ limit: '1kb' })
 
 ### Docker Deployment
 
-```dockerfile
-FROM node:20-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --production
-COPY src ./src
-EXPOSE 3000
-HEALTHCHECK CMD node -e "require('http').get('http://localhost:3000/health', ...)"
-CMD ["node", "src/index.js"]
+See the production-ready `Dockerfile` in the repository root for the complete multi-stage build configuration.
+
+**Quick Start:**
+```bash
+docker build -t timezone-app .
+docker run -d -p 3000:3000 timezone-app
+```
+
+**Using Docker Compose:**
+```bash
+docker-compose up -d
+```
+
+**For development with hot-reload:**
+```bash
+docker-compose --profile dev up timezone-app-dev
 ```
 
 ### Kubernetes Deployment
