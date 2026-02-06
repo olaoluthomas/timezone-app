@@ -2,12 +2,15 @@ name: CI
 
 on:
   push:
-    branches: ['**']
+    branches:
+      - 'feature/**'
+      - 'feat/**'
+      - 'bugfix/**'
+      - 'fix/**'
+      - 'ci/**'
   pull_request:
     branches: [main]
   workflow_dispatch:
-    branches:
-      - 'ci/**'
 
 # Cancel outdated runs when new commits are pushed
 concurrency:
