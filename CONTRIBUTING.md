@@ -371,6 +371,285 @@ Pull requests will be merged when:
 - Branch is up to date with main
 - Code coverage maintained or improved
 
+### 5. Merging Pull Requests
+
+**For Maintainers:** This section provides step-by-step instructions for merging PRs.
+
+#### Pre-Merge Checklist
+
+Before merging any PR, verify:
+
+```bash
+# Check PR status and CI checks
+gh pr view <PR-NUMBER> --json state,mergeable,statusCheckRollup,reviews
+
+# Expected output:
+# - state: "OPEN"
+# - mergeable: "MERGEABLE"
+# - All CI checks: conclusion: "SUCCESS"
+# - At least one review approval (if required)
+```
+
+**Merge Criteria:**
+- ✅ All CI checks passing (10/10 checks green)
+- ✅ Code review approval (if team project)
+- ✅ No unresolved review comments
+- ✅ Branch up to date with main
+- ✅ Code coverage maintained (96%+)
+
+#### Merge Methods
+
+This project uses **squash merging** for all PRs to maintain a clean git history.
+
+**Squash Merge (Default):**
+```bash
+gh pr merge <PR-NUMBER> --squash --delete-branch
+```
+
+**Benefits:**
+- Clean, linear git history
+- Single commit per feature/fix
+- Easier to revert if needed
+- Removes clutter from multiple work-in-progress commits
+
+**When to use other methods:**
+- **Standard Merge:** Never (creates merge commits, clutters history)
+- **Rebase Merge:** Never (loses PR context, complicates tracking)
+
+#### Single PR Merge
+
+**Step-by-step process:**
+
+1. **Verify PR is ready to merge:**
+   ```bash
+   gh pr view <PR-NUMBER> --json state,mergeable,statusCheckRollup | jq '{state, mergeable, ci_passing: [.statusCheckRollup[] | select(.conclusion != "SUCCESS")] | length == 0}'
+   ```
+
+2. **Merge the PR with squash:**
+   ```bash
+   gh pr merge <PR-NUMBER> --squash --delete-branch --subject "type: description (Fixes #N)"
+   ```
+   - `--squash`: Squashes all commits into one
+   - `--delete-branch`: Auto-deletes the branch after merge
+   - `--subject`: Sets the commit message (follows conventional commits)
+
+3. **Verify merge succeeded:**
+   ```bash
+   gh pr view <PR-NUMBER> --json state,mergedAt,mergedBy
+   # Expected: state: "MERGED"
+   ```
+
+4. **Verify issue auto-closed:**
+   ```bash
+   gh issue view <ISSUE-NUMBER> --json state,closedAt
+   # Expected: state: "CLOSED"
+   ```
+
+5. **Update local main branch:**
+   ```bash
+   git checkout main
+   git pull origin main
+   ```
+
+**Example:**
+```bash
+# Merge PR #44
+gh pr merge 44 --squash --delete-branch --subject "docs: add refactoring analysis (Fixes #43)"
+
+# Verify
+gh pr view 44 --json state
+gh issue view 43 --json state
+
+# Update local
+git checkout main && git pull origin main
+```
+
+#### Back-to-Back PR Merges
+
+When merging multiple PRs sequentially (e.g., related documentation updates), follow this workflow to avoid merge conflicts:
+
+**Critical Rule:** Always update your local `main` branch between merges.
+
+**Step-by-step process:**
+
+1. **Merge first PR (PR A):**
+   ```bash
+   gh pr merge <PR-A-NUMBER> --squash --delete-branch --subject "type: description (Fixes #N)"
+   ```
+
+2. **Update local main branch:**
+   ```bash
+   git checkout main
+   git pull origin main
+   ```
+   ⚠️ **CRITICAL:** Do not skip this step! The second PR may depend on changes from the first.
+
+3. **Verify first PR merged and issue closed:**
+   ```bash
+   gh pr view <PR-A-NUMBER> --json state,mergedAt
+   gh issue view <ISSUE-A-NUMBER> --json state,closedAt
+   ```
+
+4. **Check if second PR needs rebase:**
+   ```bash
+   gh pr view <PR-B-NUMBER> --json mergeable
+   ```
+   - If `mergeable: "MERGEABLE"` → proceed to step 5
+   - If `mergeable: "CONFLICTING"` → rebase required (see below)
+
+5. **Merge second PR (PR B):**
+   ```bash
+   gh pr merge <PR-B-NUMBER> --squash --delete-branch --subject "type: description (Fixes #M)"
+   ```
+
+6. **Update local main branch:**
+   ```bash
+   git checkout main
+   git pull origin main
+   ```
+
+7. **Verify both PRs merged successfully:**
+   ```bash
+   gh pr list --state merged --limit 5
+   gh issue list --state closed --limit 5
+   ```
+
+**Example: Merging PRs #46 and #44**
+```bash
+# 1. Merge PR #46 (container documentation)
+gh pr merge 46 --squash --delete-branch --subject "docs: document container security scanning (Fixes #45)"
+
+# 2. Update local main (REQUIRED)
+git checkout main && git pull origin main
+
+# 3. Verify PR #46 and issue #45
+gh pr view 46 --json state   # Expected: "MERGED"
+gh issue view 45 --json state # Expected: "CLOSED"
+
+# 4. Check PR #44 mergeable status
+gh pr view 44 --json mergeable # Expected: "MERGEABLE"
+
+# 5. Merge PR #44 (refactoring documentation)
+gh pr merge 44 --squash --delete-branch --subject "docs: add refactoring analysis (Fixes #43)"
+
+# 6. Update local main
+git checkout main && git pull origin main
+
+# 7. Verify final state
+gh pr list --state merged --limit 2
+gh issue list --state closed --limit 2
+```
+
+**Why update main between merges?**
+- The second PR may have merge conflicts with changes from the first PR
+- GitHub needs to re-evaluate the second PR's mergeable status
+- Ensures you have the latest code when reviewing subsequent PRs
+- Prevents "branch out of date" errors
+
+#### Handling Merge Conflicts
+
+If a PR has merge conflicts:
+
+1. **Update PR branch with latest main:**
+   ```bash
+   git checkout <pr-branch-name>
+   git pull origin <pr-branch-name>
+   git fetch origin main
+   git merge origin/main
+   ```
+
+2. **Resolve conflicts:**
+   ```bash
+   # Edit conflicting files
+   git add <resolved-files>
+   git commit -m "chore: resolve merge conflicts with main"
+   ```
+
+3. **Push updated branch:**
+   ```bash
+   git push origin <pr-branch-name>
+   ```
+
+4. **Wait for CI to pass, then merge:**
+   ```bash
+   gh pr merge <PR-NUMBER> --squash --delete-branch
+   ```
+
+#### Post-Merge Verification
+
+After merging one or more PRs:
+
+```bash
+# 1. Verify git history is clean
+git log --oneline -5
+
+# 2. Verify CI is passing on main
+gh run list --branch main --limit 3
+
+# 3. Verify issues were auto-closed
+gh issue list --state closed --limit 5
+
+# 4. Verify branches were deleted
+gh pr list --state merged --limit 5 --json number,headRefName
+```
+
+#### Common Merge Scenarios
+
+**Scenario 1: Single documentation PR**
+```bash
+gh pr merge 44 --squash --delete-branch --subject "docs: update README (Fixes #43)"
+git checkout main && git pull origin main
+```
+
+**Scenario 2: Two related PRs (container docs #46, refactoring docs #44)**
+```bash
+# First PR
+gh pr merge 46 --squash --delete-branch
+git checkout main && git pull origin main
+
+# Second PR (after main updated)
+gh pr merge 44 --squash --delete-branch
+git checkout main && git pull origin main
+```
+
+**Scenario 3: Feature PR + Documentation PR**
+```bash
+# Feature PR (may affect tests)
+gh pr merge 42 --squash --delete-branch
+git checkout main && git pull origin main
+
+# Docs PR (documents the feature)
+gh pr merge 43 --squash --delete-branch
+git checkout main && git pull origin main
+```
+
+#### Rollback a Merged PR
+
+If a PR needs to be rolled back:
+
+```bash
+# 1. Find the merge commit
+git log --oneline --grep="Fixes #<ISSUE-NUMBER>" -1
+
+# 2. Revert the commit
+git revert <commit-sha>
+
+# 3. Push revert commit
+git push origin main
+
+# 4. Reopen the issue
+gh issue reopen <ISSUE-NUMBER>
+```
+
+#### Best Practices
+
+1. **Always squash merge** - Keeps history clean
+2. **Update main between merges** - Prevents conflicts
+3. **Delete branches after merge** - Reduces clutter
+4. **Use conventional commit messages** - Enables automated changelogs
+5. **Verify CI passes on main** - Catch integration issues early
+6. **Check dependent PRs** - Some PRs may depend on others
+
 ## AI-Assisted Development
 
 This project was built using Claude Code and welcomes AI-assisted contributions.
