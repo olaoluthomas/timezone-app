@@ -541,6 +541,46 @@ The Container Build & Push workflow automatically:
 4. Uploads scan results to GitHub Security tab
 5. Performs container health checks
 
+**Path Filtering (Resource Optimization):**
+The workflow intelligently skips builds when only documentation or configuration files change:
+- **Triggers builds:** Source code (`src/`, `tests/`, `scripts/`), dependencies (`package.json`, `package-lock.json`), container files (`Dockerfile`, `docker-compose.yml`), workflows (`.github/workflows/**`)
+- **Skips builds:** Documentation (`**.md`, `docs/**`), license files, git config, code quality configs, editor directories
+- **Always runs:** Tagged releases (path filters ignored), manual dispatches (`workflow_dispatch`)
+- **Estimated savings:** 30-40% reduction in workflow runs, 50-100 GitHub Actions minutes/month
+
+**OCI Labels (Build Traceability):**
+Container images include comprehensive metadata labels following the OCI (Open Container Initiative) specification:
+
+**Standard OCI Labels:**
+- Image metadata: title, description, URL, source, version, licenses
+- Build info: creation timestamp, commit SHA/revision
+
+**Build Context Labels:**
+- `build.trigger` - What triggered the build (push, schedule, workflow_dispatch)
+- `build.commit.message` - Full commit message (e.g., "chore(deps): update production-dependencies")
+- `build.commit.author` - Commit author (e.g., "dependabot[bot]")
+- `build.commit.timestamp` - When the commit was made
+- `build.workflow.run_id` - GitHub Actions run ID for full traceability
+
+**Use Cases:**
+- **Debugging:** `docker inspect` shows exactly what's in a container
+- **Dependency Audits:** See which dependencies were updated (from commit message)
+- **Compliance:** Built-in audit trail (who built it, when, why)
+- **Rollbacks:** Compare commit messages between container versions
+
+**Example:**
+```bash
+# Check why a container was built
+docker inspect ghcr.io/olaoluthomas/timezone-app:main | \
+  jq '.[0].Config.Labels["build.commit.message"]'
+```
+
+**Dependabot Integration:**
+When Dependabot updates dependencies, the container labels clearly show:
+- Commit message: "chore(deps): update production-dependencies"
+- Author: "dependabot[bot]"
+- Exact commit SHA for tracing to GitHub
+
 **Reference:** See PR #42 for the security scanning implementation details.
 
 ### Kubernetes Deployment
