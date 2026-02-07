@@ -6,6 +6,37 @@ on:
       - main
     tags:
       - 'v*'
+    paths-ignore:
+      # Documentation
+      - '**.md'
+      - 'docs/**'
+      - '.github/pull_request_template.md'
+
+      # License and legal
+      - 'LICENSE'
+      - 'AUTHORS'
+      - 'NOTICE'
+
+      # Git configuration
+      - '.gitignore'
+      - '.gitattributes'
+      - '.husky/**'
+
+      # Code quality configs (don't affect runtime)
+      - '.eslintrc*'
+      - 'eslint.config.*'
+      - '.prettierrc*'
+      - '.prettierignore'
+      - 'commitlint.config.*'
+      - '.editorconfig'
+
+      # GitHub configuration (non-workflow)
+      - '.github/dependabot.yml'
+
+      # Editor directories
+      - '.vscode/**'
+      - '.idea/**'
+
   workflow_dispatch:
 
 env:
@@ -46,6 +77,31 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=sha,prefix={{branch}}-
+          labels: |
+            # Standard OCI labels
+            org.opencontainers.image.title=${{ github.event.repository.name }}
+            org.opencontainers.image.description=${{ github.event.repository.description }}
+            org.opencontainers.image.url=${{ github.event.repository.html_url }}
+            org.opencontainers.image.source=${{ github.event.repository.clone_url }}
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.created=${{ github.event.head_commit.timestamp }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses=${{ github.event.repository.license.spdx_id }}
+
+            # Build context labels (answers "why was this built?")
+            build.trigger=${{ github.event_name }}
+            build.branch=${{ github.ref_name }}
+            build.commit.sha=${{ github.sha }}
+            build.commit.message=${{ github.event.head_commit.message }}
+            build.commit.author=${{ github.event.head_commit.author.name }}
+            build.commit.timestamp=${{ github.event.head_commit.timestamp }}
+            build.workflow.run_id=${{ github.run_id }}
+            build.workflow.run_number=${{ github.run_number }}
+
+            # Repository metadata
+            repository.full_name=${{ github.repository }}
+            repository.owner=${{ github.repository_owner }}
+            repository.default_branch=${{ github.event.repository.default_branch }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5

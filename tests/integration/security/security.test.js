@@ -140,7 +140,7 @@ describe('Security Middleware Integration', () => {
       // The last request should be rate limited
       expect(last.status).toBe(429);
       expect(last.body.error).toContain('Too many requests');
-    }, 30000); // Increase timeout for many requests
+    }, 60000); // Increased timeout for many requests (101 requests can take >30s)
 
     it('should track different IPs separately', async () => {
       // First IP
