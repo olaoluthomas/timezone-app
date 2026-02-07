@@ -472,13 +472,39 @@ The application is optimized for performance and reliability:
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! This project follows a **mandatory issue-first workflow** with technical safeguards.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+### Quick Start
+
+```bash
+# 1. Create a GitHub issue (MANDATORY)
+gh issue create --title "type: description" --label "type"
+
+# 2. Create a branch (must reference issue number)
+git checkout -b type/issue-N-description
+
+# 3. Make changes and commit
+git commit -m "type: description"
+
+# 4. Push and create PR
+git push -u origin type/issue-N-description
+gh pr create --title "type: description (Fixes #N)"
+```
+
+### Important Notes
+
+- **⚠️ Direct commits to main are blocked** by pre-commit hook
+- **All branches must reference issue numbers**: `fix/issue-14-description`
+- **All PRs must link to issues**: Use `Fixes #N` in title and description
+- **Automated quality checks**: Code is auto-formatted and tested before push
+
+### Documentation
+
+- 📖 **[WORKFLOW.md](WORKFLOW.md)** - Quick reference guide (START HERE)
+- 📚 **[CONTRIBUTING.md](CONTRIBUTING.md)** - Complete contribution guide
+- 🤖 **[CLAUDE.md](CLAUDE.md)** - Project overview and SOP
+
+For full details, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

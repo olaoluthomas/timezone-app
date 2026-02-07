@@ -720,6 +720,24 @@ Before starting work on bug fixes, features, or enhancements, you **must** creat
 - Clear context for future developers
 - Automated PR/issue linking
 
+### Technical Safeguard: Branch Protection
+
+**Direct commits to `main` or `master` branches are blocked by the pre-commit hook.**
+
+If you attempt to commit to main, you'll see:
+
+```bash
+❌ COMMIT BLOCKED: Cannot commit directly to main branch!
+
+📋 Follow the Issue-First Workflow (SOP):
+   1. Create a GitHub issue: gh issue create --title "type: description" --label "type"
+   2. Create a feature branch: git checkout -b type/issue-N-description
+   3. Make your changes and commit
+   4. Push and create PR: git push -u origin branch-name
+```
+
+This safeguard ensures the workflow is always followed and prevents accidental commits to the protected branch.
+
 ### Branch Naming Convention
 
 All branches must reference their issue number:
