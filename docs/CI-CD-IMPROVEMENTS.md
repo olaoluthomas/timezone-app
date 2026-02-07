@@ -548,3 +548,5 @@ npm run create-pr
 - **Quarterly**: Evaluate tools and metrics
 
 **Next Review:** 2026-02-01
+
+<!-- Test: Path filtering working as expected (2026-02-07) -->
