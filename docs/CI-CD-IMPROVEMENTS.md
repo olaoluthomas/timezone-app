@@ -191,6 +191,38 @@ kubectl logs <pod-name>
 
 ## Completed ✅
 
+### Container Workflow Permission Fix
+- **Completed:** 2026-02-07
+- **Duration:** 30 minutes
+- **Impact:** High
+- **Owner:** olaoluthomas
+
+**What Was Implemented:**
+- Added `security-events: write` permission to Container Build & Push workflow
+- Updated CodeQL action from v3 to v4 (proactive deprecation fix)
+- Fixed continuous workflow failures since PR #26
+
+**Problem:**
+The Container Build & Push workflow had been failing continuously with "Resource not accessible by integration" error when attempting to upload Trivy security scan results to GitHub Security tab.
+
+**Solution:**
+Added missing `security-events: write` permission required for SARIF file upload to GitHub Security tab.
+
+**Results:**
+- Workflow success rate: 0% → 100%
+- Trivy security scan results now visible in GitHub Security tab
+- Container deployments unblocked
+- No more "Resource not accessible" errors
+- Future-proofed with CodeQL v4 (v3 deprecates December 2026)
+
+**Files:**
+- `.github/workflows/container.yml`
+
+**GitHub Issue:** #41
+**Pull Request:** #42
+
+---
+
 ### Pre-commit and Pre-push Hooks
 - **Completed:** 2026-01-24
 - **Duration:** 2 hours

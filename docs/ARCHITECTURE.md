@@ -519,6 +519,30 @@ docker-compose up -d
 docker-compose --profile dev up timezone-app-dev
 ```
 
+#### Security Scanning
+
+Container images are automatically scanned with Trivy during the build process via the Container Build & Push workflow (`.github/workflows/container.yml`). Scan results are uploaded to the GitHub Security tab for vulnerability tracking.
+
+**Required Permissions:**
+- `security-events: write` - Required for uploading SARIF scan results to GitHub Security tab
+- `packages: write` - Required for pushing images to GitHub Container Registry
+
+**Scan Configuration:**
+- **Tool:** Trivy (Aqua Security)
+- **Format:** SARIF (Security Alerts Results Interchange Format)
+- **Frequency:** On every push to main and tagged releases
+- **Results:** Available in GitHub Security tab under Code Scanning
+
+**Workflow Integration:**
+The Container Build & Push workflow automatically:
+1. Builds multi-architecture container images (amd64, arm64)
+2. Pushes images to GitHub Container Registry (ghcr.io)
+3. Runs Trivy security scan on the built image
+4. Uploads scan results to GitHub Security tab
+5. Performs container health checks
+
+**Reference:** See PR #42 for the security scanning implementation details.
+
 ### Kubernetes Deployment
 
 **Note:** Full Kubernetes manifest files are planned for future implementation. See `docs/CI-CD-IMPROVEMENTS.md` for tracking.
