@@ -464,6 +464,97 @@ Issue creation is **optional** for:
 - Trivial whitespace/comment changes
 - Urgent production hotfixes (create issue retroactively)
 
+### Labeling Issues and Pull Requests
+
+**⚠️ IMPORTANT: All issues and PRs MUST be labeled appropriately.**
+
+Labels help organize work, track progress, and make the project searchable. Apply labels when creating issues and PRs.
+
+#### Standard Labels
+
+**Type Labels (Required - Choose One):**
+- `bug` - Something isn't working correctly
+- `enhancement` - New feature or request
+- `documentation` - Documentation improvements
+- `ci-cd` - CI/CD pipeline changes
+- `dependencies` - Dependency updates (usually Dependabot)
+
+**Priority Labels (Optional):**
+- `priority: high` - Critical issues requiring immediate attention
+- `priority: medium` - Important but not urgent
+- `priority: low` - Nice to have, can wait
+
+**Status Labels (Optional):**
+- `good first issue` - Good for newcomers
+- `help wanted` - Extra attention needed
+- `question` - Further information requested
+- `wontfix` - Will not be worked on
+- `duplicate` - Duplicate of another issue
+
+**Area Labels (Optional):**
+- `infrastructure` - Infrastructure and deployment
+- `security` - Security-related issues
+- `performance` - Performance improvements
+- `testing` - Test-related changes
+
+#### How to Apply Labels
+
+**When Creating an Issue:**
+```bash
+# Via GitHub CLI
+gh issue create --title "feat: Add timezone converter" --label "enhancement"
+gh issue create --title "fix: CORS error on localhost" --label "bug"
+gh issue create --title "ci: Optimize workflow" --label "ci-cd,enhancement"
+
+# Via GitHub UI
+# Select labels from the right sidebar when creating the issue
+```
+
+**When Creating a Pull Request:**
+```bash
+# Via GitHub CLI (after creating PR)
+gh pr edit <PR-NUMBER> --add-label "enhancement,documentation"
+
+# Via GitHub UI
+# Select labels from the right sidebar after creating the PR
+```
+
+**Labeling Rules:**
+- **Issues**: Apply appropriate type label when creating (bug, enhancement, etc.)
+- **PRs**: Apply same labels as the linked issue for consistency
+- **Multiple labels**: Use commas without spaces: `"ci-cd,enhancement"`
+- **Keep updated**: Update labels if issue/PR scope changes
+
+**Examples:**
+```bash
+# Bug fix
+gh issue create --title "fix: Rate limiting broken" --label "bug"
+gh pr edit 42 --add-label "bug"
+
+# New feature
+gh issue create --title "feat: Add dark mode" --label "enhancement"
+gh pr edit 43 --add-label "enhancement"
+
+# CI/CD improvement
+gh issue create --title "ci: Add caching" --label "ci-cd,enhancement"
+gh pr edit 44 --add-label "ci-cd,enhancement"
+
+# Documentation update
+gh issue create --title "docs: Update README" --label "documentation"
+gh pr edit 45 --add-label "documentation"
+
+# Infrastructure change
+gh issue create --title "feat: Kubernetes manifests" --label "enhancement,infrastructure"
+gh pr edit 46 --add-label "enhancement,infrastructure"
+```
+
+**Benefits of Proper Labeling:**
+- ✅ Easy filtering and searching
+- ✅ Quick identification of issue type
+- ✅ Better project organization
+- ✅ Useful for generating changelogs
+- ✅ Helps prioritize work
+
 ## Common Contribution Scenarios
 
 ### Adding a New Feature
