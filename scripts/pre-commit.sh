@@ -1,6 +1,28 @@
 #!/bin/bash
 set -e
 
+# ⚠️ PREVENT DIRECT COMMITS TO MAIN
+BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
+
+if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
+  echo ""
+  echo "❌ COMMIT BLOCKED: Cannot commit directly to $BRANCH branch!"
+  echo ""
+  echo "📋 Follow the Issue-First Workflow (SOP):"
+  echo "   1. Create a GitHub issue: gh issue create --title \"type: description\" --label \"type\""
+  echo "   2. Create a feature branch: git checkout -b type/issue-N-description"
+  echo "   3. Make your changes and commit"
+  echo "   4. Push and create PR: git push -u origin branch-name"
+  echo ""
+  echo "💡 Exceptions (no issue required):"
+  echo "   - Typo fixes (use chore: prefix)"
+  echo "   - Urgent hotfixes (create issue retroactively)"
+  echo ""
+  echo "📖 See CONTRIBUTING.md for full workflow details"
+  echo ""
+  exit 1
+fi
+
 echo "🎨 Running pre-commit checks..."
 echo ""
 
