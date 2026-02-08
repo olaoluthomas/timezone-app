@@ -2,21 +2,23 @@
 
 **Purpose:** Track completion status and key deliverables for each milestone. Reference this file along with `CLAUDE.md` when resuming sessions.
 
-**Last Updated:** 2026-01-25
+**Last Updated:** 2026-02-08
 
 ---
 
 ## Quick Status
 
 **Project:** Timezone Web App
-**Current Status:** 9/9 Milestones Complete ✅
-**Next Milestone:** All milestones complete - Production ready!
-**Overall Progress:** 100% 🎉
-**Last Updated:** 2026-02-01
+**Core Milestones:** 9/9 Complete ✅
+**Post-Production Milestones:** 3 Planned (10-12) 📋
+**Current Phase:** Phase 2 - Code Quality & Infrastructure
+**Next Milestone:** Milestone 10 - Code Quality & Developer Experience
+**Last Updated:** 2026-02-08
 
 **Test Status:** ✅ 213/213 tests passing
 **Coverage:** ✅ 96.68%
 **Linting:** ✅ 0 errors, 0 warnings
+**Open Issues:** 11 total (8 organized into milestones, 3 with PRs)
 **Refactoring:** 3 opportunities completed (Winston Logger, Constants, Compression)
 
 ---
@@ -452,24 +454,117 @@ docker stop <container>                   # Verify graceful Docker shutdown
 
 ## In Progress Milestones 🔄
 
-None. All 9 milestones complete! 🎉
+None. All core milestones complete! 🎉
+
+---
+
+## Post-Production Milestones 🚀
+
+The following milestones focus on code quality, architecture, and deployment infrastructure improvements after achieving production-ready status.
+
+### Milestone 10: Code Quality & Developer Experience
+**Status:** 📋 PLANNED
+**Estimated Duration:** ~6.5 hours
+**Theme:** Eliminate duplication, improve test maintainability, enhance debugging
+
+**Issues:**
+- [#33](https://github.com/olaoluthomas/timezone-app/issues/33) - Eliminate duplication in geolocation.js (2h)
+- [#34](https://github.com/olaoluthomas/timezone-app/issues/34) - Extract test helper utilities (2.5h)
+- [#38](https://github.com/olaoluthomas/timezone-app/issues/38) - Request/response logging (1.5h)
+- [#40](https://github.com/olaoluthomas/timezone-app/issues/40) - Add .env.example (30min)
+
+**Planned Deliverables:**
+- [ ] `src/utils/ip-validator.js` + 15 tests (IP validation utility class)
+- [ ] `src/utils/date-formatter.js` + 8 tests (Date formatting utility class)
+- [ ] `tests/helpers/nock-mocks.js` (centralized test fixtures)
+- [ ] `tests/helpers/test-setup.js` (common test setup)
+- [ ] `src/middleware/request-logger.js` + 10 tests (request/response logging)
+- [ ] `.env.example` with all configuration options documented
+- [ ] Updated `README.md` with environment setup instructions
+- [ ] ~330 lines of code reduced (130 production + 200 tests)
+
+**Success Criteria:**
+- ✅ All 236+ tests passing (213 existing + 23 new)
+- ✅ Coverage maintained at 96%+
+- ✅ ~130 lines of duplicate code eliminated (50 production + 80 test)
+- ✅ 2 new utility classes created (IPValidator, DateFormatter)
+- ✅ ~200 lines of test code reduced through centralization
+- ✅ Request/response logging operational
+- ✅ Developer onboarding improved with .env.example
+
+**Impact:** ⭐⭐⭐⭐ High (maintainability, developer experience)
+
+---
+
+### Milestone 11: MVC Architecture & Configuration
+**Status:** 📋 PLANNED
+**Estimated Duration:** 7 hours
+**Theme:** Clean architecture patterns with professional error handling
+
+**Issues:**
+- [#35](https://github.com/olaoluthomas/timezone-app/issues/35) - Extract controllers (MVC pattern) (3h)
+- [#36](https://github.com/olaoluthomas/timezone-app/issues/36) - Centralized error handler middleware (2h)
+- [#39](https://github.com/olaoluthomas/timezone-app/issues/39) - Centralize configuration management (2h)
+
+**Planned Deliverables:**
+- [ ] `src/controllers/healthController.js` + 15 tests (health endpoints)
+- [ ] `src/controllers/timezoneController.js` + 10 tests (timezone endpoint)
+- [ ] `src/middleware/error-handler.js` + 12 tests (APIError class)
+- [ ] `src/config/index.js` (Config class with validation) + 15 tests
+- [ ] Updated `src/app.js` (simplified to ~75 lines, routing-only)
+- [ ] 52+ new tests (25 controller + 12 error + 15 config)
+
+**Success Criteria:**
+- ✅ Clean MVC architecture established
+- ✅ Controllers handle all route logic (healthController, timezoneController)
+- ✅ app.js reduced by ~35 lines (110 → 75 lines)
+- ✅ Centralized error handling with APIError class
+- ✅ No stack traces leak in production
+- ✅ Configuration validated on startup (fail-fast)
+- ✅ All 268+ tests passing (213 + 55 new)
+- ✅ Coverage maintained at 96%+
+
+**Impact:** ⭐⭐⭐⭐⭐ Critical (scalability, architecture foundation)
+
+---
+
+### Milestone 12: Kubernetes Deployment Infrastructure
+**Status:** 📋 PLANNED
+**Estimated Duration:** 3-4 hours
+**Theme:** Production-ready Kubernetes deployment
+
+**Issues:**
+- [#30](https://github.com/olaoluthomas/timezone-app/issues/30) - Kubernetes manifest files (3-4h)
+
+**Planned Deliverables:**
+- [ ] `k8s/base/deployment.yaml` (base deployment configuration)
+- [ ] `k8s/base/service.yaml` (ClusterIP service)
+- [ ] `k8s/base/configmap.yaml` (environment configuration)
+- [ ] `k8s/base/hpa.yaml` (HorizontalPodAutoscaler)
+- [ ] `k8s/overlays/staging/*` (staging patches: 2 replicas, lower resources)
+- [ ] `k8s/overlays/production/*` (production patches: 3 replicas, HA setup)
+- [ ] `k8s/README.md` (deployment guide with kubectl commands)
+- [ ] Updated `docs/ARCHITECTURE.md` (K8s deployment architecture)
+
+**Success Criteria:**
+- ✅ Base K8s manifests created and validated (kubectl apply --dry-run)
+- ✅ Staging overlay configured (2 replicas, lower resources)
+- ✅ Production overlay configured (3 replicas, HA setup)
+- ✅ Kustomize configuration working (kustomize build)
+- ✅ Health probes configured correctly (liveness/readiness)
+- ✅ HPA tested (2-10 pods based on CPU 70%)
+- ✅ Local testing successful (minikube or kind)
+- ✅ Documentation complete with deployment examples
+
+**Impact:** ⭐⭐⭐⭐ High (deployment infrastructure, operations)
 
 ---
 
 ## Pending Milestones 📋
 
 ### Milestone 7: Error Handling Middleware
-**Status:** 📋 PLANNED (Optional)
-**Estimated Duration:** 3-4 hours
-
-**Planned Deliverables:**
-- [ ] `src/middleware/errorHandler.js`
-- [ ] Custom error classes
-- [ ] Structured error responses
-- [ ] Proper HTTP status codes
-- [ ] No stack trace leaks in production
-- [ ] Error handling tests
-
+**Status:** 📋 SUPERSEDED BY MILESTONE 11
+**Note:** Error handling has been incorporated into Milestone 11 (MVC Architecture & Configuration) as `#36 - Centralized error handler middleware`. This milestone is no longer tracked separately.
 
 ---
 
@@ -575,70 +670,53 @@ After each milestone, verify:
 
 ## Next Steps
 
-### Immediate Priority (Sprint 1 - This Week)
-
-**1. Milestone 9 - Graceful Shutdown** (Critical - 2 hours)
-   - SIGTERM/SIGINT/uncaughtException handlers
-   - 30-second timeout
-   - Server.close() implementation
-   - Production deployment requirement
-
-**2. Refactoring: Extract Controllers** (High Priority - 3 hours)
-   - Create `src/controllers/` directory
-   - Extract healthController.js (liveness, readiness)
-   - Extract timezoneController.js
-   - Add controller unit tests
-   - Clean MVC architecture
-
-**Sprint 1 Total:** 5 hours
-
-### Next Priority (Sprint 2 - Next Week)
-
-**3. Consolidate IP Validation** (2 hours)
-   - Create `src/utils/ip-validator.js`
-   - Extract IP normalization logic
-   - Add comprehensive tests
-
-**4. Extract Test Helper Utilities** (2 hours)
-   - Create `tests/helpers/nock-mocks.js`
-   - Reduce 49 duplicate nock setups
-   - Save ~200 lines of test code
-
-**5. Centralized Error Handler** (2 hours)
-   - Create `src/middleware/error-handler.js`
-   - Consistent error responses
-   - Better error logging
-
-**Sprint 2 Total:** 6 hours
-
-### Current Status (2026-01-26)
-1. ✅ Milestone 8 (CI/CD Pipeline) complete
-2. ✅ GitHub Actions workflow active (.github/workflows/ci.yml)
-3. ✅ 7 CI jobs running on every push/PR
+### Current Status (2026-02-08)
+1. ✅ All 9 core milestones complete (Milestones 1-9)
+2. ✅ Production-ready with 213 tests passing (96.68% coverage)
+3. ✅ GitHub Actions CI/CD active (7 jobs on every push/PR)
 4. ✅ Multi-version testing (Node 18.x & 20.x)
-5. ✅ 167 tests passing with 96.06% coverage
-6. ✅ Winston Logger implemented (Milestone 6)
-7. ✅ Constants extracted to config/constants.js
-8. ✅ Compression middleware added
-9. ⏳ Ready for Milestone 9 (final milestone)
-10. ⏳ 5 high-priority refactoring opportunities identified
+5. ✅ Graceful shutdown implemented (Milestone 9 complete)
+6. ✅ Winston Logger, Constants, Compression implemented
+7. 📋 Post-production milestones identified (10-12)
+8. 📋 11 open issues organized into milestones
+
+### Post-Production Roadmap (Phase 2)
+
+**Milestone 10: Code Quality & Developer Experience** (6.5 hours)
+- Focus: Eliminate duplication, improve tests, enhance debugging
+- Issues: #33, #34, #38, #40
+- Impact: ⭐⭐⭐⭐ High (maintainability, DX)
+
+**Milestone 11: MVC Architecture & Configuration** (7 hours)
+- Focus: Professional architecture patterns
+- Issues: #35, #36, #39
+- Impact: ⭐⭐⭐⭐⭐ Critical (scalability, foundation)
+
+**Milestone 12: Kubernetes Deployment** (3-4 hours)
+- Focus: Production infrastructure
+- Issues: #30
+- Impact: ⭐⭐⭐⭐ High (deployment, ops)
+
+**Total Phase 2 Effort:** 16.5-17.5 hours
 
 ### Recent Improvements
 - **Winston Logger**: Structured logging with daily rotation (95.83% coverage)
 - **Constants Extraction**: Centralized config for timeouts, rate limits, cache
 - **Compression**: Gzip for responses >1KB
-- **Refactoring Analysis**: Updated status document with 33 opportunities tracked
+- **Graceful Shutdown**: Zero-downtime deployments (Milestone 9)
+- **Milestone Organization**: Open issues grouped into 3 new milestones
 
 **Note:** With automated workflow, Winston logger, and CI/CD in place, all work benefits from:
 - Automatic code formatting and linting
-- Pre-push test validation (167 tests)
+- Pre-push test validation (213 tests)
 - Conventional commit enforcement
 - Structured logging for better observability
 - Automated PR creation
 - CI/CD validation on every push
 
 **See Also:**
-- `docs/REFACTORING_STATUS_2026-01-26.md` - Detailed refactoring plan
+- `docs/MILESTONE-ROADMAP.md` - High-level roadmap visualization (NEW)
+- `docs/REFACTORING_STATUS_2026-02-07.md` - Detailed refactoring plan
 - `docs/REFACTORING_OPPORTUNITIES.md` - Original analysis (2026-01-24)
 
 ---
