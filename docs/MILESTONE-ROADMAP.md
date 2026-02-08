@@ -55,31 +55,37 @@ The timezone-app project is organized into two distinct phases:
 
 | Milestone | Theme | Duration | Impact | Status |
 |-----------|-------|----------|--------|--------|
-| M10 | Code Quality & Developer Experience | 6.5h | ⭐⭐⭐⭐ | 📋 Planned |
+| M10 | Code Quality, DX & Security | 8.5h | ⭐⭐⭐⭐⭐ | 📋 Planned |
 | M11 | MVC Architecture & Configuration | 7h | ⭐⭐⭐⭐⭐ | 📋 Planned |
 | M12 | Kubernetes Deployment Infrastructure | 3-4h | ⭐⭐⭐⭐ | 📋 Planned |
 
-**Total Phase 2 Effort:** 16.5-17.5 hours
+**Total Phase 2 Effort:** 18.5-19.5 hours (was 16.5-17.5h)
 **Expected Timeline:** 2-3 weeks
 
 ---
 
-## Milestone 10: Code Quality & Developer Experience
+## Milestone 10: Code Quality, Developer Experience & Security
 
-**Duration:** 6.5 hours
-**Impact:** ⭐⭐⭐⭐ High (maintainability, developer experience)
+**Duration:** 8.5 hours (was 6.5h)
+**Impact:** ⭐⭐⭐⭐⭐ Critical (maintainability, developer experience, security)
 
 ### Focus Areas
 - Eliminate code duplication (~50 lines in geolocation.js)
 - Improve test maintainability (~200 lines of duplicate test setup)
 - Enhance debugging with request/response logging
 - Improve developer onboarding with .env.example
+- **Address 8 security scan findings from Trivy container scanning**
+- **Enable Dependabot for automated dependency updates**
+- **Document security scanning workflow**
 
 ### Issues Included
 - [#33](https://github.com/olaoluthomas/timezone-app/issues/33) - Eliminate duplication in geolocation.js (2h)
 - [#34](https://github.com/olaoluthomas/timezone-app/issues/34) - Extract test helper utilities (2.5h)
 - [#38](https://github.com/olaoluthomas/timezone-app/issues/38) - Request/response logging middleware (1.5h)
 - [#40](https://github.com/olaoluthomas/timezone-app/issues/40) - Add .env.example file (30min)
+- [#56](https://github.com/olaoluthomas/timezone-app/issues/56) - Address 6 high-severity dev dependency vulnerabilities (1h)
+- [#57](https://github.com/olaoluthomas/timezone-app/issues/57) - Address 2 medium-severity dev dependency vulnerabilities (30min)
+- [#58](https://github.com/olaoluthomas/timezone-app/issues/58) - Enable Dependabot for automated security updates (30min)
 
 ### Deliverables
 1. **New Utility Classes:**
@@ -97,11 +103,18 @@ The timezone-app project is organized into two distinct phases:
    - `.env.example` - Environment configuration template
    - Updated `README.md` - Environment setup guide
 
+5. **Security:**
+   - Security vulnerability remediation (8 alerts resolved)
+   - `.github/dependabot.yml` - Dependabot configuration
+   - `docs/SECURITY-SCANNING-WORKFLOW.md` - Security scanning process documentation
+
 ### Success Metrics
 - ✅ ~330 lines of code reduced
 - ✅ 23+ new tests (236 total)
 - ✅ Coverage maintained at 96%+
 - ✅ Developer onboarding time reduced
+- ✅ **All 8 security alerts resolved in GitHub Security**
+- ✅ **Dependabot operational and creating automated PRs**
 
 ---
 
