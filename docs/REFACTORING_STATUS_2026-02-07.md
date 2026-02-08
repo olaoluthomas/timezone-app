@@ -8,6 +8,39 @@
 
 ---
 
+## ⚠️ UPDATE (2026-02-08): Issues Organized into Official Milestones
+
+The Sprint 1 and Sprint 2 issues identified in this document have been formalized into official project milestones:
+
+### Sprint 1 → **Milestone 10: Code Quality & Developer Experience**
+**Issues:** [#33](https://github.com/olaoluthomas/timezone-app/issues/33), [#34](https://github.com/olaoluthomas/timezone-app/issues/34), [#38](https://github.com/olaoluthomas/timezone-app/issues/38), [#40](https://github.com/olaoluthomas/timezone-app/issues/40)
+- Eliminate duplication in geolocation.js
+- Extract test helper utilities
+- Request/response logging middleware
+- Add .env.example file
+
+**Duration:** 6.5 hours | **Impact:** ⭐⭐⭐⭐ High
+
+### Sprint 2 → **Milestone 11: MVC Architecture & Configuration**
+**Issues:** [#35](https://github.com/olaoluthomas/timezone-app/issues/35), [#36](https://github.com/olaoluthomas/timezone-app/issues/36), [#39](https://github.com/olaoluthomas/timezone-app/issues/39)
+- Extract route handlers to controllers (MVC pattern)
+- Centralized error handler middleware
+- Centralize configuration management with validation
+
+**Duration:** 7 hours | **Impact:** ⭐⭐⭐⭐⭐ Critical
+
+### Additional Milestone → **Milestone 12: Kubernetes Deployment Infrastructure**
+**Issues:** [#30](https://github.com/olaoluthomas/timezone-app/issues/30)
+- Create Kubernetes manifest files with Kustomize
+
+**Duration:** 3-4 hours | **Impact:** ⭐⭐⭐⭐ High
+
+**See complete milestone tracking in:**
+- `docs/MILESTONES.md` - Detailed milestone documentation
+- `docs/MILESTONE-ROADMAP.md` - High-level roadmap visualization
+
+---
+
 ## Executive Summary
 
 **Comprehensive codebase analysis using Augment AI revealed critical insights:**
