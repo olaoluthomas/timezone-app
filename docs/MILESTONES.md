@@ -462,16 +462,19 @@ None. All core milestones complete! 🎉
 
 The following milestones focus on code quality, architecture, and deployment infrastructure improvements after achieving production-ready status.
 
-### Milestone 10: Code Quality & Developer Experience
+### Milestone 10: Code Quality, Developer Experience & Security
 **Status:** 📋 PLANNED
-**Estimated Duration:** ~6.5 hours
-**Theme:** Eliminate duplication, improve test maintainability, enhance debugging
+**Estimated Duration:** ~8.5 hours (was 6.5h)
+**Theme:** Eliminate duplication, improve test maintainability, enhance debugging, and secure supply chain
 
 **Issues:**
 - [#33](https://github.com/olaoluthomas/timezone-app/issues/33) - Eliminate duplication in geolocation.js (2h)
 - [#34](https://github.com/olaoluthomas/timezone-app/issues/34) - Extract test helper utilities (2.5h)
 - [#38](https://github.com/olaoluthomas/timezone-app/issues/38) - Request/response logging (1.5h)
 - [#40](https://github.com/olaoluthomas/timezone-app/issues/40) - Add .env.example (30min)
+- [#56](https://github.com/olaoluthomas/timezone-app/issues/56) - Address 6 high-severity dev dependency vulnerabilities (1h)
+- [#57](https://github.com/olaoluthomas/timezone-app/issues/57) - Address 2 medium-severity dev dependency vulnerabilities (30min)
+- [#58](https://github.com/olaoluthomas/timezone-app/issues/58) - Enable Dependabot for automated security updates (30min)
 
 **Planned Deliverables:**
 - [ ] `src/utils/ip-validator.js` + 15 tests (IP validation utility class)
@@ -481,6 +484,9 @@ The following milestones focus on code quality, architecture, and deployment inf
 - [ ] `src/middleware/request-logger.js` + 10 tests (request/response logging)
 - [ ] `.env.example` with all configuration options documented
 - [ ] Updated `README.md` with environment setup instructions
+- [ ] Security vulnerability remediation (8 alerts resolved)
+- [ ] `.github/dependabot.yml` configuration for automated updates
+- [ ] `docs/SECURITY-SCANNING-WORKFLOW.md` documentation
 - [ ] ~330 lines of code reduced (130 production + 200 tests)
 
 **Success Criteria:**
@@ -491,8 +497,10 @@ The following milestones focus on code quality, architecture, and deployment inf
 - ✅ ~200 lines of test code reduced through centralization
 - ✅ Request/response logging operational
 - ✅ Developer onboarding improved with .env.example
+- ✅ **All 8 security alerts resolved in GitHub Security**
+- ✅ **Dependabot operational and creating automated PRs**
 
-**Impact:** ⭐⭐⭐⭐ High (maintainability, developer experience)
+**Impact:** ⭐⭐⭐⭐⭐ Critical (maintainability, developer experience, security)
 
 ---
 
