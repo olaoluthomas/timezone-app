@@ -718,6 +718,43 @@ If you're using Claude Code for contributions:
 - Check for code duplication
 - Validate error handling
 
+### Mandatory PR Creation Workflow for AI Assistants
+
+**⚠️ CRITICAL: Claude Code and other AI assistants MUST follow these rules:**
+
+1. **Issue-First Workflow (Non-Negotiable)**
+   - Create or identify a GitHub issue before making changes
+   - Reference the issue number in all commits and PR
+
+2. **PR Creation (ONLY Supported Method)**
+   ```bash
+   npm run create-pr
+   ```
+   - **NEVER use `gh pr create` directly** - it bypasses automated labeling
+   - The script automatically applies labels based on:
+     - Commit type prefix (feat:, fix:, docs:, etc.)
+     - Changed files (src/, tests/, docs/, etc.)
+   - Manual PR creation will be caught by CI validation
+
+3. **Quality Requirements**
+   - All tests must pass (`npm test`)
+   - Code must be linted (`npm run lint`)
+   - Pre-commit and pre-push hooks must pass
+   - Conventional commit format required
+
+4. **What Happens If You Bypass This:**
+   - PR will fail label validation in GitHub Actions
+   - PR cannot be merged until labels are manually added
+   - Inconsistent PR metadata affects project organization
+
+5. **Technical Enforcement**
+   - The GitHub Actions PR validation workflow automatically validates:
+     - Presence of at least one type label (bug, enhancement, documentation, refactor, dependencies)
+     - Conventional commit title format (feat:, fix:, docs:, etc.)
+     - Issue reference in PR description
+   - PRs with missing labels or incorrect formatting will be blocked from merging
+   - This ensures all PRs have consistent, properly labeled metadata
+
 ## Project Structure
 
 ```
