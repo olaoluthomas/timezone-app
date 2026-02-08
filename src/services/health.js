@@ -91,10 +91,7 @@ async function performHealthCheck() {
   const startTime = Date.now();
 
   // Run checks in parallel for speed
-  const [apiCheck, cacheCheck] = await Promise.all([
-    checkGeolocationAPI(),
-    Promise.resolve(checkCache()),
-  ]);
+  const [apiCheck, cacheCheck] = await Promise.all([checkGeolocationAPI(), checkCache()]);
 
   const totalTime = Date.now() - startTime;
 
