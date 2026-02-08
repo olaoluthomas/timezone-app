@@ -60,7 +60,7 @@ if echo "$CHANGED_FILES" | grep -q "^tests/"; then
 fi
 
 # Documentation changes
-if echo "$CHANGED_FILES" | grep -q "^docs/\|README\.md\|\.md$"; then
+if echo "$CHANGED_FILES" | grep -q "^docs/\|README\.md\|\.md$\|\.env\.example$"; then
   # Only add if not already added by PR_TYPE
   if [[ ! " ${LABELS[@]} " =~ " documentation " ]]; then
     LABELS+=("documentation")

@@ -168,12 +168,24 @@ git push origin feature/my-feature
 ```
 
 #### Creating Pull Requests
+
+**⚠️ IMPORTANT: Always use the automated PR creation script.**
+
 After pushing, create a PR using:
 
 ```bash
 npm run create-pr
-# Creates PR with auto-applied labels based on changes
 ```
+
+This script automatically:
+- Generates PR title from commit messages
+- Applies appropriate labels based on:
+  - Commit message prefix (`feat:` → "enhancement", `docs:` → "documentation", etc.)
+  - Changed files (`src/` → "code", `tests/` → "tests", etc.)
+- Assigns reviewers
+- Links to the related issue
+
+**Do NOT use `gh pr create` directly** - this bypasses automated labeling and may result in improperly labeled PRs.
 
 **Do not bypass the hooks** - they exist to maintain code quality.
 
@@ -306,14 +318,32 @@ npm run test:watch          # Watch mode
 
 ### 2. Create Pull Request
 
-**Title Format:**
+**⚠️ REQUIRED: Use the automated PR creation script:**
+
+```bash
+npm run create-pr
 ```
-<type>: <short description> (<Closes|Fixes|Resolves> #issue-number)
+
+This is the **ONLY** supported way to create pull requests. Manual PR creation bypasses:
+- Automated label assignment
+- Consistent PR formatting
+- Issue linkage validation
+
+The script will automatically:
+1. Extract PR title from your commit messages
+2. Apply labels based on commit type and changed files
+3. Generate PR description with commit history
+4. Assign reviewers
+5. Create the PR and return the URL
+
+**PR Title Format (automatically generated from commits):**
+```
+<type>: <short description>
 
 Examples:
-feat: add timezone converter endpoint (Closes #42)
-fix: resolve cache key collision issue (Fixes #14)
-docs: improve API documentation (Closes #88)
+feat: add timezone converter endpoint
+fix: resolve cache key collision issue
+docs: improve API documentation
 ```
 
 **PR Description Template:**
