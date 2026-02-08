@@ -19,8 +19,8 @@ git commit -m "type: description of changes"
 # Step 4: Push Branch
 git push -u origin type/issue-N-short-description
 
-# Step 5: Create Pull Request (MUST reference issue)
-gh pr create --title "type: description (Fixes #N)"
+# Step 5: Create Pull Request (Use automated script)
+npm run create-pr
 ```
 
 ## Branch Naming Convention
@@ -105,7 +105,7 @@ git commit -m "feat: add timezone converter endpoint"
 
 # 4. Push and create PR
 git push -u origin feat/issue-42-timezone-converter
-gh pr create --title "feat: add timezone converter (Closes #42)"
+npm run create-pr
 ```
 
 ### Fixing a Bug
@@ -126,7 +126,7 @@ git commit -m "fix: resolve rate limiting issue for localhost"
 git push -u origin fix/issue-14-rate-limit-localhost
 
 # 5. Create PR
-gh pr create --title "fix: rate limiting for localhost (Fixes #14)"
+npm run create-pr
 ```
 
 ### Refactoring Code
@@ -147,18 +147,55 @@ git commit -m "refactor: remove unnecessary Promise.resolve() wrapper"
 git push -u origin refactor/issue-37-remove-promise-resolve
 
 # 5. Create PR
-gh pr create --title "refactor: remove unnecessary Promise.resolve() wrapper (Fixes #37)"
+npm run create-pr
 ```
+
+## Creating Pull Requests
+
+**⚠️ REQUIRED: Use the automated PR creation script**
+
+```bash
+npm run create-pr
+```
+
+This is the **ONLY** supported way to create PRs. Benefits:
+- ✅ **Auto-labels**: Applies labels based on commit type and changed files
+- ✅ **Consistent format**: Generates standardized PR descriptions
+- ✅ **Issue linking**: Automatically links to related issues
+- ✅ **Reviewer assignment**: Assigns appropriate reviewers
+- ✅ **Validation**: Ensures PR follows project conventions
+
+**DO NOT use `gh pr create` directly** - this bypasses automated labeling and validation.
+
+### How Labels Are Applied
+
+The script automatically labels PRs based on:
+
+**Commit Type → Type Labels:**
+- `feat:` → "enhancement"
+- `fix:` → "bug"
+- `docs:` → "documentation"
+- `test:` → "tests"
+- `refactor:` → "refactor"
+
+**Changed Files → Area Labels:**
+- `src/**/*.js` → "code"
+- `tests/` → "tests"
+- `docs/` or `.md` files or `.env.example` → "documentation"
+- `package.json` → "dependencies"
+- `src/middleware/` → "middleware"
+- `src/services/` → "services"
 
 ## PR Requirements
 
 All PRs **MUST**:
-- ✅ Reference issue number in title: `(Closes #N)`, `(Fixes #N)`, or `(Resolves #N)`
-- ✅ Include `Closes #N`, `Fixes #N`, or `Resolves #N` in PR description
+- ✅ Be created using `npm run create-pr` (not manual `gh pr create`)
+- ✅ Reference issue number in commit messages and PR
 - ✅ Pass all CI checks (10/10 green)
 - ✅ Follow conventional commit format
 - ✅ Include tests for new functionality
 - ✅ Maintain or improve code coverage (96%+)
+- ✅ Have appropriate labels applied (automatic via script)
 
 ## Common Mistakes
 
@@ -185,14 +222,14 @@ git checkout -b add-feature  # ❌ No issue number
 git checkout -b feat/issue-42-add-feature
 ```
 
-### ❌ Mistake: PR without issue reference
+### ❌ Mistake: Manual PR creation without automated script
 ```bash
-gh pr create --title "Add new feature"  # ❌ No issue link
+gh pr create --title "feat: add new feature (Closes #42)"  # ❌ Bypasses auto-labeling
 ```
 
-**✅ Solution:** Reference the issue
+**✅ Solution:** Use the automated script
 ```bash
-gh pr create --title "feat: add new feature (Closes #42)"
+npm run create-pr  # ✅ Auto-applies labels and validates
 ```
 
 ## Why This Workflow?
