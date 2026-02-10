@@ -125,19 +125,19 @@ fi
 
 # Generate PR body from template (auto-filled sections)
 PR_BODY=$(cat <<EOF
-## Related Issue
+**Related Issue**
 
 $ISSUE_REFERENCE
 
-## Changes
+**Changes**
 
 $(git diff $BASE_BRANCH...HEAD --stat)
 
-## Commits
+**Commits**
 
 $(git log $BASE_BRANCH..HEAD --pretty=format:"- %s (%h)" --reverse)
 
-## Testing
+**Testing**
 
 ✅ All tests passing (125/125)
 ✅ 100% code coverage maintained
@@ -145,7 +145,7 @@ $(git log $BASE_BRANCH..HEAD --pretty=format:"- %s (%h)" --reverse)
 ✅ Security audit passed
 ✅ Commit messages follow conventional format
 
-## Automated Checks
+**Automated Checks**
 
 - ✅ Pre-commit formatting and linting
 - ✅ Pre-push test suite
