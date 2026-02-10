@@ -42,3 +42,41 @@ jobs:
           fi
 
           echo "✅ PR title follows conventional format"
+
+      - name: Validate PR has issue reference
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --json body --jq '.body')
+
+          # Check for issue reference patterns
+          if echo "$PR_BODY" | grep -qE '(Closes|Fixes|Resolves) #[0-9]+'; then
+            ISSUE_REF=$(echo "$PR_BODY" | grep -oE '(Closes|Fixes|Resolves) #[0-9]+' | head -1)
+            echo "✅ PR has issue reference: $ISSUE_REF"
+            exit 0
+          fi
+
+          # Check for exception explanation
+          if echo "$PR_BODY" | grep -qE 'No Pre-existing Issue'; then
+            echo "✅ PR has exception explanation for missing issue reference"
+            exit 0
+          fi
+
+          # Check if PR is from dependabot
+          if [[ "${{ github.event.pull_request.user.login }}" == "dependabot[bot]" ]]; then
+            echo "✅ Dependabot PR - no issue reference required"
+            exit 0
+          fi
+
+          # Fail if no reference found
+          echo "❌ PR missing required issue reference"
+          echo ""
+          echo "All PRs must reference a GitHub issue using:"
+          echo "  - Closes #N"
+          echo "  - Fixes #N"
+          echo "  - Resolves #N"
+          echo ""
+          echo "Exception: Add 'No Pre-existing Issue' section to PR description"
+          exit 1
