@@ -5,6 +5,31 @@ set -e
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 BASE_BRANCH="${1:-main}"  # Default to main
 
+# Extract issue number from branch name (format: type/issue-N-description or type/N-description)
+ISSUE_NUMBER=""
+if [[ "$CURRENT_BRANCH" =~ ^(feat|feature|fix|bugfix|docs|refactor|test|chore|ci)/issue-([0-9]+) ]]; then
+  ISSUE_NUMBER="${BASH_REMATCH[2]}"
+  echo "📋 Detected issue #$ISSUE_NUMBER from branch name"
+elif [[ "$CURRENT_BRANCH" =~ ^(feat|feature|fix|bugfix|docs|refactor|test|chore|ci)/([0-9]+) ]]; then
+  ISSUE_NUMBER="${BASH_REMATCH[2]}"
+  echo "📋 Detected issue #$ISSUE_NUMBER from branch name"
+else
+  echo "⚠️  WARNING: No issue number detected in branch name"
+  echo "   Expected format: type/issue-N-description or type/N-description"
+  echo "   The PR will be created but you must manually add 'Closes #N' to the description"
+  echo ""
+  echo "   Only skip issue reference for:"
+  echo "   - Typo fixes (use 'chore: fix typo in...')"
+  echo "   - Urgent hotfixes (create issue retroactively)"
+  echo ""
+  read -p "   Continue without issue reference? (y/N): " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "❌ PR creation cancelled"
+    exit 1
+  fi
+fi
+
 # Check if branch exists on remote
 if ! git ls-remote --heads origin "$CURRENT_BRANCH" | grep -q "$CURRENT_BRANCH"; then
   echo "❌ Branch $CURRENT_BRANCH not found on remote"
@@ -91,8 +116,19 @@ for label in "${LABELS[@]}"; do
   LABEL_ARGS="$LABEL_ARGS --label \"$label\""
 done
 
+# Generate issue reference for PR body
+if [ -n "$ISSUE_NUMBER" ]; then
+  ISSUE_REFERENCE="Closes #$ISSUE_NUMBER"
+else
+  ISSUE_REFERENCE="⚠️ **REQUIRED**: Add issue reference below or explain why none exists"
+fi
+
 # Generate PR body from template (auto-filled sections)
 PR_BODY=$(cat <<EOF
+## Related Issue
+
+$ISSUE_REFERENCE
+
 ## Changes
 
 $(git diff $BASE_BRANCH...HEAD --stat)
