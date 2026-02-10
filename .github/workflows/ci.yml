@@ -46,6 +46,7 @@ jobs:
         if: github.event_name == 'workflow_run'
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 2
 
       - name: Check trigger conditions
         id: check
