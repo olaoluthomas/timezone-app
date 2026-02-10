@@ -303,7 +303,8 @@ NODE_ENV=production
 ### Built With AI Assistance
 This project was developed using **Claude Code** (Anthropic's official CLI) and **Claude Code Router** for intelligent model orchestration:
 
-**Local Models** (for fast iteration and cost efficiency):
+**Claude Code Router Configuration**:
+- **QWEN3-4B-Instruct-2507** (open-source) - Default, background tasks, and web search operations
 - **Llama 3.2 1B Instruct** - Quick edits, code formatting, documentation
 - **QWEN 3 Coder 30B** - Complex refactoring, architectural decisions
 
@@ -311,7 +312,11 @@ This project was developed using **Claude Code** (Anthropic's official CLI) and 
 - **Claude Sonnet 4.5** - Architecture design, test strategy, complex implementations
 - **Claude Haiku 4.5** - Quick validations, minor fixes, code reviews
 
-The combination of local and API models enabled rapid, cost-effective development while maintaining high code quality and comprehensive test coverage. See [docs/DEVELOPMENT_TOOLS.md](docs/DEVELOPMENT_TOOLS.md) for details on the AI-assisted development workflow.
+**MCP Servers** (Model Context Protocol for enhanced capabilities):
+- **Augment Code** - Advanced code search and retrieval across the codebase
+- **GitHub** - Seamless integration for issue tracking, PR creation, and repository management
+
+The combination of local open-source models, API models, and MCP servers enabled rapid, cost-effective development while maintaining high code quality and comprehensive test coverage. See [docs/development/DEVELOPMENT_TOOLS.md](docs/development/DEVELOPMENT_TOOLS.md) for details on the AI-assisted development workflow.
 
 ## Project Structure
 
