@@ -24,7 +24,6 @@ on:
   workflow_run:
     workflows: ["PR Validation"]
     types: [completed]
-    branches: [main]
 
   # Manual trigger
   workflow_dispatch:
