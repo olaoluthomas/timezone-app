@@ -8,8 +8,28 @@ on:
       - 'bugfix/**'
       - 'fix/**'
       - 'ci/**'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - 'AUTHORS'
+      - 'NOTICE'
+      - '.gitignore'
+      - '.gitattributes'
+      - '.github/pull_request_template.md'
+      - '.editorconfig'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - 'AUTHORS'
+      - 'NOTICE'
+      - '.gitignore'
+      - '.gitattributes'
+      - '.github/pull_request_template.md'
+      - '.editorconfig'
   workflow_dispatch:
 
 # Cancel outdated runs when new commits are pushed
