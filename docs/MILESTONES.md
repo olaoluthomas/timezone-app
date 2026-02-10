@@ -2,7 +2,7 @@
 
 **Purpose:** Track completion status and key deliverables for each milestone. Reference this file along with `CLAUDE.md` when resuming sessions.
 
-**Last Updated:** 2026-02-08
+**Last Updated:** 2026-02-09
 
 ---
 
@@ -11,15 +11,16 @@
 **Project:** Timezone Web App
 **Core Milestones:** 9/9 Complete ✅
 **Post-Production Milestones:** 3 Planned (10-12) 📋
-**Current Phase:** Phase 2 - Code Quality & Infrastructure
+**Feature Enhancement Milestones:** 2 Planned (13-14) 🎨
+**Current Phase:** Phase 2 - Code Quality & Infrastructure + Feature Enhancements
 **Next Milestone:** Milestone 10 - Code Quality & Developer Experience
-**Last Updated:** 2026-02-08
+**Last Updated:** 2026-02-09
 
 **Test Status:** ✅ 213/213 tests passing
 **Coverage:** ✅ 96.68%
 **Linting:** ✅ 0 errors, 0 warnings
-**Open Issues:** 11 total (8 organized into milestones, 3 with PRs)
-**Refactoring:** 3 opportunities completed (Winston Logger, Constants, Compression)
+**Open Issues:** 20 total (17 organized into milestones: 8 in Phase 2, 9 in Feature Enhancements)
+**Refactoring:** 4 opportunities completed (Winston Logger, Constants, Compression, Graceful Shutdown)
 
 ---
 
@@ -568,6 +569,102 @@ The following milestones focus on code quality, architecture, and deployment inf
 
 ---
 
+## Feature Enhancement Milestones 🎨
+
+The following milestones focus on user-facing features and visual enhancements to improve user experience and app capabilities.
+
+### Milestone 13: Globe View Integration
+**Status:** 📋 PLANNED
+**Created:** 2026-02-10
+**Estimated Duration:** TBD
+**Theme:** Interactive 3D globe visualization for location display
+
+**GitHub Milestone:** [Globe view integration](https://github.com/olaoluthomas/timezone-app/milestone/1)
+
+**Issues:**
+- [#71](https://github.com/olaoluthomas/timezone-app/issues/71) - Integrate globe view of location `enhancement`
+  - Main feature: 3D globe in UI with location pin-pointing
+  - Show lat-long and IP address in tooltip on hover
+- [#72](https://github.com/olaoluthomas/timezone-app/issues/72) - Create globe in UI `enhancement`
+  - Initial globe creation and UI integration
+- [#73](https://github.com/olaoluthomas/timezone-app/issues/73) - Make globe 3D `enhancement`
+  - Add 3D rendering capabilities to the globe
+- [#74](https://github.com/olaoluthomas/timezone-app/issues/74) - Integrate map view and terrain view `enhancement`
+  - Add different visualization modes (map/terrain)
+- [#75](https://github.com/olaoluthomas/timezone-app/issues/75) - Integrate tooltip that engages on user click `enhancement`
+  - Interactive tooltip functionality
+
+**Planned Deliverables:**
+- [ ] 3D globe component (Three.js or similar library)
+- [ ] Location pin marker on globe
+- [ ] Interactive tooltip with IP, lat-long display
+- [ ] Map view visualization mode
+- [ ] Terrain view visualization mode
+- [ ] Click-to-engage tooltip interaction
+- [ ] Responsive globe rendering
+- [ ] Tests for globe components
+- [ ] Updated UI/UX with globe integration
+- [ ] Documentation for globe feature
+
+**Success Criteria:**
+- ✅ 3D globe renders correctly across browsers
+- ✅ User location accurately pinned on globe
+- ✅ Tooltip displays IP address and coordinates
+- ✅ Multiple view modes functional (3D, map, terrain)
+- ✅ Interactive elements responsive and intuitive
+- ✅ Performance maintained (60fps rendering)
+- ✅ All tests passing with globe integration
+- ✅ Documentation complete
+
+**Impact:** ⭐⭐⭐⭐⭐ High (user experience, visual appeal, feature differentiation)
+
+---
+
+### Milestone 14: App Analytics Integration
+**Status:** 📋 PLANNED
+**Created:** 2026-02-10
+**Estimated Duration:** TBD
+**Theme:** Analytics infrastructure for user interaction tracking and performance monitoring
+
+**GitHub Milestone:** [App Analytics Integration](https://github.com/olaoluthomas/timezone-app/milestone/2)
+
+**Issues:**
+- [#76](https://github.com/olaoluthomas/timezone-app/issues/76) - Integrate App Metrics & Dashboard `infrastructure`
+  - Main feature: App DB collects user interaction data & performance metrics
+- [#77](https://github.com/olaoluthomas/timezone-app/issues/77) - App DB deployment
+  - Deploy database infrastructure for analytics
+- [#78](https://github.com/olaoluthomas/timezone-app/issues/78) - User interaction collection
+  - Implement user interaction tracking
+- [#79](https://github.com/olaoluthomas/timezone-app/issues/79) - Dashboard deployment
+  - Deploy analytics dashboard
+
+**Planned Deliverables:**
+- [ ] Analytics database setup (PostgreSQL/MongoDB)
+- [ ] User interaction tracking service
+- [ ] Performance metrics collection
+- [ ] Analytics API endpoints
+- [ ] Analytics dashboard UI
+- [ ] Database deployment (cloud provider)
+- [ ] Dashboard hosting/deployment
+- [ ] Data visualization components
+- [ ] Privacy-compliant tracking (GDPR/CCPA)
+- [ ] Analytics documentation
+
+**Success Criteria:**
+- ✅ Database deployed and operational
+- ✅ User interactions tracked accurately
+- ✅ Performance metrics collected reliably
+- ✅ Dashboard displays real-time analytics
+- ✅ Privacy compliance ensured (anonymization, opt-out)
+- ✅ Minimal performance impact (<5ms overhead)
+- ✅ Secure data storage and transmission
+- ✅ All tests passing with analytics integration
+- ✅ Documentation complete
+
+**Impact:** ⭐⭐⭐⭐ High (product insights, user behavior understanding, performance monitoring)
+
+---
+
 ## Pending Milestones 📋
 
 ### Milestone 7: Error Handling Middleware
@@ -635,20 +732,22 @@ After each milestone, verify:
 ## Project Health Metrics
 
 ### Test Coverage
-- **Overall:** 96.06%
+- **Overall:** 96.68%
 - **Cache Service:** 100%
 - **Geolocation Service:** 96.96%
 - **Health Service:** 100%
 - **Middleware:** 100%
 - **Logger:** 95.83%
 - **Compression:** 100%
+- **Shutdown:** 100%
 
 ### Test Suites
-- **Unit Tests:** 89 passing
+- **Unit Tests:** 110 passing (includes shutdown tests)
 - **Integration Tests:** 55 passing
 - **Smoke Tests:** 11 passing
 - **Compression Tests:** 12 passing
-- **Total Tests:** 167 passing (12 suites)
+- **Other Tests:** 25 passing
+- **Total Tests:** 213 passing (12 suites)
 - **Test Execution Time:** ~2.5s
 
 ### Code Quality
@@ -678,7 +777,7 @@ After each milestone, verify:
 
 ## Next Steps
 
-### Current Status (2026-02-08)
+### Current Status (2026-02-09)
 1. ✅ All 9 core milestones complete (Milestones 1-9)
 2. ✅ Production-ready with 213 tests passing (96.68% coverage)
 3. ✅ GitHub Actions CI/CD active (7 jobs on every push/PR)
@@ -686,33 +785,49 @@ After each milestone, verify:
 5. ✅ Graceful shutdown implemented (Milestone 9 complete)
 6. ✅ Winston Logger, Constants, Compression implemented
 7. 📋 Post-production milestones identified (10-12)
-8. 📋 11 open issues organized into milestones
+8. 📋 Feature enhancement milestones identified (13-14)
+9. 📋 20 open issues organized into milestones (8 Phase 2, 9 Feature Enhancements, 3 with PRs)
 
-### Post-Production Roadmap (Phase 2)
+### Post-Production Roadmap (Phase 2 - Code Quality & Infrastructure)
 
-**Milestone 10: Code Quality & Developer Experience** (6.5 hours)
-- Focus: Eliminate duplication, improve tests, enhance debugging
-- Issues: #33, #34, #38, #40
-- Impact: ⭐⭐⭐⭐ High (maintainability, DX)
+**Milestone 10: Code Quality & Developer Experience** (~8 hours)
+- Focus: Eliminate duplication, improve tests, enhance debugging, security
+- Issues: #33, #34, #38, #40, #56, #57
+- Impact: ⭐⭐⭐⭐⭐ Critical (maintainability, DX, security)
 
-**Milestone 11: MVC Architecture & Configuration** (7 hours)
+**Milestone 11: MVC Architecture & Configuration** (~7 hours)
 - Focus: Professional architecture patterns
 - Issues: #35, #36, #39
 - Impact: ⭐⭐⭐⭐⭐ Critical (scalability, foundation)
 
-**Milestone 12: Kubernetes Deployment** (3-4 hours)
+**Milestone 12: Kubernetes Deployment** (~3-4 hours)
 - Focus: Production infrastructure
 - Issues: #30
 - Impact: ⭐⭐⭐⭐ High (deployment, ops)
 
-**Total Phase 2 Effort:** 16.5-17.5 hours
+**Total Phase 2 Effort:** ~18-19 hours
+
+### Feature Enhancement Roadmap (Phase 3 - User Experience & Analytics)
+
+**Milestone 13: Globe View Integration** (TBD)
+- Focus: Interactive 3D globe visualization
+- Issues: #71, #72, #73, #74, #75 (5 issues)
+- Impact: ⭐⭐⭐⭐⭐ High (UX, visual appeal, differentiation)
+
+**Milestone 14: App Analytics Integration** (TBD)
+- Focus: Analytics infrastructure and monitoring
+- Issues: #76, #77, #78, #79 (4 issues)
+- Impact: ⭐⭐⭐⭐ High (insights, monitoring, data-driven decisions)
+
+**Total Phase 3 Effort:** TBD (requires estimation after Phase 2)
 
 ### Recent Improvements
 - **Winston Logger**: Structured logging with daily rotation (95.83% coverage)
 - **Constants Extraction**: Centralized config for timeouts, rate limits, cache
 - **Compression**: Gzip for responses >1KB
 - **Graceful Shutdown**: Zero-downtime deployments (Milestone 9)
-- **Milestone Organization**: Open issues grouped into 3 new milestones
+- **Milestone Organization**: 20 open issues grouped into 5 new milestones (2026-02-09)
+- **Documentation Reorganization**: Docs restructured into logical subdirectories (2026-02-09)
 
 **Note:** With automated workflow, Winston logger, and CI/CD in place, all work benefits from:
 - Automatic code formatting and linting
@@ -723,15 +838,19 @@ After each milestone, verify:
 - CI/CD validation on every push
 
 **See Also:**
-- `docs/MILESTONE-ROADMAP.md` - High-level roadmap visualization (NEW)
-- `docs/REFACTORING_STATUS_2026-02-07.md` - Detailed refactoring plan
-- `docs/REFACTORING_OPPORTUNITIES.md` - Original analysis (2026-01-24)
+- `docs/planning/MILESTONE-ROADMAP.md` - High-level roadmap visualization
+- `docs/refactoring/REFACTORING.md` - Refactoring main index
+- `docs/refactoring/archive/REFACTORING_STATUS_2026-02-07.md` - Latest refactoring analysis
+- `docs/refactoring/REFACTORING_OPPORTUNITIES.md` - Original analysis (2026-01-24)
 
 ---
 
 ## Reference Documentation
 
-- **Plan File:** `/Users/simeon/.claude/plans/transient-soaring-firefly.md`
 - **Project Instructions:** `/Users/simeon/Projects/Agents_GenAI/playground/CLAUDE.md`
-- **CI Testing Guide:** `docs/CI-TESTING.md`
-- **README:** `README.md`
+- **Documentation Index:** `docs/README.md`
+- **Architecture:** `docs/ARCHITECTURE.md`
+- **CI Testing Guide:** `docs/ci-cd/CI-TESTING.md`
+- **Security:** `docs/security/SECURITY-IMPROVEMENTS.md`
+- **Development:** `docs/development/DEVELOPMENT.md`
+- **Main README:** `README.md`
