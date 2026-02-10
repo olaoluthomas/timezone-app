@@ -1,8 +1,8 @@
-## Description
+**Description**
 
 <!-- Describe your changes in detail -->
 
-## Type of Change
+**Type of Change**
 
 <!-- Mark the relevant option with an 'x' -->
 
@@ -16,7 +16,7 @@
 - [ ] ✅ Test update
 - [ ] 🔧 Build/config update
 
-## Testing
+**Testing**
 
 <!-- Describe the tests you ran to verify your changes -->
 
@@ -25,7 +25,7 @@
 - [ ] Manual testing completed
 - [ ] Code coverage maintained/improved
 
-## Checklist
+**Checklist**
 
 - [ ] My code follows the project's style guidelines
 - [ ] I have performed a self-review of my own code
@@ -34,7 +34,7 @@
 - [ ] My changes generate no new warnings
 - [ ] Any dependent changes have been merged and published
 
-## Related Issues
+**Related Issues**
 
 <!-- ⚠️ REQUIRED: All PRs must reference a GitHub issue -->
 <!-- Use one of: Closes #N, Fixes #N, or Resolves #N -->
@@ -43,11 +43,11 @@
 Closes #
 
 <!-- Exception: If no pre-existing issue exists (typos, urgent hotfixes only), explain why:
-## No Pre-existing Issue
+**No Pre-existing Issue**
 This PR addresses [brief description] discovered during [context].
 An issue was not created beforehand because: [reason - typo fix, urgent hotfix, etc.]
 -->
 
-## Screenshots (if applicable)
+**Screenshots (if applicable)**
 
 <!-- Add screenshots to help explain your changes -->
