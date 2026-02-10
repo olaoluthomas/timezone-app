@@ -29,7 +29,6 @@ Built entirely with [Claude Code](https://github.com/anthropics/claude-code) as 
 git clone https://github.com/olaoluthomas/timezone-app.git
 cd timezone-app
 npm install
-npm test
 npm start
 # Open http://localhost:3000
 ```
@@ -74,8 +73,8 @@ See [Configuration Guide](docs/development/CONFIGURATION.md) for advanced option
 
 ## Technology Stack
 
-**Core:** Node.js, Express.js, Axios, node-cache, ipapi.co API
-**Testing:** Jest, Supertest, Nock
+**Core:** Node.js, Express.js, Axios, node-cache, ipapi.co API \
+**Testing:** Jest, Supertest, Nock \
 **Quality:** ESLint, Prettier, Husky
 
 **Built with AI:**
