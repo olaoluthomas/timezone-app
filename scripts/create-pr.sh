@@ -123,40 +123,46 @@ else
   ISSUE_REFERENCE="⚠️ **REQUIRED**: Add issue reference below or explain why none exists"
 fi
 
-# Generate PR body from template (auto-filled sections)
-PR_BODY=$(cat <<EOF
-**Related Issue**
+# Get first commit message for summary context
+FIRST_COMMIT=$(git log $BASE_BRANCH..HEAD --pretty=format:"%s" --reverse | head -1)
 
-$ISSUE_REFERENCE
+# Generate PR body from template (concise, value-focused)
+PR_BODY=$(cat <<'EOF'
+## Summary
 
-**Changes**
+<!-- Describe WHAT this PR accomplishes and WHY it is important (2-3 sentences) -->
+<!-- Focus on business/technical value, not implementation details -->
+<!-- Example: Eliminates duplicate code by extracting utilities. Improves maintainability. -->
 
-$(git diff $BASE_BRANCH...HEAD --stat)
+FIRST_COMMIT_PLACEHOLDER
 
-**Commits**
+## Related Issue
 
-$(git log $BASE_BRANCH..HEAD --pretty=format:"- %s (%h)" --reverse)
+ISSUE_REFERENCE_PLACEHOLDER
 
-**Testing**
+## Impact
 
-✅ All tests passing (125/125)
-✅ 100% code coverage maintained
-✅ Linting passed
-✅ Security audit passed
-✅ Commit messages follow conventional format
+<!-- Brief bullet points on what changes for users/developers -->
+<!-- Example: -->
+<!-- - Reduced code complexity in geolocation service -->
+<!-- - Added reusable IP validation utilities -->
+<!-- - Improved test coverage to 97.5% -->
 
-**Automated Checks**
-
-- ✅ Pre-commit formatting and linting
-- ✅ Pre-push test suite
-- ✅ Commitlint validation
+-
 
 ---
 
-🤖 PR created automatically via pre-push workflow
-🏷️ Labels: ${LABELS[*]}
+Note: Keep the description concise and focused on value. Reviewers can see file changes in the diff view.
+Your description should answer "What problem does this solve?" and "Why does it matter?"
+
+Labels: LABELS_PLACEHOLDER
 EOF
 )
+
+# Replace placeholders with actual values
+PR_BODY="${PR_BODY//FIRST_COMMIT_PLACEHOLDER/$FIRST_COMMIT}"
+PR_BODY="${PR_BODY//ISSUE_REFERENCE_PLACEHOLDER/$ISSUE_REFERENCE}"
+PR_BODY="${PR_BODY//LABELS_PLACEHOLDER/${LABELS[*]}}"
 
 # Create PR using GitHub CLI
 # Note: eval needed for label args to work properly
