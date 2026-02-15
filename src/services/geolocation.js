@@ -43,6 +43,8 @@
 const axios = require('axios');
 const cache = require('./cache');
 const logger = require('../utils/logger');
+const { determineLookupIP } = require('../utils/ip-validator');
+const { formatTimezone } = require('../utils/date-formatter');
 
 /**
  * Environment types where fallback should be active
@@ -108,23 +110,6 @@ function getDevFallback() {
 }
 
 /**
- * Normalize IP address from IPv6-mapped IPv4 format to pure IPv4
- * @param {string} ip - IP address (may be IPv4, IPv6, or IPv4-mapped IPv6)
- * @returns {string} Normalized IP address
- */
-function normalizeIP(ip) {
-  if (!ip) return ip;
-
-  // Check if this is an IPv4-mapped IPv6 address (::ffff:x.x.x.x)
-  if (ip.startsWith('::ffff:')) {
-    // Extract the IPv4 part (everything after ::ffff:)
-    return ip.substring(7);
-  }
-
-  return ip;
-}
-
-/**
  * Fetches timezone and location information based on IP address
  * Uses caching to reduce API calls and improve performance
  * @param {string} ip - The IP address to lookup
@@ -132,32 +117,22 @@ function normalizeIP(ip) {
  */
 async function getTimezoneByIP(ip) {
   try {
-    // Normalize IPv6-mapped IPv4 addresses to pure IPv4
-    // This handles ::ffff:192.168.1.1 → 192.168.1.1
-    const normalizedIP = normalizeIP(ip);
+    // Determine lookup IP (handles normalization and localhost/private detection)
+    const ipInfo = determineLookupIP(ip);
 
-    logger.debug('IP normalization', { originalIP: ip, normalizedIP });
-
-    // Check if IP is localhost or private and should use server's public IP
-    const isLocalhost =
-      normalizedIP === '::1' || normalizedIP === '127.0.0.1' || normalizedIP?.startsWith('127.');
-
-    const isPrivate =
-      normalizedIP?.startsWith('10.') ||
-      normalizedIP?.startsWith('192.168.') ||
-      normalizedIP?.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./);
-
-    // For localhost/private IPs, use empty string (server's public IP)
-    const lookupIP = isLocalhost || isPrivate ? '' : normalizedIP;
+    logger.debug('IP normalization', {
+      originalIP: ip,
+      normalizedIP: ipInfo.normalizedIP,
+    });
 
     logger.debug('Geolocation lookup', {
-      lookupIP: lookupIP || 'server public IP',
-      isLocalhost,
-      isPrivate,
+      lookupIP: ipInfo.lookupIP || 'server public IP',
+      isLocalhost: ipInfo.isLocalhost,
+      isPrivate: ipInfo.isPrivate,
     });
 
     // Create cache key from the lookup IP
-    const cacheKey = `geo:${lookupIP || 'default'}`;
+    const cacheKey = `geo:${ipInfo.lookupIP || 'default'}`;
 
     // Check cache first
     const cachedData = cache.get(cacheKey);
@@ -171,7 +146,7 @@ async function getTimezoneByIP(ip) {
     }
 
     // Cache miss - fetch from API
-    const data = await fetchFromAPI(lookupIP);
+    const data = await fetchFromAPI(ipInfo.lookupIP);
 
     // Store base data in cache (without timestamp to avoid staleness)
     const cacheableData = {
@@ -188,25 +163,12 @@ async function getTimezoneByIP(ip) {
     cache.set(cacheKey, cacheableData);
 
     // Calculate current time in the detected timezone
-    const now = new Date();
-    const formatter = new Intl.DateTimeFormat('en-US', {
-      timeZone: data.timezone,
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    });
-
-    const localTime = formatter.format(now);
+    const localTime = formatTimezone(data.timezone);
 
     return {
       ...cacheableData,
       currentTime: localTime,
-      timestamp: now.toISOString(),
+      timestamp: new Date().toISOString(),
       cached: false,
     };
   } catch (error) {
@@ -222,16 +184,9 @@ async function getTimezoneByIP(ip) {
         fallback: true,
       });
 
-      // Create cache key from the lookup IP (same as main flow)
-      const normalizedIP = normalizeIP(ip);
-      const isLocalhost =
-        normalizedIP === '::1' || normalizedIP === '127.0.0.1' || normalizedIP?.startsWith('127.');
-      const isPrivate =
-        normalizedIP?.startsWith('10.') ||
-        normalizedIP?.startsWith('192.168.') ||
-        normalizedIP?.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./);
-      const lookupIP = isLocalhost || isPrivate ? '' : normalizedIP;
-      const cacheKey = `geo:${lookupIP || 'default'}`;
+      // Determine lookup IP (same as main flow)
+      const ipInfo = determineLookupIP(ip);
+      const cacheKey = `geo:${ipInfo.lookupIP || 'default'}`;
 
       // Cache the fallback data (same as normal response)
       const cacheableData = {
@@ -248,25 +203,12 @@ async function getTimezoneByIP(ip) {
       cache.set(cacheKey, cacheableData);
 
       // Calculate current time in fallback timezone
-      const now = new Date();
-      const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: fallbackData.timezone,
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        weekday: 'long',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-      });
-
-      const localTime = formatter.format(now);
+      const localTime = formatTimezone(fallbackData.timezone);
 
       return {
         ...cacheableData,
         currentTime: localTime,
-        timestamp: now.toISOString(),
+        timestamp: new Date().toISOString(),
         cached: false,
         fallback: true, // Indicates fallback was used
       };
