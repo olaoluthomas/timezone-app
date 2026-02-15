@@ -123,37 +123,38 @@ else
   ISSUE_REFERENCE="⚠️ **REQUIRED**: Add issue reference below or explain why none exists"
 fi
 
-# Generate PR body from template (auto-filled sections)
+# Get first commit message for summary context
+FIRST_COMMIT=$(git log $BASE_BRANCH..HEAD --pretty=format:"%s" --reverse | head -1)
+
+# Generate PR body from template (concise, value-focused)
 PR_BODY=$(cat <<EOF
-**Related Issue**
+## Summary
+
+<!-- Describe WHAT this PR accomplishes and WHY it's important (2-3 sentences) -->
+<!-- Focus on business/technical value, not implementation details -->
+<!-- Example: "Eliminates duplicate code by extracting utilities. Improves maintainability." -->
+
+$FIRST_COMMIT
+
+## Related Issue
 
 $ISSUE_REFERENCE
 
-**Changes**
+## Impact
 
-$(git diff $BASE_BRANCH...HEAD --stat)
+<!-- Brief bullet points on what changes for users/developers -->
+<!-- Example: -->
+<!-- - Reduced code complexity in geolocation service -->
+<!-- - Added reusable IP validation utilities -->
+<!-- - Improved test coverage to 97.5% -->
 
-**Commits**
-
-$(git log $BASE_BRANCH..HEAD --pretty=format:"- %s (%h)" --reverse)
-
-**Testing**
-
-✅ All tests passing (125/125)
-✅ 100% code coverage maintained
-✅ Linting passed
-✅ Security audit passed
-✅ Commit messages follow conventional format
-
-**Automated Checks**
-
-- ✅ Pre-commit formatting and linting
-- ✅ Pre-push test suite
-- ✅ Commitlint validation
+-
 
 ---
 
-🤖 PR created automatically via pre-push workflow
+📝 **Instructions:** Replace the summary above with a concise description of your changes.
+Focus on WHAT you did and WHY it matters, not HOW you did it.
+
 🏷️ Labels: ${LABELS[*]}
 EOF
 )

@@ -1,53 +1,31 @@
-**Description**
+## Summary
 
-<!-- Describe your changes in detail -->
+<!-- Describe WHAT this PR accomplishes and WHY it's important -->
+<!-- 2-3 concise sentences focusing on business/technical value -->
+<!-- Example: Fixes rate limiting bug affecting localhost requests. Ensures dev environment works correctly without hitting API limits. -->
 
-**Type of Change**
 
-<!-- Mark the relevant option with an 'x' -->
+## Related Issue
 
-- [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
-- [ ] ✨ New feature (non-breaking change which adds functionality)
-- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] 📝 Documentation update
-- [ ] 🎨 Code style update (formatting, renaming)
-- [ ] ♻️ Code refactoring (no functional changes)
-- [ ] ⚡️ Performance improvement
-- [ ] ✅ Test update
-- [ ] 🔧 Build/config update
-
-**Testing**
-
-<!-- Describe the tests you ran to verify your changes -->
-
-- [ ] All existing tests pass
-- [ ] New tests added for new functionality
-- [ ] Manual testing completed
-- [ ] Code coverage maintained/improved
-
-**Checklist**
-
-- [ ] My code follows the project's style guidelines
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] Any dependent changes have been merged and published
-
-**Related Issues**
-
-<!-- ⚠️ REQUIRED: All PRs must reference a GitHub issue -->
-<!-- Use one of: Closes #N, Fixes #N, or Resolves #N -->
-<!-- This automatically closes the issue when the PR is merged -->
-
+<!-- ⚠️ REQUIRED: Reference the GitHub issue this PR addresses -->
 Closes #
 
-<!-- Exception: If no pre-existing issue exists (typos, urgent hotfixes only), explain why:
+<!-- Exception: If no pre-existing issue exists (typos, urgent hotfixes), explain:
 **No Pre-existing Issue**
 This PR addresses [brief description] discovered during [context].
-An issue was not created beforehand because: [reason - typo fix, urgent hotfix, etc.]
 -->
 
-**Screenshots (if applicable)**
+## Impact
 
-<!-- Add screenshots to help explain your changes -->
+<!-- Brief bullet points on what changes for users/developers -->
+<!-- Focus on outcomes, not implementation details -->
+<!-- Examples: -->
+<!-- - Users in private networks can now access the service -->
+<!-- - Improved response time by 40% through caching -->
+<!-- - Reduced code duplication from 300 to 240 lines -->
+
+-
+
+---
+
+**Note:** Keep the description concise and focused on value. Reviewers can see file changes in the diff view. Your description should answer "What problem does this solve?" and "Why does it matter?"

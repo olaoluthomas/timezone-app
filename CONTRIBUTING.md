@@ -346,26 +346,39 @@ fix: resolve cache key collision issue
 docs: improve API documentation
 ```
 
-**PR Description Template:**
+**PR Description Format:**
+
+Write concise, matter-of-fact descriptions that focus on **WHAT** and **WHY**:
+
+✅ **Good Example:**
 ```markdown
-## Description
-Brief description of changes
+## Summary
+Eliminates ~50 lines of duplicate IP validation code by extracting to reusable utilities. Improves maintainability and test coverage.
 
 ## Related Issue
-Closes #123
-<!-- Use one of: Closes #N, Fixes #N, or Resolves #N -->
-<!-- This auto-closes the issue when PR is merged -->
+Closes #33
 
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
+## Impact
+- Reduced geolocation.js from 300 to 241 lines
+- Added 29 tests with 100% coverage
+- Future IP handling can reuse utilities
+```
 
-## Testing
-- [ ] Unit tests added/updated
-- [ ] Integration tests added/updated
-- [ ] Manual testing completed
+❌ **Bad Example:**
+```markdown
+## Changes
+src/utils/ip-validator.js | 119 +++++++++++
+tests/unit/utils/ip-validator.test.js | 156 +++++++++++++
+src/services/geolocation.js | 78 -------
+
+Created new files, updated tests, removed duplicate code...
+```
+
+**Key principles:**
+- **Focus on value:** What problem does this solve? Why does it matter?
+- **Be concise:** 2-3 sentences in summary, bullet points for impact
+- **Skip mechanics:** Reviewers see file changes in the diff
+- **Emphasize outcomes:** What's better after this PR?
 
 ## Checklist
 - [ ] Code follows project style guidelines
