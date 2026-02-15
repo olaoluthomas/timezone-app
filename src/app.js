@@ -11,13 +11,14 @@
  * Middleware Stack (in order):
  * 1. Trust proxy (for accurate IP extraction)
  * 2. Helmet (security headers)
- * 3. Compression (gzip for responses >1KB)
- * 4. CORS (cross-origin resource sharing)
- * 5. JSON parser (1KB limit)
- * 6. Request timeout (30 seconds)
- * 7. Static files (no rate limiting)
- * 8. Health endpoints (lenient rate limiting)
- * 9. API endpoints (strict rate limiting)
+ * 3. Request/response logger (request tracing)
+ * 4. Compression (gzip for responses >1KB)
+ * 5. CORS (cross-origin resource sharing)
+ * 6. JSON parser (1KB limit)
+ * 7. Request timeout (30 seconds)
+ * 8. Static files (no rate limiting)
+ * 9. Health endpoints (lenient rate limiting)
+ * 10. API endpoints (strict rate limiting)
  *
  * @module app
  */
@@ -29,6 +30,7 @@ const compressionMiddleware = require('./middleware/compression');
 const corsMiddleware = require('./middleware/cors');
 const { apiLimiter, healthLimiter } = require('./middleware/rate-limit');
 const timeoutMiddleware = require('./middleware/timeout');
+const requestLogger = require('./middleware/request-logger');
 const geolocationService = require('./services/geolocation');
 const healthService = require('./services/health');
 const logger = require('./utils/logger');
@@ -49,26 +51,29 @@ app.use(
   })
 );
 
-// 2. Compression (before CORS for optimal performance)
+// 2. Request/response logging (early for complete request tracing)
+app.use(requestLogger);
+
+// 3. Compression (before CORS for optimal performance)
 app.use(compressionMiddleware);
 
-// 3. CORS (before routes)
+// 4. CORS (before routes)
 app.use(corsMiddleware);
 
-// 4. Request parsing with limits
+// 5. Request parsing with limits
 app.use(
   express.json({
     limit: CONSTANTS.REQUEST_SIZE_LIMIT, // Timezone API doesn't need large payloads
   })
 );
 
-// 5. Request timeout (30 seconds)
+// 6. Request timeout (30 seconds)
 app.use(timeoutMiddleware(CONSTANTS.REQUEST_TIMEOUT));
 
-// 6. Static files (no rate limiting)
+// 7. Static files (no rate limiting)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 7. Health check endpoints with lenient rate limiting
+// 8. Health check endpoints with lenient rate limiting
 app.get('/health', healthLimiter, (req, res) => {
   res.status(200).json({
     status: 'ok',
@@ -92,7 +97,7 @@ app.get('/health/ready', healthLimiter, async (req, res) => {
   }
 });
 
-// 8. API routes with strict rate limiting
+// 9. API routes with strict rate limiting
 app.get('/api/timezone', apiLimiter, async (req, res) => {
   try {
     // Get client IP - trust proxy setting handles X-Forwarded-For parsing
