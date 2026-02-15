@@ -127,18 +127,18 @@ fi
 FIRST_COMMIT=$(git log $BASE_BRANCH..HEAD --pretty=format:"%s" --reverse | head -1)
 
 # Generate PR body from template (concise, value-focused)
-PR_BODY=$(cat <<EOF
+PR_BODY=$(cat <<'EOF'
 ## Summary
 
-<!-- Describe WHAT this PR accomplishes and WHY it's important (2-3 sentences) -->
+<!-- Describe WHAT this PR accomplishes and WHY it is important (2-3 sentences) -->
 <!-- Focus on business/technical value, not implementation details -->
-<!-- Example: "Eliminates duplicate code by extracting utilities. Improves maintainability." -->
+<!-- Example: Eliminates duplicate code by extracting utilities. Improves maintainability. -->
 
-$FIRST_COMMIT
+FIRST_COMMIT_PLACEHOLDER
 
 ## Related Issue
 
-$ISSUE_REFERENCE
+ISSUE_REFERENCE_PLACEHOLDER
 
 ## Impact
 
@@ -152,12 +152,17 @@ $ISSUE_REFERENCE
 
 ---
 
-📝 **Instructions:** Replace the summary above with a concise description of your changes.
-Focus on WHAT you did and WHY it matters, not HOW you did it.
+Note: Keep the description concise and focused on value. Reviewers can see file changes in the diff view.
+Your description should answer "What problem does this solve?" and "Why does it matter?"
 
-🏷️ Labels: ${LABELS[*]}
+Labels: LABELS_PLACEHOLDER
 EOF
 )
+
+# Replace placeholders with actual values
+PR_BODY="${PR_BODY//FIRST_COMMIT_PLACEHOLDER/$FIRST_COMMIT}"
+PR_BODY="${PR_BODY//ISSUE_REFERENCE_PLACEHOLDER/$ISSUE_REFERENCE}"
+PR_BODY="${PR_BODY//LABELS_PLACEHOLDER/${LABELS[*]}}"
 
 # Create PR using GitHub CLI
 # Note: eval needed for label args to work properly
