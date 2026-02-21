@@ -43,6 +43,7 @@
 const axios = require('axios');
 const cache = require('./cache');
 const logger = require('../utils/logger');
+const config = require('../config');
 const { determineLookupIP } = require('../utils/ip-validator');
 const { formatTimezone } = require('../utils/date-formatter');
 
@@ -98,7 +99,7 @@ async function fetchFromAPI(lookupIP) {
  * @returns {Object|null} Fallback data or null if not in local development
  */
 function getDevFallback() {
-  const currentEnv = process.env.NODE_ENV || 'development';
+  const currentEnv = config.nodeEnv;
 
   // Only provide fallback in local development environments
   // QA, staging, and production should test real API behavior
@@ -179,7 +180,7 @@ async function getTimezoneByIP(ip) {
     if (fallbackData) {
       logger.warn('Using development fallback data', {
         reason: error.message,
-        environment: process.env.NODE_ENV || 'not-set',
+        environment: config.nodeEnv,
         originalIP: ip,
         fallback: true,
       });
