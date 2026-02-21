@@ -216,7 +216,7 @@ async function getTimezoneByIP(ip) {
     }
 
     // Production: throw error as before
-    throw new Error('Unable to determine location from IP address');
+    throw new Error('Unable to determine location from IP address', { cause: error });
   }
 }
 
