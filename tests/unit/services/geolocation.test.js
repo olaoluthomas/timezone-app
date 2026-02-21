@@ -270,16 +270,23 @@ describe('GeolocationService', () => {
     const originalEnv = process.env.NODE_ENV;
 
     beforeEach(() => {
+      // Clear cache using the original module
       clearCache();
       nock.cleanAll();
     });
 
     afterEach(() => {
       process.env.NODE_ENV = originalEnv;
+      // Clear module cache after restoring NODE_ENV
+      jest.resetModules();
     });
 
     test('should use fallback data for localhost when API fails in development', async () => {
       process.env.NODE_ENV = 'development';
+      // Clear module cache and re-require to pick up new NODE_ENV
+      jest.resetModules();
+      const { getTimezoneByIP } = require('../../../src/services/geolocation');
+
       nock('https://ipapi.co').get('/json/').reply(429, { error: 'Rate limited' });
 
       const result = await getTimezoneByIP('127.0.0.1');
@@ -293,6 +300,10 @@ describe('GeolocationService', () => {
 
     test('should use fallback data for private IP when API fails in development', async () => {
       process.env.NODE_ENV = 'development';
+      // Clear module cache and re-require to pick up new NODE_ENV
+      jest.resetModules();
+      const { getTimezoneByIP } = require('../../../src/services/geolocation');
+
       nock('https://ipapi.co').get('/json/').reply(500, { error: 'Server error' });
 
       const result = await getTimezoneByIP('192.168.1.1');
@@ -303,6 +314,10 @@ describe('GeolocationService', () => {
 
     test('should use fallback for any IP in development when API fails', async () => {
       process.env.NODE_ENV = 'development';
+      // Clear module cache and re-require to pick up new NODE_ENV
+      jest.resetModules();
+      const { getTimezoneByIP } = require('../../../src/services/geolocation');
+
       nock('https://ipapi.co').get('/8.8.8.8/json/').reply(429);
 
       const result = await getTimezoneByIP('8.8.8.8');
@@ -313,6 +328,10 @@ describe('GeolocationService', () => {
 
     test('should NOT use fallback in production mode', async () => {
       process.env.NODE_ENV = 'production';
+      // Clear module cache and re-require to pick up new NODE_ENV
+      jest.resetModules();
+      const { getTimezoneByIP } = require('../../../src/services/geolocation');
+
       nock('https://ipapi.co').get('/json/').reply(429);
 
       await expect(getTimezoneByIP('127.0.0.1')).rejects.toThrow(
@@ -322,6 +341,10 @@ describe('GeolocationService', () => {
 
     test('should NOT use fallback in QA/test environment', async () => {
       process.env.NODE_ENV = 'qa';
+      // Clear module cache and re-require to pick up new NODE_ENV
+      jest.resetModules();
+      const { getTimezoneByIP } = require('../../../src/services/geolocation');
+
       nock('https://ipapi.co').get('/json/').reply(429);
 
       await expect(getTimezoneByIP('127.0.0.1')).rejects.toThrow(
@@ -331,6 +354,10 @@ describe('GeolocationService', () => {
 
     test('should NOT use fallback in staging environment', async () => {
       process.env.NODE_ENV = 'staging';
+      // Clear module cache and re-require to pick up new NODE_ENV
+      jest.resetModules();
+      const { getTimezoneByIP } = require('../../../src/services/geolocation');
+
       nock('https://ipapi.co').get('/json/').reply(429);
 
       await expect(getTimezoneByIP('127.0.0.1')).rejects.toThrow(
@@ -340,6 +367,10 @@ describe('GeolocationService', () => {
 
     test('should cache fallback data like normal responses', async () => {
       process.env.NODE_ENV = 'development';
+      // Clear module cache and re-require to pick up new NODE_ENV
+      jest.resetModules();
+      const { getTimezoneByIP } = require('../../../src/services/geolocation');
+
       nock('https://ipapi.co').get('/json/').reply(429);
 
       // First call uses fallback
@@ -355,6 +386,10 @@ describe('GeolocationService', () => {
 
     test('should include all required fields in fallback response', async () => {
       process.env.NODE_ENV = 'development';
+      // Clear module cache and re-require to pick up new NODE_ENV
+      jest.resetModules();
+      const { getTimezoneByIP } = require('../../../src/services/geolocation');
+
       nock('https://ipapi.co').get('/json/').reply(429);
 
       const result = await getTimezoneByIP('127.0.0.1');

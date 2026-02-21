@@ -31,10 +31,10 @@
 const winston = require('winston');
 const path = require('path');
 const DailyRotateFile = require('winston-daily-rotate-file');
+const config = require('../config');
 
 // Determine log level based on environment
-const logLevel =
-  process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'info' : 'debug');
+const logLevel = config.logLevel;
 
 // Define custom format for development (pretty print)
 const devFormat = winston.format.combine(
@@ -57,7 +57,7 @@ const prodFormat = winston.format.combine(
 );
 
 // Choose format based on environment
-const logFormat = process.env.NODE_ENV === 'production' ? prodFormat : devFormat;
+const logFormat = config.isProduction ? prodFormat : devFormat;
 
 // Create transports array
 const transports = [
@@ -68,7 +68,7 @@ const transports = [
 ];
 
 // Add file transports only if not in test environment
-if (process.env.NODE_ENV !== 'test') {
+if (!config.isTest) {
   // Error log file (errors only)
   transports.push(
     new winston.transports.File({

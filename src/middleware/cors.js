@@ -22,6 +22,7 @@
  */
 
 const cors = require('cors');
+const config = require('../config');
 
 /**
  * CORS middleware with environment-based configuration
@@ -36,14 +37,12 @@ const corsOptions = {
     }
 
     // In non-production environments (development, test), allow all origins
-    if (process.env.NODE_ENV !== 'production') {
+    if (!config.isProduction) {
       return callback(null, true);
     }
 
     // In production, check against whitelist
-    const allowedOrigins = process.env.ALLOWED_ORIGINS
-      ? process.env.ALLOWED_ORIGINS.split(',')
-      : [];
+    const allowedOrigins = config.allowedOrigins;
 
     // Allow if origin is in whitelist or whitelist includes '*'
     if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {

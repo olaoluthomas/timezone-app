@@ -20,6 +20,7 @@
 
 const compression = require('compression');
 const logger = require('../utils/logger');
+const config = require('../config');
 
 /**
  * Compression filter to determine which responses should be compressed
@@ -54,7 +55,7 @@ function createCompressionMiddleware() {
     filter: shouldCompress,
 
     // Log compression stats in development mode
-    ...(process.env.NODE_ENV !== 'production' && {
+    ...(!config.isProduction && {
       // In development, log compression events for monitoring
       onResponse(req, res) {
         const originalSize = res.getHeader('content-length');

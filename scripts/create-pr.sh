@@ -164,15 +164,23 @@ PR_BODY="${PR_BODY//FIRST_COMMIT_PLACEHOLDER/$FIRST_COMMIT}"
 PR_BODY="${PR_BODY//ISSUE_REFERENCE_PLACEHOLDER/$ISSUE_REFERENCE}"
 PR_BODY="${PR_BODY//LABELS_PLACEHOLDER/${LABELS[*]}}"
 
+# Write PR body to temporary file to avoid quoting issues
+PR_BODY_FILE=$(mktemp)
+echo "$PR_BODY" > "$PR_BODY_FILE"
+
 # Create PR using GitHub CLI
-# Note: eval needed for label args to work properly
+# Note: Using --body-file to avoid shell quoting issues with special characters
+# eval needed for label args to work properly
 PR_URL=$(eval gh pr create \
   --title \"$PR_TITLE\" \
-  --body \"$PR_BODY\" \
+  --body-file \"$PR_BODY_FILE\" \
   --base \"$BASE_BRANCH\" \
   --head \"$CURRENT_BRANCH\" \
   --reviewer \"olaoluthomas\" \
   $LABEL_ARGS)
+
+# Clean up temp file
+rm -f "$PR_BODY_FILE"
 
 echo ""
 echo "✅ Pull Request created!"
