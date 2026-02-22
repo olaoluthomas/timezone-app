@@ -1,0 +1,38 @@
+name: PR Validation Watchdog
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+
+jobs:
+  watchdog:
+    name: Watch for Missing PR Validation
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      pull-requests: read
+    steps:
+      - name: Wait for PR Validation to trigger naturally
+        run: sleep 120
+
+      - name: Check if PR Validation ran
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SHA="${{ github.event.pull_request.head.sha }}"
+          RUNS=$(gh api "repos/${{ github.repository }}/actions/runs?head_sha=$SHA&per_page=10" \
+            --jq '[.workflow_runs[] | select(.name == "PR Validation")] | length')
+          echo "runs=$RUNS" >> $GITHUB_OUTPUT
+          echo "Found $RUNS PR Validation run(s) for $SHA"
+
+      - name: Trigger PR Validation (watchdog re-fire)
+        if: steps.check.outputs.runs == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "No PR Validation run detected — triggering via watchdog"
+          gh workflow run pr-validation.yml \
+            --repo ${{ github.repository }} \
+            --ref ${{ github.event.pull_request.head.ref }} \
+            --field pr_number=${{ github.event.pull_request.number }}
