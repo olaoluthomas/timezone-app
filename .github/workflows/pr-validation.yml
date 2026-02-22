@@ -11,6 +11,10 @@ on:
         description: 'PR number to validate (used when triggered by watchdog)'
         required: true
 
+concurrency:
+  group: pr-validation-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: true
+
 jobs:
   validate-pr:
     name: Validate PR Labels and Format

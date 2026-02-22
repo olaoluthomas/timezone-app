@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, reopened, synchronize, labeled, unlabeled]
 
+concurrency:
+  group: pr-watchdog-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   watchdog:
     name: Watch for Missing PR Validation
