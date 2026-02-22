@@ -2,6 +2,7 @@
 set -e
 
 # Skip pre-push checks in CI (for semantic-release automation)
+# This allows automated tools like semantic-release to push without running tests
 if [ "$CI" = "true" ]; then
   echo "⏭️  Skipping pre-push checks in CI environment"
   exit 0
