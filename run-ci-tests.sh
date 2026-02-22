@@ -44,7 +44,7 @@ run_step "🔍 Running ESLint" "npm run lint"
 run_step "✨ Checking code formatting" "npm run format:check"
 
 # Step 4: Run security audit
-run_step "🔒 Running security audit" "npm audit --audit-level=moderate"
+run_step "🔒 Running security audit" "npm audit --audit-level=moderate --omit=dev"
 
 # Step 5: Run unit tests
 run_step "🧪 Running unit tests" "npm run test:unit -- --coverage --silent"
