@@ -4,7 +4,8 @@ set -e
 # ⚠️ PREVENT DIRECT COMMITS TO MAIN
 BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
 
-if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
+# Allow commits to main in CI (for semantic-release automation)
+if [ "$CI" != "true" ] && ([ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]); then
   echo ""
   echo "❌ COMMIT BLOCKED: Cannot commit directly to $BRANCH branch!"
   echo ""
