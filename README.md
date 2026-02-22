@@ -100,12 +100,13 @@ See [Configuration Guide](docs/development/CONFIGURATION.md) for advanced option
 
 Contributions welcome! Follow the **mandatory issue-first workflow**:
 
-```bash
-gh issue create --title "type: description" --label "type"
+```
+# 1. Create issue — Preferred: GitHub MCP issue_write | Fallback: gh issue create
+# 2. Branch, commit, push
 git checkout -b type/issue-N-description
 git commit -m "type: description"
 git push -u origin type/issue-N-description
-gh pr create --title "type: description (Fixes #N)"
+# 3. Create PR — Preferred: GitHub MCP create_pull_request | Fallback: npm run create-pr
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full details.

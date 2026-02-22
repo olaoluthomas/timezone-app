@@ -366,9 +366,9 @@ Jobs:
 # Workflow triggers automatically on:
 git push origin feature-branch        # Any branch push
 git push origin pull-request          # PR to main
-gh workflow run ci.yml --ref ci/test  # Manual trigger for ci/* branches
+gh workflow run ci.yml --ref ci/test  # Manual trigger for ci/* branches (CLI only — no MCP equivalent)
 
-# View workflow status
+# View workflow status (CLI only — no MCP equivalent)
 gh run list --workflow=ci.yml
 gh run view <run-id>
 ```

@@ -169,23 +169,21 @@ git push origin feature/my-feature
 
 #### Creating Pull Requests
 
-**⚠️ IMPORTANT: Always use the automated PR creation script.**
+After pushing, create a PR:
 
-After pushing, create a PR using:
+**Preferred: GitHub MCP `create_pull_request`** with labels derived from commit type and changed files (see labeling logic in `scripts/create-pr.sh`).
+
+**Fallback: Automated script**
 
 ```bash
 npm run create-pr
 ```
 
-This script automatically:
-- Generates PR title from commit messages
-- Applies appropriate labels based on:
-  - Commit message prefix (`feat:` → "enhancement", `docs:` → "documentation", etc.)
-  - Changed files (`src/` → "code", `tests/` → "tests", etc.)
-- Assigns reviewers
-- Links to the related issue
+Both methods apply labels based on:
+- Commit message prefix (`feat:` → "enhancement", `docs:` → "documentation", etc.)
+- Changed files (`src/` → "code", `tests/` → "tests", etc.)
 
-**Do NOT use `gh pr create` directly** - this bypasses automated labeling and may result in improperly labeled PRs.
+The script also assigns reviewers and links to the related issue.
 
 **Do not bypass the hooks** - they exist to maintain code quality.
 
@@ -318,23 +316,20 @@ npm run test:watch          # Watch mode
 
 ### 2. Create Pull Request
 
-**⚠️ REQUIRED: Use the automated PR creation script:**
+**Preferred: GitHub MCP `create_pull_request`** with labels derived from commit type and changed files (see `scripts/create-pr.sh` for labeling logic).
+
+**Fallback:**
 
 ```bash
 npm run create-pr
 ```
 
-This is the **ONLY** supported way to create pull requests. Manual PR creation bypasses:
-- Automated label assignment
-- Consistent PR formatting
-- Issue linkage validation
+Both methods:
+1. Apply labels based on commit type and changed files
+2. Generate a PR description skeleton
+3. Create the PR and return the URL
 
-The script will automatically:
-1. Extract PR title from your commit messages
-2. Apply labels based on commit type and changed files
-3. Generate PR description with commit history
-4. Assign reviewers
-5. Create the PR and return the URL
+The script additionally assigns reviewers and extracts the PR title from commits.
 
 **PR Title Format (automatically generated from commits):**
 ```
@@ -422,9 +417,10 @@ Pull requests will be merged when:
 
 Before merging any PR, verify:
 
-```bash
+```
 # Check PR status and CI checks
-gh pr view <PR-NUMBER> --json state,mergeable,statusCheckRollup,reviews
+# Preferred: GitHub MCP pull_request_read (method: get_status)
+# Fallback:  gh pr view <PR-NUMBER> --json state,mergeable,statusCheckRollup,reviews
 
 # Expected output:
 # - state: "OPEN"
@@ -445,8 +441,9 @@ gh pr view <PR-NUMBER> --json state,mergeable,statusCheckRollup,reviews
 This project uses **squash merging** for all PRs to maintain a clean git history.
 
 **Squash Merge (Default):**
-```bash
-gh pr merge <PR-NUMBER> --squash --delete-branch
+```
+# Preferred: GitHub MCP merge_pull_request (merge_method: squash)
+# Fallback:  gh pr merge <PR-NUMBER> --squash --delete-branch
 ```
 
 **Benefits:**
@@ -464,27 +461,28 @@ gh pr merge <PR-NUMBER> --squash --delete-branch
 **Step-by-step process:**
 
 1. **Verify PR is ready to merge:**
-   ```bash
-   gh pr view <PR-NUMBER> --json state,mergeable,statusCheckRollup | jq '{state, mergeable, ci_passing: [.statusCheckRollup[] | select(.conclusion != "SUCCESS")] | length == 0}'
+   ```
+   # Preferred: GitHub MCP pull_request_read (method: get_status)
+   # Fallback:  gh pr view <PR-NUMBER> --json state,mergeable,statusCheckRollup
    ```
 
 2. **Merge the PR with squash:**
-   ```bash
-   gh pr merge <PR-NUMBER> --squash --delete-branch --subject "type: description (Fixes #N)"
    ```
-   - `--squash`: Squashes all commits into one
-   - `--delete-branch`: Auto-deletes the branch after merge
-   - `--subject`: Sets the commit message (follows conventional commits)
+   # Preferred: GitHub MCP merge_pull_request (merge_method: squash, commit_title: "type: description (Fixes #N)")
+   # Fallback:  gh pr merge <PR-NUMBER> --squash --delete-branch --subject "type: description (Fixes #N)"
+   ```
 
 3. **Verify merge succeeded:**
-   ```bash
-   gh pr view <PR-NUMBER> --json state,mergedAt,mergedBy
+   ```
+   # Preferred: GitHub MCP pull_request_read (method: get)
+   # Fallback:  gh pr view <PR-NUMBER> --json state,mergedAt,mergedBy
    # Expected: state: "MERGED"
    ```
 
 4. **Verify issue auto-closed:**
-   ```bash
-   gh issue view <ISSUE-NUMBER> --json state,closedAt
+   ```
+   # Preferred: GitHub MCP issue_read (method: get)
+   # Fallback:  gh issue view <ISSUE-NUMBER> --json state,closedAt
    # Expected: state: "CLOSED"
    ```
 
@@ -494,7 +492,7 @@ gh pr merge <PR-NUMBER> --squash --delete-branch
    git pull origin main
    ```
 
-**Example:**
+**Example (using fallback CLI):**
 ```bash
 # Merge PR #44
 gh pr merge 44 --squash --delete-branch --subject "docs: add refactoring analysis (Fixes #43)"
@@ -516,8 +514,9 @@ When merging multiple PRs sequentially (e.g., related documentation updates), fo
 **Step-by-step process:**
 
 1. **Merge first PR (PR A):**
-   ```bash
-   gh pr merge <PR-A-NUMBER> --squash --delete-branch --subject "type: description (Fixes #N)"
+   ```
+   # Preferred: GitHub MCP merge_pull_request (merge_method: squash)
+   # Fallback:  gh pr merge <PR-A-NUMBER> --squash --delete-branch --subject "type: description (Fixes #N)"
    ```
 
 2. **Update local main branch:**
@@ -528,21 +527,24 @@ When merging multiple PRs sequentially (e.g., related documentation updates), fo
    ⚠️ **CRITICAL:** Do not skip this step! The second PR may depend on changes from the first.
 
 3. **Verify first PR merged and issue closed:**
-   ```bash
-   gh pr view <PR-A-NUMBER> --json state,mergedAt
-   gh issue view <ISSUE-A-NUMBER> --json state,closedAt
+   ```
+   # Preferred: GitHub MCP pull_request_read + issue_read
+   # Fallback:  gh pr view <PR-A-NUMBER> --json state,mergedAt
+   #            gh issue view <ISSUE-A-NUMBER> --json state,closedAt
    ```
 
 4. **Check if second PR needs rebase:**
-   ```bash
-   gh pr view <PR-B-NUMBER> --json mergeable
+   ```
+   # Preferred: GitHub MCP pull_request_read (method: get) — check mergeable field
+   # Fallback:  gh pr view <PR-B-NUMBER> --json mergeable
    ```
    - If `mergeable: "MERGEABLE"` → proceed to step 5
    - If `mergeable: "CONFLICTING"` → rebase required (see below)
 
 5. **Merge second PR (PR B):**
-   ```bash
-   gh pr merge <PR-B-NUMBER> --squash --delete-branch --subject "type: description (Fixes #M)"
+   ```
+   # Preferred: GitHub MCP merge_pull_request (merge_method: squash)
+   # Fallback:  gh pr merge <PR-B-NUMBER> --squash --delete-branch --subject "type: description (Fixes #M)"
    ```
 
 6. **Update local main branch:**
@@ -552,33 +554,34 @@ When merging multiple PRs sequentially (e.g., related documentation updates), fo
    ```
 
 7. **Verify both PRs merged successfully:**
-   ```bash
-   gh pr list --state merged --limit 5
-   gh issue list --state closed --limit 5
+   ```
+   # Preferred: GitHub MCP list_pull_requests (state: closed) + list_issues (state: CLOSED)
+   # Fallback:  gh pr list --state merged --limit 5
+   #            gh issue list --state closed --limit 5
    ```
 
-**Example: Merging PRs #46 and #44**
+**Example (using fallback CLI):**
 ```bash
-# 1. Merge PR #46 (container documentation)
+# 1. Merge PR #46 — Preferred: GitHub MCP merge_pull_request
 gh pr merge 46 --squash --delete-branch --subject "docs: document container security scanning (Fixes #45)"
 
 # 2. Update local main (REQUIRED)
 git checkout main && git pull origin main
 
-# 3. Verify PR #46 and issue #45
+# 3. Verify PR #46 and issue #45 — Preferred: GitHub MCP pull_request_read + issue_read
 gh pr view 46 --json state   # Expected: "MERGED"
 gh issue view 45 --json state # Expected: "CLOSED"
 
-# 4. Check PR #44 mergeable status
+# 4. Check PR #44 mergeable status — Preferred: GitHub MCP pull_request_read
 gh pr view 44 --json mergeable # Expected: "MERGEABLE"
 
-# 5. Merge PR #44 (refactoring documentation)
+# 5. Merge PR #44 — Preferred: GitHub MCP merge_pull_request
 gh pr merge 44 --squash --delete-branch --subject "docs: add refactoring analysis (Fixes #43)"
 
 # 6. Update local main
 git checkout main && git pull origin main
 
-# 7. Verify final state
+# 7. Verify final state — Preferred: GitHub MCP list_pull_requests + list_issues
 gh pr list --state merged --limit 2
 gh issue list --state closed --limit 2
 ```
@@ -614,8 +617,9 @@ If a PR has merge conflicts:
    ```
 
 4. **Wait for CI to pass, then merge:**
-   ```bash
-   gh pr merge <PR-NUMBER> --squash --delete-branch
+   ```
+   # Preferred: GitHub MCP merge_pull_request (merge_method: squash)
+   # Fallback:  gh pr merge <PR-NUMBER> --squash --delete-branch
    ```
 
 #### Post-Merge Verification
@@ -626,43 +630,38 @@ After merging one or more PRs:
 # 1. Verify git history is clean
 git log --oneline -5
 
-# 2. Verify CI is passing on main
+# 2-4. Verify CI, issues, and branches
+# Preferred: GitHub MCP list_commits, list_issues (state: CLOSED), list_pull_requests (state: closed)
+# Fallback:
 gh run list --branch main --limit 3
-
-# 3. Verify issues were auto-closed
 gh issue list --state closed --limit 5
-
-# 4. Verify branches were deleted
 gh pr list --state merged --limit 5 --json number,headRefName
 ```
 
 #### Common Merge Scenarios
 
 **Scenario 1: Single documentation PR**
-```bash
-gh pr merge 44 --squash --delete-branch --subject "docs: update README (Fixes #43)"
+```
+# Preferred: GitHub MCP merge_pull_request (pullNumber: 44, merge_method: squash)
+# Fallback:  gh pr merge 44 --squash --delete-branch --subject "docs: update README (Fixes #43)"
 git checkout main && git pull origin main
 ```
 
-**Scenario 2: Two related PRs (container docs #46, refactoring docs #44)**
-```bash
-# First PR
-gh pr merge 46 --squash --delete-branch
+**Scenario 2: Two related PRs**
+```
+# First PR — Preferred: GitHub MCP merge_pull_request | Fallback: gh pr merge 46 --squash --delete-branch
 git checkout main && git pull origin main
 
-# Second PR (after main updated)
-gh pr merge 44 --squash --delete-branch
+# Second PR (after main updated) — same approach
 git checkout main && git pull origin main
 ```
 
 **Scenario 3: Feature PR + Documentation PR**
-```bash
-# Feature PR (may affect tests)
-gh pr merge 42 --squash --delete-branch
+```
+# Feature PR — Preferred: GitHub MCP merge_pull_request | Fallback: gh pr merge --squash --delete-branch
 git checkout main && git pull origin main
 
-# Docs PR (documents the feature)
-gh pr merge 43 --squash --delete-branch
+# Docs PR — same approach
 git checkout main && git pull origin main
 ```
 
@@ -681,7 +680,8 @@ git revert <commit-sha>
 git push origin main
 
 # 4. Reopen the issue
-gh issue reopen <ISSUE-NUMBER>
+# Preferred: GitHub MCP issue_write (method: update, state: open)
+# Fallback:  gh issue reopen <ISSUE-NUMBER>
 ```
 
 #### Best Practices
@@ -739,15 +739,13 @@ If you're using Claude Code for contributions:
    - Create or identify a GitHub issue before making changes
    - Reference the issue number in all commits and PR
 
-2. **PR Creation (ONLY Supported Method)**
-   ```bash
-   npm run create-pr
-   ```
-   - **NEVER use `gh pr create` directly** - it bypasses automated labeling
-   - The script automatically applies labels based on:
+2. **PR Creation**
+   - **Preferred**: GitHub MCP `create_pull_request` with labels derived from commit type and changed files (see `scripts/create-pr.sh` for labeling logic)
+   - **Fallback**: `npm run create-pr`
+   - Labels are based on:
      - Commit type prefix (feat:, fix:, docs:, etc.)
      - Changed files (src/, tests/, docs/, etc.)
-   - Manual PR creation will be caught by CI validation
+   - PRs without labels will be caught by CI validation
 
 3. **Quality Requirements**
    - All tests must pass (`npm test`)
@@ -877,20 +875,18 @@ Labels help organize work, track progress, and make the project searchable. Appl
 #### How to Apply Labels
 
 **When Creating an Issue:**
-```bash
-# Via GitHub CLI
-gh issue create --title "feat: Add timezone converter" --label "enhancement"
-gh issue create --title "fix: CORS error on localhost" --label "bug"
-gh issue create --title "ci: Optimize workflow" --label "ci-cd,enhancement"
+```
+# Preferred: GitHub MCP issue_write (method: create, labels: ["enhancement"])
+# Fallback:  gh issue create --title "feat: Add timezone converter" --label "enhancement"
 
 # Via GitHub UI
 # Select labels from the right sidebar when creating the issue
 ```
 
 **When Creating a Pull Request:**
-```bash
-# Via GitHub CLI (after creating PR)
-gh pr edit <PR-NUMBER> --add-label "enhancement,documentation"
+```
+# Preferred: GitHub MCP create_pull_request or update_pull_request with labels
+# Fallback:  gh pr edit <PR-NUMBER> --add-label "enhancement,documentation"
 
 # Via GitHub UI
 # Select labels from the right sidebar after creating the PR
@@ -902,7 +898,7 @@ gh pr edit <PR-NUMBER> --add-label "enhancement,documentation"
 - **Multiple labels**: Use commas without spaces: `"ci-cd,enhancement"`
 - **Keep updated**: Update labels if issue/PR scope changes
 
-**Examples:**
+**Examples (using fallback CLI):**
 ```bash
 # Bug fix
 gh issue create --title "fix: Rate limiting broken" --label "bug"
@@ -915,15 +911,8 @@ gh pr edit 43 --add-label "enhancement"
 # CI/CD improvement
 gh issue create --title "ci: Add caching" --label "ci-cd,enhancement"
 gh pr edit 44 --add-label "ci-cd,enhancement"
-
-# Documentation update
-gh issue create --title "docs: Update README" --label "documentation"
-gh pr edit 45 --add-label "documentation"
-
-# Infrastructure change
-gh issue create --title "feat: Kubernetes manifests" --label "enhancement,infrastructure"
-gh pr edit 46 --add-label "enhancement,infrastructure"
 ```
+For AI assistants, use GitHub MCP `issue_write` and `update_pull_request` with the same label values.
 
 **Benefits of Proper Labeling:**
 - ✅ Easy filtering and searching
@@ -946,8 +935,9 @@ gh pr edit 46 --add-label "enhancement,infrastructure"
 
 **Example:**
 ```bash
-# 1. Create issue via GitHub UI or CLI
-gh issue create --title "feat: Add timezone converter" --label "enhancement"
+# 1. Create issue
+# Preferred: GitHub MCP issue_write (method: create, title: "feat: Add timezone converter", labels: ["enhancement"])
+# Fallback:  gh issue create --title "feat: Add timezone converter" --label "enhancement"
 # Returns: Created issue #42
 
 # 2. Create branch
@@ -956,7 +946,7 @@ git checkout -b feat/issue-42-timezone-converter
 # 3. Make changes, commit, push
 
 # 4. Create PR that references the issue
-gh pr create --title "feat: Add timezone converter (Closes #42)"
+# Preferred: GitHub MCP create_pull_request | Fallback: npm run create-pr
 ```
 
 ### Fixing a Bug
@@ -973,7 +963,8 @@ gh pr create --title "feat: Add timezone converter (Closes #42)"
 **Example:**
 ```bash
 # 1. Create issue
-gh issue create --title "fix: Rate limiting not working for localhost" --label "bug"
+# Preferred: GitHub MCP issue_write (method: create, title: "fix: Rate limiting not working for localhost", labels: ["bug"])
+# Fallback:  gh issue create --title "fix: Rate limiting not working for localhost" --label "bug"
 # Returns: Created issue #14
 
 # 2. Create branch
@@ -982,7 +973,7 @@ git checkout -b fix/issue-14-rate-limiting-localhost
 # 3. Write failing test, fix bug, commit
 
 # 4. Create PR
-gh pr create --title "fix: Rate limiting for localhost (Fixes #14)"
+# Preferred: GitHub MCP create_pull_request | Fallback: npm run create-pr
 ```
 
 ### Updating Documentation

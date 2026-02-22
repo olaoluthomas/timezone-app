@@ -219,10 +219,9 @@ The application is production-ready with:
 Before making any code changes for bugs, features, or enhancements:
 
 1. **Create a GitHub Issue** (mandatory)
-   ```bash
-   gh issue create --title "fix: Brief description" --label "bug"
-   # OR
-   gh issue create --title "feat: Brief description" --label "enhancement"
+   ```
+   # Preferred: GitHub MCP issue_write (method: create, owner: olaoluthomas, repo: timezone-app)
+   # Fallback:  gh issue create --title "fix: Brief description" --label "bug"
    ```
 
 2. **Create a branch referencing the issue**
@@ -240,7 +239,10 @@ Before making any code changes for bugs, features, or enhancements:
 4. **Push and create PR**
    ```bash
    git push -u origin branch-name
-   gh pr create --title "fix: description (Fixes #N)"
+   ```
+   ```
+   # Preferred: GitHub MCP create_pull_request (with labels)
+   # Fallback:  npm run create-pr
    ```
 
 ### Branch Naming Convention

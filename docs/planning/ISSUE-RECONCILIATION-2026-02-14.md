@@ -124,15 +124,17 @@ All issues are organized on the [GitHub Project Board](https://github.com/users/
 
 Run these commands to verify the organization:
 
-```bash
+```
 # List all issues by milestone
-gh issue list --limit 100 --json number,title,milestone --jq 'group_by(.milestone.title) | map({milestone: .[0].milestone.title, count: length, issues: map("#\(.number)")})'
+# Preferred: GitHub MCP list_issues (per milestone)
+# Fallback:  gh issue list --limit 100 --json number,title,milestone
 
 # View project board
 open https://github.com/users/olaoluthomas/projects/3
 
 # View milestones
-gh api repos/olaoluthomas/timezone-app/milestones --jq '.[] | "\(.title): \(.open_issues) open"'
+# Preferred: GitHub MCP API
+# Fallback:  gh api repos/olaoluthomas/timezone-app/milestones
 ```
 
 ## Statistics

@@ -22,9 +22,9 @@ The timezone-app uses **Trivy container security scanning** integrated into the 
 ## Handling Security Findings
 
 ### Step 1: Review Alert
-```bash
-gh api repos/olaoluthomas/timezone-app/code-scanning/alerts \
-  --jq '.[] | {number, severity: .rule.severity, description: .rule.description}'
+```
+# Preferred: GitHub MCP (use API tools for code-scanning alerts)
+# Fallback:  gh api repos/olaoluthomas/timezone-app/code-scanning/alerts
 ```
 
 ### Step 2: Create Issue
@@ -43,7 +43,7 @@ npm audit
 npm test
 
 # Check if alert resolved
-gh api repos/olaoluthomas/timezone-app/code-scanning/alerts/<alert-id>
+# Preferred: GitHub MCP | Fallback: gh api repos/olaoluthomas/timezone-app/code-scanning/alerts/<alert-id>
 ```
 
 ### Step 4: Verify Resolution

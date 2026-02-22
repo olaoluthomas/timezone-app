@@ -62,8 +62,9 @@ This document serves as the index for all refactoring documentation and planning
    ```
 
 2. **View GitHub issues:**
-   ```bash
-   gh issue list --label refactor
+   ```
+   # Preferred: GitHub MCP search_issues (query: "label:refactor")
+   # Fallback:  gh issue list --label refactor
    ```
 
 3. **Pick an issue to work on:**
@@ -82,7 +83,7 @@ This document serves as the index for all refactoring documentation and planning
 
    # Push and create PR
    git push -u origin refactor/issue-37-remove-promise-wrapper
-   gh pr create --title "refactor: remove Promise.resolve() wrapper (Fixes #37)"
+   # Preferred: GitHub MCP create_pull_request | Fallback: npm run create-pr
    ```
 
 ---
