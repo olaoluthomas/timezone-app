@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# Skip pre-push checks in CI (for semantic-release automation)
+if [ "$CI" = "true" ]; then
+  echo "⏭️  Skipping pre-push checks in CI environment"
+  exit 0
+fi
+
 echo "🔍 Running pre-push checks..."
 echo ""
 
