@@ -117,7 +117,16 @@ Changed files are analyzed:
 
 For PRs created outside the automation or needing corrections:
 
-### Using GitHub CLI
+### Using GitHub MCP (Preferred)
+
+```
+# Add/update labels
+update_pull_request (owner, repo, pullNumber, labels: ["label1", "label2"])
+# Or for issues:
+issue_write (method: update, labels: ["label1", "label2"])
+```
+
+### Using GitHub CLI (Fallback)
 
 ```bash
 # Add labels
@@ -125,9 +134,6 @@ gh pr edit <PR_NUMBER> --add-label "label1,label2,label3"
 
 # Remove labels
 gh pr edit <PR_NUMBER> --remove-label "label1"
-
-# Replace all labels
-gh pr edit <PR_NUMBER> --add-label "new-label" --remove-label "old-label"
 ```
 
 ### Using GitHub Web UI
@@ -234,14 +240,10 @@ Use this flowchart to determine labels:
 
 ### Tracking Label Usage
 
-```bash
-# List all PRs with specific label
+```
+# Preferred: GitHub MCP search_pull_requests or list_pull_requests
+# Fallback:
 gh pr list --label "refactor"
-
-# Count PRs by label (using jq)
-gh pr list --json labels --limit 100 | jq -r '.[].labels[].name' | sort | uniq -c | sort -rn
-
-# Recent PRs grouped by label
 gh pr list --label "enhancement" --limit 10
 ```
 
@@ -259,9 +261,9 @@ gh pr list --label "enhancement" --limit 10
 
 ### Current Available Labels
 
-```bash
-# List all labels in the repository
-gh label list
+```
+# Preferred: GitHub MCP get_label or list labels via API
+# Fallback:  gh label list
 ```
 
 **Standard Labels:**
@@ -361,30 +363,34 @@ Future integration (planned):
 
 ### Create PR with Auto-Labels
 
-```bash
-npm run create-pr
+```
+# Preferred: GitHub MCP create_pull_request (with labels)
+# Fallback:  npm run create-pr
 ```
 
 ### Manually Add Labels
 
-```bash
-gh pr edit <NUMBER> --add-label "label1,label2"
+```
+# Preferred: GitHub MCP update_pull_request (labels)
+# Fallback:  gh pr edit <NUMBER> --add-label "label1,label2"
 ```
 
 ### List PRs by Label
 
-```bash
-gh pr list --label "refactor"
+```
+# Preferred: GitHub MCP search_pull_requests (query: "label:refactor")
+# Fallback:  gh pr list --label "refactor"
 ```
 
 ### View PR Labels
 
-```bash
-gh pr view <NUMBER> --json labels
+```
+# Preferred: GitHub MCP pull_request_read (method: get)
+# Fallback:  gh pr view <NUMBER> --json labels
 ```
 
 ---
 
-**Last Review:** 2026-01-26
+**Last Review:** 2026-02-22
 **Next Review:** 2026-02-26
 **Owner:** Development Team

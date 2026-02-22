@@ -274,11 +274,12 @@ The CI workflow runs automatically on:
    ```
 
 2. **Pull requests to main**
-   ```bash
-   gh pr create --base main  # CI runs on PR creation
+   ```
+   # Preferred: GitHub MCP create_pull_request | Fallback: npm run create-pr
+   # CI runs automatically on PR creation
    ```
 
-3. **Manual dispatch** (for ci/* branches)
+3. **Manual dispatch** (for ci/* branches — CLI only, no MCP equivalent)
    ```bash
    gh workflow run ci.yml --ref ci/test-feature
    ```
@@ -470,8 +471,9 @@ Both should produce identical results. Local checks are faster and catch issues 
    - Fix any environment-specific issues
 
 3. **Use Draft PRs**
-   ```bash
-   gh pr create --draft  # Run CI without requesting reviews
+   ```
+   # Preferred: GitHub MCP create_pull_request (draft: true)
+   # Fallback:  gh pr create --draft
    ```
    - CI runs on draft PRs
    - Convert to ready when CI passes

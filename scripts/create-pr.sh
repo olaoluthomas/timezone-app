@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# PR creation with automated labeling.
+# AI assistants: Prefer GitHub MCP `create_pull_request` with labels derived
+# from commit type and changed files. Fall back to this script if MCP fails.
+# See CLAUDE.md "GitHub MCP Tools (AI Assistants)" for the full tool mapping.
+
 # Get current branch
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 BASE_BRANCH="${1:-main}"  # Default to main
@@ -110,7 +115,7 @@ fi
 # Remove duplicate labels
 LABELS=($(echo "${LABELS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
-# Build label string for gh CLI
+# Build label flags for gh CLI
 LABEL_ARGS=""
 for label in "${LABELS[@]}"; do
   LABEL_ARGS="$LABEL_ARGS --label \"$label\""
@@ -123,16 +128,12 @@ else
   ISSUE_REFERENCE="⚠️ **REQUIRED**: Add issue reference below or explain why none exists"
 fi
 
-# Get first commit message for summary context
-FIRST_COMMIT=$(git log $BASE_BRANCH..HEAD --pretty=format:"%s" --reverse | head -1)
+# Use PR title as summary seed (more descriptive than oldest commit on stacked branches)
+FIRST_COMMIT="$PR_TITLE"
 
 # Generate PR body from template (concise, value-focused)
 PR_BODY=$(cat <<'EOF'
 ## Summary
-
-<!-- Describe WHAT this PR accomplishes and WHY it is important (2-3 sentences) -->
-<!-- Focus on business/technical value, not implementation details -->
-<!-- Example: Eliminates duplicate code by extracting utilities. Improves maintainability. -->
 
 FIRST_COMMIT_PLACEHOLDER
 
@@ -142,33 +143,19 @@ ISSUE_REFERENCE_PLACEHOLDER
 
 ## Impact
 
-<!-- Brief bullet points on what changes for users/developers -->
-<!-- Example: -->
-<!-- - Reduced code complexity in geolocation service -->
-<!-- - Added reusable IP validation utilities -->
-<!-- - Improved test coverage to 97.5% -->
-
 -
-
----
-
-Note: Keep the description concise and focused on value. Reviewers can see file changes in the diff view.
-Your description should answer "What problem does this solve?" and "Why does it matter?"
-
-Labels: LABELS_PLACEHOLDER
 EOF
 )
 
 # Replace placeholders with actual values
 PR_BODY="${PR_BODY//FIRST_COMMIT_PLACEHOLDER/$FIRST_COMMIT}"
 PR_BODY="${PR_BODY//ISSUE_REFERENCE_PLACEHOLDER/$ISSUE_REFERENCE}"
-PR_BODY="${PR_BODY//LABELS_PLACEHOLDER/${LABELS[*]}}"
 
 # Write PR body to temporary file to avoid quoting issues
 PR_BODY_FILE=$(mktemp)
 echo "$PR_BODY" > "$PR_BODY_FILE"
 
-# Create PR using GitHub CLI
+# Create PR via gh CLI (fallback path when GitHub MCP is unavailable)
 # Note: Using --body-file to avoid shell quoting issues with special characters
 # eval needed for label args to work properly
 PR_URL=$(eval gh pr create \

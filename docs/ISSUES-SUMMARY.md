@@ -55,7 +55,7 @@ The Timezone App currently has **19 open issues** organized across **2 milestone
 ```bash
 npm audit
 npm test
-gh api repos/olaoluthomas/timezone-app/code-scanning/alerts --jq '.[] | select(.state == "open")'
+# Preferred: GitHub MCP | Fallback: gh api repos/olaoluthomas/timezone-app/code-scanning/alerts --jq '.[] | select(.state == "open")'
 ```
 
 ---
@@ -79,7 +79,7 @@ gh api repos/olaoluthomas/timezone-app/code-scanning/alerts --jq '.[] | select(.
 **Verification:**
 ```bash
 npm test
-gh api repos/olaoluthomas/timezone-app/code-scanning/alerts --jq '.[] | select(.severity == "note")'
+# Preferred: GitHub MCP | Fallback: gh api repos/olaoluthomas/timezone-app/code-scanning/alerts --jq '.[] | select(.severity == "note")'
 ```
 
 ---

@@ -33,15 +33,11 @@
 - Use for GitHub Actions workflows targeting automated PRs
 
 **Filter Commands:**
-```bash
-# List all automated PRs
+```
+# Preferred: GitHub MCP search_pull_requests (query: "label:automated")
+# Fallback:
 gh pr list --label "automated"
-
-# List automated dependency PRs
 gh pr list --label "automated,dependencies"
-
-# Count automated PRs
-gh pr list --label "automated" --json number --jq 'length'
 ```
 
 ---
@@ -50,23 +46,19 @@ gh pr list --label "automated" --json number --jq 'length'
 
 ### Step 1: Review New PRs
 
-```bash
-# Check for new Dependabot PRs
-gh pr list --author "app/dependabot" --state open
+```
+# Preferred: GitHub MCP search_pull_requests (query: "author:app/dependabot is:open")
+# Fallback:  gh pr list --author "app/dependabot" --state open
 
-# Get PR details
-gh pr view <NUMBER> --json number,title,additions,deletions,headRefName
+# Preferred: GitHub MCP pull_request_read (method: get)
+# Fallback:  gh pr view <NUMBER> --json number,title,additions,deletions,headRefName
 ```
 
 ### Step 2: Apply Labels
 
-```bash
-# Add automated and dependencies labels
-gh pr edit <NUMBER> --add-label "automated,dependencies"
-
-# Add additional context labels as needed
-gh pr edit <NUMBER> --add-label "tests"  # if test changes
-gh pr edit <NUMBER> --add-label "code"   # if source code changes
+```
+# Preferred: GitHub MCP update_pull_request (labels: ["automated", "dependencies"])
+# Fallback:  gh pr edit <NUMBER> --add-label "automated,dependencies"
 ```
 
 ### Step 3: Local Testing
@@ -96,7 +88,7 @@ npm run test:integration
 
 | Scenario | Action | Notes |
 |----------|--------|-------|
-| ✅ All tests pass | Merge immediately | Use `gh pr merge <NUMBER> --merge --delete-branch` |
+| ✅ All tests pass | Merge immediately | GitHub MCP `merge_pull_request` or `gh pr merge <NUMBER> --merge --delete-branch` |
 | ❌ Tests fail (minor) | Fix and merge | Update tests if breaking changes are minor |
 | ❌ Tests fail (major) | Block and document | Create issue for migration work |
 | ⚠️ Major version bump | Review changelog | Check for breaking changes first |
@@ -105,9 +97,9 @@ npm run test:integration
 ### Step 5: Merge or Block
 
 **If Passing:**
-```bash
-# Merge PR
-gh pr merge <NUMBER> --merge --delete-branch
+```
+# Preferred: GitHub MCP merge_pull_request (merge_method: merge)
+# Fallback:  gh pr merge <NUMBER> --merge --delete-branch
 
 # Update local main
 git checkout main
@@ -119,12 +111,12 @@ npm test
 ```
 
 **If Blocked:**
-```bash
-# Add comment explaining why
-gh pr comment <NUMBER> --body "Blocked: <reason>. See issue #<NUMBER> for migration plan."
+```
+# Preferred: GitHub MCP add_issue_comment
+# Fallback:  gh pr comment <NUMBER> --body "Blocked: <reason>. See issue #<NUMBER> for migration plan."
 
-# Create tracking issue
-gh issue create --title "Migration: <package> to v<version>" --body "..." --label "dependencies,refactor"
+# Preferred: GitHub MCP issue_write (method: create, labels: ["dependencies", "refactor"])
+# Fallback:  gh issue create --title "Migration: <package> to v<version>" --label "dependencies,refactor"
 
 # Keep PR open for reference
 ```
@@ -198,7 +190,7 @@ gh issue create --title "Migration: <package> to v<version>" --body "..." --labe
 
 Run this checklist weekly (or when Dependabot creates new PRs):
 
-- [ ] Check for new Dependabot PRs: `gh pr list --author "app/dependabot"`
+- [ ] Check for new Dependabot PRs: GitHub MCP `search_pull_requests` (fallback: `gh pr list --author "app/dependabot"`)
 - [ ] Apply labels to new PRs: `automated`, `dependencies`
 - [ ] Review PR changes: Check `package.json` and `package-lock.json`
 - [ ] Check for major version bumps (potential breaking changes)
@@ -288,22 +280,18 @@ Run this checklist weekly (or when Dependabot creates new PRs):
 
 ### Useful Commands
 
-```bash
-# List all automated PRs
-gh pr list --label "automated"
+```
+# List automated PRs — Preferred: GitHub MCP search_pull_requests | Fallback: gh pr list --label "automated"
 
-# Test a Dependabot PR
+# Test a Dependabot PR locally
 git fetch origin <branch> && git checkout <branch>
 npm install && npm test
 
-# Merge a PR
-gh pr merge <NUMBER> --merge --delete-branch
+# Merge a PR — Preferred: GitHub MCP merge_pull_request | Fallback: gh pr merge <NUMBER> --merge --delete-branch
 
-# Block a PR with comment
-gh pr comment <NUMBER> --body "Blocked: reason here"
+# Block a PR with comment — Preferred: GitHub MCP add_issue_comment | Fallback: gh pr comment <NUMBER> --body "reason"
 
-# Create migration issue
-gh issue create --title "Migration: package to vX" --label "dependencies"
+# Create migration issue — Preferred: GitHub MCP issue_write | Fallback: gh issue create --title "Migration: package to vX" --label "dependencies"
 ```
 
 ### Status Symbols

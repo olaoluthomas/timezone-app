@@ -70,15 +70,12 @@ docs/issue-N-short-description      # Documentation
 - `docs/WORKFLOW-IMPROVEMENTS.md` - This file
 
 **Commands:**
-```bash
-# Create issue first
-gh issue create --title "fix: Brief description" --label "bug"
-
+```
+# Create issue — Preferred: GitHub MCP issue_write | Fallback: gh issue create
 # Create branch with issue number
 git checkout -b fix/issue-N-description
 
-# Create PR with issue reference
-gh pr create --title "fix: Description (Fixes #N)"
+# Create PR — Preferred: GitHub MCP create_pull_request | Fallback: npm run create-pr
 ```
 
 ---
@@ -202,10 +199,10 @@ PR #8 automatically labeled with:
 
 **Commands:**
 
-```bash
-npm run create-pr                              # Auto-labels applied
-gh pr edit 8 --add-label "label1,label2"      # Manual label addition
-gh pr list --label "refactor"                  # Filter by label
+```
+# Preferred: GitHub MCP create_pull_request (with labels) | Fallback: npm run create-pr
+# Preferred: GitHub MCP update_pull_request (labels)      | Fallback: gh pr edit 8 --add-label "label1,label2"
+# Preferred: GitHub MCP search_pull_requests              | Fallback: gh pr list --label "refactor"
 ```
 
 ---

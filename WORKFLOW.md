@@ -6,7 +6,8 @@
 
 ```bash
 # Step 1: Create GitHub Issue (MANDATORY)
-gh issue create --title "type: brief description" --label "type"
+# Preferred: GitHub MCP issue_write (method: create)
+# Fallback:  gh issue create --title "type: brief description" --label "type"
 # Returns: Created issue #N
 
 # Step 2: Create Branch (MUST reference issue number)
@@ -19,8 +20,9 @@ git commit -m "type: description of changes"
 # Step 4: Push Branch
 git push -u origin type/issue-N-short-description
 
-# Step 5: Create Pull Request (Use automated script)
-npm run create-pr
+# Step 5: Create Pull Request
+# Preferred: GitHub MCP create_pull_request (with labels from commit type + changed files)
+# Fallback:  npm run create-pr
 ```
 
 ## Branch Naming Convention
@@ -93,7 +95,8 @@ git commit -m "some changes"
 
 ```bash
 # 1. Create issue
-gh issue create --title "feat: Add timezone converter" --label "enhancement"
+# Preferred: GitHub MCP issue_write (method: create, title: "feat: Add timezone converter", labels: ["enhancement"])
+# Fallback:  gh issue create --title "feat: Add timezone converter" --label "enhancement"
 # Returns: Created issue #42
 
 # 2. Create branch
@@ -105,14 +108,15 @@ git commit -m "feat: add timezone converter endpoint"
 
 # 4. Push and create PR
 git push -u origin feat/issue-42-timezone-converter
-npm run create-pr
+# Preferred: GitHub MCP create_pull_request | Fallback: npm run create-pr
 ```
 
 ### Fixing a Bug
 
 ```bash
 # 1. Create issue
-gh issue create --title "fix: Rate limiting broken on localhost" --label "bug"
+# Preferred: GitHub MCP issue_write (method: create, title: "fix: Rate limiting broken on localhost", labels: ["bug"])
+# Fallback:  gh issue create --title "fix: Rate limiting broken on localhost" --label "bug"
 # Returns: Created issue #14
 
 # 2. Create branch
@@ -126,14 +130,15 @@ git commit -m "fix: resolve rate limiting issue for localhost"
 git push -u origin fix/issue-14-rate-limit-localhost
 
 # 5. Create PR
-npm run create-pr
+# Preferred: GitHub MCP create_pull_request | Fallback: npm run create-pr
 ```
 
 ### Refactoring Code
 
 ```bash
 # 1. Create issue
-gh issue create --title "refactor: Remove unnecessary Promise.resolve wrapper" --label "refactor"
+# Preferred: GitHub MCP issue_write (method: create, title: "refactor: Remove unnecessary Promise.resolve wrapper", labels: ["refactor"])
+# Fallback:  gh issue create --title "refactor: Remove unnecessary Promise.resolve wrapper" --label "refactor"
 # Returns: Created issue #37
 
 # 2. Create branch
@@ -147,25 +152,25 @@ git commit -m "refactor: remove unnecessary Promise.resolve() wrapper"
 git push -u origin refactor/issue-37-remove-promise-resolve
 
 # 5. Create PR
-npm run create-pr
+# Preferred: GitHub MCP create_pull_request | Fallback: npm run create-pr
 ```
 
 ## Creating Pull Requests
 
-**⚠️ REQUIRED: Use the automated PR creation script**
+**Preferred: GitHub MCP `create_pull_request`** with labels derived from commit type and changed files (see labeling logic in `scripts/create-pr.sh`).
+
+**Fallback: Automated PR creation script**
 
 ```bash
 npm run create-pr
 ```
 
-This is the **ONLY** supported way to create PRs. Benefits:
+Benefits of the automated script:
 - ✅ **Auto-labels**: Applies labels based on commit type and changed files
 - ✅ **Consistent format**: Generates standardized PR descriptions
 - ✅ **Issue linking**: Automatically links to related issues
 - ✅ **Reviewer assignment**: Assigns appropriate reviewers
 - ✅ **Validation**: Ensures PR follows project conventions
-
-**DO NOT use `gh pr create` directly** - this bypasses automated labeling and validation.
 
 ### How Labels Are Applied
 
@@ -189,7 +194,7 @@ The script automatically labels PRs based on:
 ## PR Requirements
 
 All PRs **MUST**:
-- ✅ Be created using `npm run create-pr` (not manual `gh pr create`)
+- ✅ Be created using GitHub MCP `create_pull_request` (preferred) or `npm run create-pr` (fallback)
 - ✅ Reference issue number in commit messages and PR
 - ✅ Pass all CI checks (10/10 green)
 - ✅ Follow conventional commit format
@@ -222,14 +227,15 @@ git checkout -b add-feature  # ❌ No issue number
 git checkout -b feat/issue-42-add-feature
 ```
 
-### ❌ Mistake: Manual PR creation without automated script
+### ❌ Mistake: Manual PR creation without labels
 ```bash
-gh pr create --title "feat: add new feature (Closes #42)"  # ❌ Bypasses auto-labeling
+gh pr create --title "feat: add new feature (Closes #42)"  # ❌ No labels applied
 ```
 
-**✅ Solution:** Use the automated script
-```bash
-npm run create-pr  # ✅ Auto-applies labels and validates
+**✅ Solution:** Use GitHub MCP or the automated script
+```
+# Preferred: GitHub MCP create_pull_request with labels
+# Fallback:  npm run create-pr (auto-applies labels)
 ```
 
 ## Why This Workflow?
