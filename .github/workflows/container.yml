@@ -37,6 +37,9 @@ on:
       - '.vscode/**'
       - '.idea/**'
 
+  release:
+    types: [published]
+
   workflow_dispatch:
 
 env:
