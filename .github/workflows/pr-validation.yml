@@ -5,17 +5,41 @@ name: PR Validation
 on:
   pull_request:
     types: [opened, reopened, synchronize, labeled, unlabeled]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to validate (used when triggered by watchdog)'
+        required: true
 
 jobs:
   validate-pr:
     name: Validate PR Labels and Format
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve PR metadata
+        id: pr-meta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            PR_NUMBER="${{ inputs.pr_number }}"
+            PR_DATA=$(gh pr view $PR_NUMBER --repo ${{ github.repository }} --json number,title,author)
+            PR_TITLE=$(echo "$PR_DATA" | jq -r '.title')
+            PR_AUTHOR=$(echo "$PR_DATA" | jq -r '.author.login')
+          else
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+            PR_TITLE="${{ github.event.pull_request.title }}"
+            PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          fi
+          echo "number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "title=$PR_TITLE" >> $GITHUB_OUTPUT
+          echo "author=$PR_AUTHOR" >> $GITHUB_OUTPUT
+
       - name: Check PR has type label
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          LABELS=$(gh pr view ${{ github.event.pull_request.number }} \
+          LABELS=$(gh pr view ${{ steps.pr-meta.outputs.number }} \
             --repo ${{ github.repository }} \
             --json labels --jq '.labels[].name')
 
@@ -31,7 +55,7 @@ jobs:
 
       - name: Validate PR title format
         run: |
-          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_TITLE="${{ steps.pr-meta.outputs.title }}"
 
           if ! echo "$PR_TITLE" | grep -qE '^(feat|fix|docs|test|refactor|chore|style|perf)(\(.+\))?:'; then
             echo "❌ PR title must start with conventional commit type"
@@ -47,7 +71,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} \
+          PR_BODY=$(gh pr view ${{ steps.pr-meta.outputs.number }} \
             --repo ${{ github.repository }} \
             --json body --jq '.body')
 
@@ -65,7 +89,7 @@ jobs:
           fi
 
           # Check if PR is from dependabot
-          if [[ "${{ github.event.pull_request.user.login }}" == "dependabot[bot]" ]]; then
+          if [[ "${{ steps.pr-meta.outputs.author }}" == "dependabot[bot]" ]]; then
             echo "✅ Dependabot PR - no issue reference required"
             exit 0
           fi
