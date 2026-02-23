@@ -1,3 +1,9 @@
+## [1.5.0](https://github.com/olaoluthomas/timezone-app/compare/v1.4.2...v1.5.0) (2026-02-23)
+
+### Features
+
+* add CI/CD and infrastructure label rules to create-pr script ([#131](https://github.com/olaoluthomas/timezone-app/issues/131)) ([f2eec03](https://github.com/olaoluthomas/timezone-app/commit/f2eec0327e33c7ac22e968b1f82212d44b4115c3)), closes [#130](https://github.com/olaoluthomas/timezone-app/issues/130)
+
 ## [1.4.2](https://github.com/olaoluthomas/timezone-app/compare/v1.4.1...v1.4.2) (2026-02-23)
 
 ### Bug Fixes
