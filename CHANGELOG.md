@@ -1,3 +1,9 @@
+## [1.6.0](https://github.com/olaoluthomas/timezone-app/compare/v1.5.1...v1.6.0) (2026-02-23)
+
+### Features
+
+* **geolocation:** wire GEOLOCATION_API_KEY through config and service ([#145](https://github.com/olaoluthomas/timezone-app/issues/145)) ([fcf1c25](https://github.com/olaoluthomas/timezone-app/commit/fcf1c256f0dc4f2ab03612e18604daa6d83a2dde)), closes [#133](https://github.com/olaoluthomas/timezone-app/issues/133)
+
 ## [1.5.1](https://github.com/olaoluthomas/timezone-app/compare/v1.5.0...v1.5.1) (2026-02-23)
 
 ### Bug Fixes

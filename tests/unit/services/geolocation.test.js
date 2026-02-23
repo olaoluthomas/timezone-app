@@ -492,4 +492,44 @@ describe('GeolocationService', () => {
       expect(result).toHaveProperty('fallback');
     });
   });
+
+  describe('API key support', () => {
+    beforeEach(() => {
+      clearCache();
+      nock.cleanAll();
+    });
+
+    test('should call unauthenticated URL when no API key is set', async () => {
+      jest.resetModules();
+      const {
+        getTimezoneByIP: freshGet,
+        clearCache: freshClear,
+      } = require('../../../src/services/geolocation');
+      freshClear();
+      // config.geolocationApiKey is null by default
+      const scope = nock('https://ipapi.co').get('/8.8.8.8/json/').reply(200, mockApiResponse);
+      await freshGet('8.8.8.8');
+      expect(scope.isDone()).toBe(true);
+    });
+
+    test('should append ?key= to URL when GEOLOCATION_API_KEY is set', async () => {
+      jest.resetModules();
+      const freshConfig = require('../../../src/config');
+      const {
+        getTimezoneByIP: freshGet,
+        clearCache: freshClear,
+      } = require('../../../src/services/geolocation');
+      freshClear();
+      freshConfig.geolocationApiKey = 'test-key-abc';
+      try {
+        const scope = nock('https://ipapi.co')
+          .get('/8.8.8.8/json/?key=test-key-abc')
+          .reply(200, mockApiResponse);
+        await freshGet('8.8.8.8');
+        expect(scope.isDone()).toBe(true);
+      } finally {
+        freshConfig.geolocationApiKey = null;
+      }
+    });
+  });
 });
