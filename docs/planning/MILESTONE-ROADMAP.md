@@ -2,7 +2,7 @@
 
 **Purpose:** High-level visualization of the timezone-app project roadmap across development phases.
 
-**Last Updated:** 2026-02-08
+**Last Updated:** 2026-02-23
 
 ---
 
@@ -85,6 +85,10 @@ The timezone-app project is organized into two distinct phases:
 - [#56](https://github.com/olaoluthomas/timezone-app/issues/56) - Address 6 high-severity dev dependency vulnerabilities (1h)
 - [#57](https://github.com/olaoluthomas/timezone-app/issues/57) - Address 2 medium-severity dev dependency vulnerabilities (30min)
 - ~~[#58](https://github.com/olaoluthomas/timezone-app/issues/58)~~ - Dependabot already configured (closed as duplicate)
+- [#32](https://github.com/olaoluthomas/timezone-app/issues/32) - Upgrade nock from v13 to v14
+- [#111](https://github.com/olaoluthomas/timezone-app/issues/111) - Resolve Jest dependency vulnerabilities (minimatch via glob)
+- [#133](https://github.com/olaoluthomas/timezone-app/issues/133) - Support GEOLOCATION_API_KEY for dev and production deployments
+- [#135](https://github.com/olaoluthomas/timezone-app/issues/135) - Differentiate frontend error messages by HTTP status
 
 ### Deliverables
 1. **New Utility Classes:**
@@ -207,6 +211,43 @@ The timezone-app project is organized into two distinct phases:
 
 ---
 
+## Milestone 15: Weather Integration
+
+**Duration:** TBD
+**Impact:** ⭐⭐⭐⭐ High (user-facing feature, leverages existing geolocation data)
+
+### Focus Areas
+- Integrate current weather data using existing geolocation coordinates
+- Use Open-Meteo API (free, no API key required)
+- Add weather card to frontend alongside existing time/location info
+- Graceful degradation — weather failure should not break the app
+
+### Issues Included
+- [#127](https://github.com/olaoluthomas/timezone-app/issues/127) - Integrate current weather data using geolocation coordinates
+
+### Deliverables
+1. **Weather Service:**
+   - `src/services/weather.js` — Open-Meteo API client with WMO code mapping
+   - Weather data cached with shorter TTL (15-30 min)
+2. **API Response:**
+   - `weather` object added to `GET /api/timezone` response
+   - `null` on weather fetch failure (graceful degradation)
+3. **Frontend:**
+   - Weather card in UI (temperature, condition, wind, humidity)
+   - Handle missing weather data gracefully
+4. **Tests:**
+   - Unit tests for weather service (mocked API)
+   - Integration test for weather field in API response
+
+### Success Metrics
+- ✅ Weather data displayed alongside existing location/time info
+- ✅ Weather fetch failure does not break the app
+- ✅ Weather cached with appropriate TTL
+- ✅ All existing tests still pass
+- ✅ New unit and integration tests added
+
+---
+
 ## Roadmap Dependencies
 
 ### Sequential Dependencies
@@ -234,13 +275,18 @@ M10 (Code Quality) → M11 (MVC Architecture) → M12 (K8s)
 ### Issues Remaining as Standalone
 - **#37** - Remove Promise.resolve() wrapper (5min, PR #51 open) - Too small for milestone
 - **#52** - Prevent direct commits to main (PR #53 open) - Workflow improvement, not feature
-- **#32** - Upgrade nock v13→v14 (PR #13 open) - Dependency upgrade, single task
 
 ### Rationale
 - **Too Small:** #37 takes 5 minutes, not worth milestone overhead
-- **Already In Progress:** #37, #52, #32 all have open PRs
+- **Already In Progress:** #37, #52 have open PRs
 - **Process/Workflow:** #52 is not a feature milestone
-- **Single Task:** #32 is a single dependency upgrade with no thematic grouping
+
+### Previously Standalone, Now Assigned (2026-02-23)
+- **#32** - Upgrade nock v13→v14 → moved to M10 (test infrastructure)
+- **#111** - Jest dependency vulnerabilities → moved to M10 (dependency/security)
+- **#133** - GEOLOCATION_API_KEY support → moved to M10 (developer experience)
+- **#135** - Frontend error differentiation → moved to M10 (error handling UX)
+- **#127** - Weather data integration → moved to M15 (new milestone)
 
 ---
 
@@ -271,17 +317,23 @@ M10 (Code Quality) → M11 (MVC Architecture) → M12 (K8s)
 ████████████████████████████████████████ 100% (9/9 milestones)
 ```
 
-### Phase 2 Progress
+### Phase 2 Progress (M10-M12)
+```
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% (0/3 milestones)
+```
+
+### Feature Enhancement Progress (M13-M15)
 ```
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% (0/3 milestones)
 ```
 
 ### Overall Project Progress
 ```
-Phase 1: ████████████████████████████████████████ 100%
-Phase 2: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
-         ────────────────────────────────────────
-Overall: ███████████████████░░░░░░░░░░░░░░░░░░░░░  75%
+Phase 1:    ████████████████████████████████████████ 100% (9/9)
+Phase 2:    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% (0/3)
+Features:   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% (0/3)
+            ────────────────────────────────────────
+Overall:    ██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░  60% (9/15)
 ```
 
 **Current Status:** Production-ready, Phase 2 improvements planned

@@ -2,7 +2,7 @@
 
 **Purpose:** Track completion status and key deliverables for each milestone. Reference this file along with `CLAUDE.md` when resuming sessions.
 
-**Last Updated:** 2026-02-09
+**Last Updated:** 2026-02-23
 
 ---
 
@@ -11,15 +11,15 @@
 **Project:** Timezone Web App
 **Core Milestones:** 9/9 Complete ✅
 **Post-Production Milestones:** 3 Planned (10-12) 📋
-**Feature Enhancement Milestones:** 2 Planned (13-14) 🎨
+**Feature Enhancement Milestones:** 3 Planned (13-15) 🎨
 **Current Phase:** Phase 2 - Code Quality & Infrastructure + Feature Enhancements
 **Next Milestone:** Milestone 10 - Code Quality & Developer Experience
-**Last Updated:** 2026-02-09
+**Last Updated:** 2026-02-23
 
 **Test Status:** ✅ 213/213 tests passing
 **Coverage:** ✅ 96.68%
 **Linting:** ✅ 0 errors, 0 warnings
-**Open Issues:** 20 total (17 organized into milestones: 8 in Phase 2, 9 in Feature Enhancements)
+**Open Issues:** 18 total (all organized into milestones: 8 in Phase 2, 10 in Feature Enhancements)
 **Refactoring:** 4 opportunities completed (Winston Logger, Constants, Compression, Graceful Shutdown)
 
 ---
@@ -476,6 +476,10 @@ The following milestones focus on code quality, architecture, and deployment inf
 - [#56](https://github.com/olaoluthomas/timezone-app/issues/56) - Address 6 high-severity dev dependency vulnerabilities (1h)
 - [#57](https://github.com/olaoluthomas/timezone-app/issues/57) - Address 2 medium-severity dev dependency vulnerabilities (30min)
 - ~~[#58](https://github.com/olaoluthomas/timezone-app/issues/58)~~ - Dependabot already configured (closed as duplicate)
+- [#32](https://github.com/olaoluthomas/timezone-app/issues/32) - Upgrade nock from v13 to v14
+- [#111](https://github.com/olaoluthomas/timezone-app/issues/111) - Resolve Jest dependency vulnerabilities (minimatch via glob)
+- [#133](https://github.com/olaoluthomas/timezone-app/issues/133) - Support GEOLOCATION_API_KEY for dev and production deployments
+- [#135](https://github.com/olaoluthomas/timezone-app/issues/135) - Differentiate frontend error messages by HTTP status
 
 **Planned Deliverables:**
 - [ ] `src/utils/ip-validator.js` + 15 tests (IP validation utility class)
@@ -579,7 +583,7 @@ The following milestones focus on user-facing features and visual enhancements t
 **Estimated Duration:** TBD
 **Theme:** Interactive 3D globe visualization for location display
 
-**GitHub Milestone:** [Globe view integration](https://github.com/olaoluthomas/timezone-app/milestone/1)
+**GitHub Milestone:** [Milestone 13: Globe View Integration](https://github.com/olaoluthomas/timezone-app/milestone/1)
 
 **Issues:**
 - [#71](https://github.com/olaoluthomas/timezone-app/issues/71) - Integrate globe view of location `enhancement`
@@ -626,7 +630,7 @@ The following milestones focus on user-facing features and visual enhancements t
 **Estimated Duration:** TBD
 **Theme:** Analytics infrastructure for user interaction tracking and performance monitoring
 
-**GitHub Milestone:** [App Analytics Integration](https://github.com/olaoluthomas/timezone-app/milestone/2)
+**GitHub Milestone:** [Milestone 14: App Analytics Integration](https://github.com/olaoluthomas/timezone-app/milestone/2)
 
 **Issues:**
 - [#76](https://github.com/olaoluthomas/timezone-app/issues/76) - Integrate App Metrics & Dashboard `infrastructure`
@@ -662,6 +666,41 @@ The following milestones focus on user-facing features and visual enhancements t
 - ✅ Documentation complete
 
 **Impact:** ⭐⭐⭐⭐ High (product insights, user behavior understanding, performance monitoring)
+
+---
+
+### Milestone 15: Weather Integration
+**Status:** 📋 PLANNED
+**Created:** 2026-02-23
+**Estimated Duration:** TBD
+**Theme:** Current weather data using existing geolocation coordinates
+
+**GitHub Milestone:** [Milestone 15: Weather Integration](https://github.com/olaoluthomas/timezone-app/milestone/6)
+
+**Issues:**
+- [#127](https://github.com/olaoluthomas/timezone-app/issues/127) - Integrate current weather data using geolocation coordinates `enhancement`
+  - Use Open-Meteo API (free, no key required)
+  - Weather card in frontend alongside location/time info
+  - Graceful degradation (weather failure doesn't break app)
+  - Shorter cache TTL (15-30 min vs 24h for geolocation)
+
+**Planned Deliverables:**
+- [ ] `src/services/weather.js` — Open-Meteo API client with WMO code mapping
+- [ ] Weather data cached with 15-30 min TTL
+- [ ] `weather` object added to `GET /api/timezone` response (`null` on failure)
+- [ ] Weather card in frontend UI
+- [ ] Unit tests for weather service (mocked API responses)
+- [ ] Integration test for weather field in API response
+- [ ] Updated API documentation
+
+**Success Criteria:**
+- ✅ Weather displayed alongside existing location/time info
+- ✅ Weather fetch failure does not break the app (graceful degradation)
+- ✅ Weather data cached appropriately
+- ✅ All existing tests still pass
+- ✅ New unit and integration tests added
+
+**Impact:** ⭐⭐⭐⭐ High (user experience, leverages existing geolocation data)
 
 ---
 
@@ -777,16 +816,17 @@ After each milestone, verify:
 
 ## Next Steps
 
-### Current Status (2026-02-09)
+### Current Status (2026-02-23)
 1. ✅ All 9 core milestones complete (Milestones 1-9)
-2. ✅ Production-ready with 213 tests passing (96.68% coverage)
+2. ✅ Production-ready with 292 tests passing (98%+ coverage)
 3. ✅ GitHub Actions CI/CD active (7 jobs on every push/PR)
 4. ✅ Multi-version testing (Node 18.x & 20.x)
 5. ✅ Graceful shutdown implemented (Milestone 9 complete)
 6. ✅ Winston Logger, Constants, Compression implemented
-7. 📋 Post-production milestones identified (10-12)
-8. 📋 Feature enhancement milestones identified (13-14)
-9. 📋 20 open issues organized into milestones (8 Phase 2, 9 Feature Enhancements, 3 with PRs)
+7. ✅ Upstream rate-limit retry + 503 handling (PR #134)
+8. 📋 Post-production milestones identified (10-12)
+9. 📋 Feature enhancement milestones identified (13-15)
+10. 📋 All 18 open issues organized into milestones (7 in Phase 2, 10 in Feature Enhancements, 1 in K8s)
 
 ### Post-Production Roadmap (Phase 2 - Code Quality & Infrastructure)
 
@@ -807,7 +847,7 @@ After each milestone, verify:
 
 **Total Phase 2 Effort:** ~18-19 hours
 
-### Feature Enhancement Roadmap (Phase 3 - User Experience & Analytics)
+### Feature Enhancement Roadmap (Phase 3 - User Experience, Analytics & Weather)
 
 **Milestone 13: Globe View Integration** (TBD)
 - Focus: Interactive 3D globe visualization
@@ -819,6 +859,11 @@ After each milestone, verify:
 - Issues: #76, #77, #78, #79 (4 issues)
 - Impact: ⭐⭐⭐⭐ High (insights, monitoring, data-driven decisions)
 
+**Milestone 15: Weather Integration** (TBD)
+- Focus: Current weather data via Open-Meteo API
+- Issues: #127 (1 issue)
+- Impact: ⭐⭐⭐⭐ High (UX, leverages existing geolocation)
+
 **Total Phase 3 Effort:** TBD (requires estimation after Phase 2)
 
 ### Recent Improvements
@@ -826,7 +871,7 @@ After each milestone, verify:
 - **Constants Extraction**: Centralized config for timeouts, rate limits, cache
 - **Compression**: Gzip for responses >1KB
 - **Graceful Shutdown**: Zero-downtime deployments (Milestone 9)
-- **Milestone Organization**: 20 open issues grouped into 5 new milestones (2026-02-09)
+- **Milestone Organization**: 18 open issues grouped into 6 milestones (2026-02-23, corrected from 2026-02-09)
 - **Documentation Reorganization**: Docs restructured into logical subdirectories (2026-02-09)
 
 **Note:** With automated workflow, Winston logger, and CI/CD in place, all work benefits from:
