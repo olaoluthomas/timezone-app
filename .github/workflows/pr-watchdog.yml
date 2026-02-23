@@ -1,42 +1,55 @@
-name: PR Validation Watchdog
+# PR CI Watchdog (manual recovery tool)
+# Use this to check if CI ran for a specific PR and re-trigger if missing.
+# Primary CI triggers automatically via pull_request in ci.yml.
+
+name: PR CI Watchdog
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize, labeled, unlabeled]
-
-concurrency:
-  group: pr-watchdog-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to check for CI runs'
+        required: true
 
 jobs:
   watchdog:
-    name: Watch for Missing PR Validation
+    name: Check for Missing CI Run
     runs-on: ubuntu-latest
     permissions:
       actions: write
       pull-requests: read
     steps:
-      - name: Wait for PR Validation to trigger naturally
-        run: sleep 120
+      - name: Get PR head SHA
+        id: pr-info
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_DATA=$(gh pr view ${{ inputs.pr_number }} \
+            --repo ${{ github.repository }} \
+            --json headRefName,headRefOid)
+          HEAD_SHA=$(echo "$PR_DATA" | jq -r '.headRefOid')
+          HEAD_REF=$(echo "$PR_DATA" | jq -r '.headRefName')
+          echo "sha=$HEAD_SHA" >> $GITHUB_OUTPUT
+          echo "ref=$HEAD_REF" >> $GITHUB_OUTPUT
+          echo "PR #${{ inputs.pr_number }} head SHA: $HEAD_SHA (branch: $HEAD_REF)"
 
-      - name: Check if PR Validation ran
+      - name: Check if CI ran for this PR
         id: check
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          SHA="${{ github.event.pull_request.head.sha }}"
+          SHA="${{ steps.pr-info.outputs.sha }}"
           RUNS=$(gh api "repos/${{ github.repository }}/actions/runs?head_sha=$SHA&per_page=10" \
-            --jq '[.workflow_runs[] | select(.name == "PR Validation")] | length')
+            --jq '[.workflow_runs[] | select(.name == "CI")] | length')
           echo "runs=$RUNS" >> $GITHUB_OUTPUT
-          echo "Found $RUNS PR Validation run(s) for $SHA"
+          echo "Found $RUNS CI run(s) for SHA $SHA"
 
-      - name: Trigger PR Validation (watchdog re-fire)
+      - name: Trigger CI (watchdog re-fire)
         if: steps.check.outputs.runs == '0'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          echo "No PR Validation run detected — triggering via watchdog"
-          gh workflow run pr-validation.yml \
+          echo "No CI run detected for PR #${{ inputs.pr_number }} — triggering via watchdog"
+          gh workflow run ci.yml \
             --repo ${{ github.repository }} \
-            --ref ${{ github.event.pull_request.head.ref }} \
-            --field pr_number=${{ github.event.pull_request.number }}
+            --ref ${{ steps.pr-info.outputs.ref }}
