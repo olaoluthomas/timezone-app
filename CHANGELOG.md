@@ -1,3 +1,9 @@
+## [1.5.1](https://github.com/olaoluthomas/timezone-app/compare/v1.5.0...v1.5.1) (2026-02-23)
+
+### Bug Fixes
+
+* handle ipapi.co 429 rate limiting with retry backoff ([#134](https://github.com/olaoluthomas/timezone-app/issues/134)) ([970f1eb](https://github.com/olaoluthomas/timezone-app/commit/970f1ebfb66e61865dc0178532ae0bffd665ed99)), closes [#132](https://github.com/olaoluthomas/timezone-app/issues/132)
+
 ## [1.5.0](https://github.com/olaoluthomas/timezone-app/compare/v1.4.2...v1.5.0) (2026-02-23)
 
 ### Features
