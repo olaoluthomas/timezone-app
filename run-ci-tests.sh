@@ -49,22 +49,15 @@ run_step "🔒 Running security audit" "npm audit --audit-level=moderate --omit=
 # Step 5: Run unit tests
 run_step "🧪 Running unit tests" "npm run test:unit -- --coverage --silent"
 
-# Step 6: Run integration tests (if they exist)
-if npm run test:integration --silent 2>/dev/null; then
-  run_step "🔗 Running integration tests" "npm run test:integration --silent"
-else
-  echo -e "${YELLOW}ℹ  Integration tests not yet implemented, skipping...${NC}\n"
-fi
+# Step 6: Run integration tests
+run_step "🔗 Running integration tests" "npm run test:integration --silent"
 
-# Step 7: Run smoke tests (if they exist)
-if npm run test:smoke --silent 2>/dev/null; then
-  run_step "💨 Running smoke tests" "npm run test:smoke --silent"
-else
-  echo -e "${YELLOW}ℹ  Smoke tests not yet implemented, skipping...${NC}\n"
-fi
+# Step 7: Run smoke tests
+run_step "💨 Running smoke tests" "npm run test:smoke --silent"
 
-# Step 8: Generate full coverage report
-run_step "📊 Generating full coverage report" "npm test -- --silent"
+# Step 8: Generate full coverage report (exclude smoke tests to avoid duplicate API calls)
+run_step "📊 Generating full coverage report" \
+  "npm test -- --silent --testPathIgnorePatterns=tests/smoke"
 
 # Final summary
 echo -e "${BLUE}============================================================${NC}"

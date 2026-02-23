@@ -1,6 +1,8 @@
 const request = require('supertest');
 const app = require('../../src/app');
 
+jest.setTimeout(60000);
+
 /**
  * Smoke Tests - Quick End-to-End Validation
  *
@@ -17,6 +19,12 @@ const app = require('../../src/app');
  * Run: npm run test:smoke
  */
 describe('API Smoke Tests', () => {
+  let timezoneResponse;
+
+  beforeAll(async () => {
+    timezoneResponse = await request(app).get('/api/timezone');
+  });
+
   describe('Health Endpoints', () => {
     it('GET /health should return 200 with expected structure', async () => {
       const response = await request(app).get('/health');
@@ -52,10 +60,10 @@ describe('API Smoke Tests', () => {
 
   describe('Timezone API Endpoint', () => {
     it('GET /api/timezone should return response with security headers', async () => {
-      const response = await request(app).get('/api/timezone');
+      const response = timezoneResponse;
 
-      // Accept both success (200) and error (500) - external API may fail
-      expect([200, 500]).toContain(response.status);
+      // Accept success (200), generic error (500), or upstream unavailable (503)
+      expect([200, 500, 503]).toContain(response.status);
 
       if (response.status === 200) {
         expect(response.body).toHaveProperty('timezone');
@@ -79,7 +87,7 @@ describe('API Smoke Tests', () => {
     });
 
     it('GET /api/timezone should have security headers', async () => {
-      const response = await request(app).get('/api/timezone');
+      const response = timezoneResponse;
 
       // Required security headers
       expect(response.headers['x-content-type-options']).toBe('nosniff');
@@ -119,11 +127,10 @@ describe('API Smoke Tests', () => {
 
   describe('Rate Limiting', () => {
     it('should respect rate limits on API endpoint', async () => {
-      // Make a request to get initial rate limit headers
-      const response = await request(app).get('/api/timezone');
+      const response = timezoneResponse;
 
-      // Accept both success and error - focus on rate limit headers
-      expect([200, 500]).toContain(response.status);
+      // Accept success, generic error, or upstream unavailable
+      expect([200, 500, 503]).toContain(response.status);
 
       // Verify rate limit headers are present and valid
       const limit = parseInt(response.headers['ratelimit-limit']);
@@ -135,7 +142,7 @@ describe('API Smoke Tests', () => {
     });
 
     it('should have higher rate limits for health checks', async () => {
-      const apiResponse = await request(app).get('/api/timezone');
+      const apiResponse = timezoneResponse;
       const healthResponse = await request(app).get('/health');
 
       const apiLimit = parseInt(apiResponse.headers['ratelimit-limit']);
@@ -148,11 +155,10 @@ describe('API Smoke Tests', () => {
 
   describe('CORS', () => {
     it('should allow requests with no origin', async () => {
-      // Requests without Origin header (like curl, mobile apps)
-      const response = await request(app).get('/api/timezone');
+      const response = timezoneResponse;
 
       // External API may fail, but CORS should allow the request
-      expect([200, 500]).toContain(response.status);
+      expect([200, 500, 503]).toContain(response.status);
 
       // Verify CORS didn't block the request
       expect(response.headers['access-control-allow-origin']).toBeUndefined();
@@ -164,7 +170,7 @@ describe('API Smoke Tests', () => {
         .set('Origin', 'http://localhost:3000');
 
       // In test environment, should allow all origins
-      expect([200, 500]).toContain(response.status);
+      expect([200, 500, 503]).toContain(response.status);
 
       // Verify CORS allowed the origin
       if (response.headers['access-control-allow-origin']) {
@@ -175,7 +181,7 @@ describe('API Smoke Tests', () => {
 
   describe('Security Middleware Stack', () => {
     it('all endpoints should have complete security headers', async () => {
-      const endpoints = ['/health', '/health/ready', '/api/timezone', '/'];
+      const endpoints = ['/health', '/health/ready', '/'];
 
       for (const endpoint of endpoints) {
         const response = await request(app).get(endpoint);
@@ -187,6 +193,11 @@ describe('API Smoke Tests', () => {
         // Verify no CSP header (disabled for frontend)
         expect(response.headers['content-security-policy']).toBeUndefined();
       }
+
+      // Use shared response for /api/timezone
+      expect(timezoneResponse.headers['x-content-type-options']).toBe('nosniff');
+      expect(timezoneResponse.headers['x-frame-options']).toBeDefined();
+      expect(timezoneResponse.headers['content-security-policy']).toBeUndefined();
     });
   });
 });

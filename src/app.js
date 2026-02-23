@@ -100,6 +100,17 @@ app.get('/health/ready', healthLimiter, async (req, res) => {
 
 // 9. API routes with strict rate limiting
 app.get('/api/timezone', apiLimiter, async (req, res) => {
+  // Handle socket timeout: send 503 instead of letting the socket be destroyed.
+  // Without this listener, Node.js auto-destroys the socket after REQUEST_TIMEOUT,
+  // causing clients to receive a "socket hang up" rather than a proper error response.
+  res.on('timeout', () => {
+    if (!res.headersSent) {
+      res.status(503).set('Retry-After', '60').json({
+        error: 'Geolocation service temporarily unavailable',
+      });
+    }
+  });
+
   try {
     // Get client IP - trust proxy setting handles X-Forwarded-For parsing
     // req.ip is automatically parsed by Express when trust proxy is enabled
