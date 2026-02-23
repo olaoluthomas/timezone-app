@@ -1,5 +1,5 @@
 # Stage 1: Builder - Install all dependencies
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
 
 # Copy package files
@@ -12,12 +12,15 @@ RUN npm ci
 COPY . .
 
 # Stage 2: Production - Minimal runtime image
-FROM node:20-alpine AS production
+FROM node:22-alpine AS production
 WORKDIR /app
+
+# Upgrade system npm to fix Trivy-flagged CVEs in bundled deps
+RUN npm install -g npm@latest && npm cache clean --force
 
 # Install production dependencies only
 COPY package*.json ./
-RUN npm ci --production --ignore-scripts && \
+RUN npm ci --omit=dev --ignore-scripts && \
     npm cache clean --force
 
 # Copy application source

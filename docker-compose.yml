@@ -1,7 +1,6 @@
-version: '3.8'
-
 services:
   timezone-app:
+    image: ghcr.io/olaoluthomas/timezone-app:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -10,13 +9,21 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - PORT=3000
-      - LOG_LEVEL=debug
-    volumes:
-      # Mount source code for hot-reload (development only)
-      - ./src:/app/src:ro
+      - LOG_LEVEL=info
     restart: unless-stopped
+    stop_grace_period: 30s
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+      - /app/logs:rw,noexec,nosuid,size=128m
+    mem_limit: 256m
+    cpus: 0.5
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"]
       interval: 30s
@@ -25,29 +32,6 @@ services:
       start_period: 5s
     networks:
       - timezone-network
-
-  # Optional: Add a development version with nodemon for hot-reload
-  timezone-app-dev:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: builder  # Use builder stage which has all dev dependencies
-    container_name: timezone-app-dev
-    ports:
-      - "3001:3000"
-    environment:
-      - NODE_ENV=development
-      - PORT=3000
-      - LOG_LEVEL=debug
-    volumes:
-      - ./src:/app/src:ro
-      - ./tests:/app/tests:ro
-    command: npx nodemon src/index.js
-    restart: unless-stopped
-    networks:
-      - timezone-network
-    profiles:
-      - dev  # Only start with --profile dev
 
 networks:
   timezone-network:

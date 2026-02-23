@@ -130,7 +130,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '22.x'
 
       - name: Cache npm dependencies
         uses: actions/cache@v3
@@ -162,7 +162,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '22.x'
 
       - name: Cache npm dependencies
         uses: actions/cache@v3
@@ -179,13 +179,13 @@ jobs:
         run: npm audit --audit-level=moderate --omit=dev
         continue-on-error: false
 
-  # Job 3: Unit Tests (Node 18.x and 20.x)
+  # Job 3: Unit Tests (Node 20.x and 22.x)
   test-unit:
     name: Unit Tests (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x, 22.x]
       fail-fast: false
     needs: [validate-pr]
     if: always() && (needs.validate-pr.result == 'success' || needs.validate-pr.result == 'skipped')
@@ -212,13 +212,13 @@ jobs:
       - name: Run unit tests with coverage
         run: npm run test:unit -- --coverage
 
-  # Job 4: Integration Tests (Node 18.x and 20.x)
+  # Job 4: Integration Tests (Node 20.x and 22.x)
   test-integration:
     name: Integration Tests (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x, 22.x]
       fail-fast: false
     needs: [validate-pr]
     if: always() && (needs.validate-pr.result == 'success' || needs.validate-pr.result == 'skipped')
@@ -245,13 +245,13 @@ jobs:
       - name: Run integration tests
         run: npm run test:integration
 
-  # Job 5: Smoke Tests (Node 18.x and 20.x)
+  # Job 5: Smoke Tests (Node 20.x and 22.x)
   test-smoke:
     name: Smoke Tests (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x, 22.x]
       fail-fast: false
     needs: [validate-pr]
     if: always() && (needs.validate-pr.result == 'success' || needs.validate-pr.result == 'skipped')
@@ -291,7 +291,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '22.x'
 
       - name: Cache npm dependencies
         uses: actions/cache@v3
@@ -327,7 +327,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '22.x'
 
       - name: Cache npm dependencies
         uses: actions/cache@v3
