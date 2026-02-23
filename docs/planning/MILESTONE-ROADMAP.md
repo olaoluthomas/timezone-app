@@ -2,15 +2,16 @@
 
 **Purpose:** High-level visualization of the timezone-app project roadmap across development phases.
 
-**Last Updated:** 2026-02-08
+**Last Updated:** 2026-02-23
 
 ---
 
 ## Overview
 
-The timezone-app project is organized into two distinct phases:
+The timezone-app project is organized into three phases:
 - **Phase 1 (Complete):** Core features and production readiness
 - **Phase 2 (Planned):** Code quality, architecture, and infrastructure improvements
+- **Phase 3 (Planned):** User-facing feature enhancements
 
 ---
 
@@ -49,7 +50,7 @@ The timezone-app project is organized into two distinct phases:
 
 **Status:** 0/3 milestones complete (0%)
 **Estimated Start:** February 2026
-**Focus:** Improve code maintainability, establish clean architecture, enable K8s deployment
+**Focus:** Improve code maintainability, establish clean architecture, complete deployment infrastructure
 
 ### Milestones Overview
 
@@ -57,7 +58,7 @@ The timezone-app project is organized into two distinct phases:
 |-----------|-------|----------|--------|--------|
 | M10 | Code Quality, DX & Security | 8h | ⭐⭐⭐⭐⭐ | 📋 Planned |
 | M11 | MVC Architecture & Configuration | 7h | ⭐⭐⭐⭐⭐ | 📋 Planned |
-| M12 | Kubernetes Deployment Infrastructure | 3-4h | ⭐⭐⭐⭐ | 📋 Planned |
+| M12 | Container Deployment Infrastructure | 3-4h | ⭐⭐⭐⭐ | 📋 Planned |
 
 **Total Phase 2 Effort:** 18-19 hours (was 16.5-17.5h)
 **Expected Timeline:** 2-3 weeks
@@ -85,6 +86,10 @@ The timezone-app project is organized into two distinct phases:
 - [#56](https://github.com/olaoluthomas/timezone-app/issues/56) - Address 6 high-severity dev dependency vulnerabilities (1h)
 - [#57](https://github.com/olaoluthomas/timezone-app/issues/57) - Address 2 medium-severity dev dependency vulnerabilities (30min)
 - ~~[#58](https://github.com/olaoluthomas/timezone-app/issues/58)~~ - Dependabot already configured (closed as duplicate)
+- [#32](https://github.com/olaoluthomas/timezone-app/issues/32) - Upgrade nock from v13 to v14
+- [#111](https://github.com/olaoluthomas/timezone-app/issues/111) - Resolve Jest dependency vulnerabilities (minimatch via glob)
+- [#133](https://github.com/olaoluthomas/timezone-app/issues/133) - Support GEOLOCATION_API_KEY for dev and production deployments
+- [#135](https://github.com/olaoluthomas/timezone-app/issues/135) - Differentiate frontend error messages by HTTP status
 
 ### Deliverables
 1. **New Utility Classes:**
@@ -162,48 +167,181 @@ The timezone-app project is organized into two distinct phases:
 
 ---
 
-## Milestone 12: Kubernetes Deployment Infrastructure
+## Milestone 12: Container Deployment Infrastructure
 
-**Duration:** 3-4 hours
+**Duration:** 3-4 hours (K8s manifests)
 **Impact:** ⭐⭐⭐⭐ High (deployment infrastructure, operations)
 
+### Context: Deployment Options Considered
+
+The app already has a documented, operational deployment path using **Podman (rootless)** and **Docker**, covered in the [Container Deployment Guide](https://github.com/olaoluthomas/timezone-app/wiki/Container-Deployment-Guide) wiki. That guide covers:
+- Podman rootless container deployment on a VM
+- systemd service with auto-restart
+- Watchtower for automated image updates
+- Caddy reverse proxy with TLS
+- Firewall configuration
+
+M12 extends this to **Kubernetes**, creating manifest files for baremetal cluster deployment. Both paths are first-class deployment options.
+
 ### Focus Areas
-- Create production-ready Kubernetes manifests
-- Support multi-environment deployments (staging/production)
-- Enable horizontal pod autoscaling
-- Leverage existing health probes and graceful shutdown
+- Create minimal Kubernetes manifests for baremetal cluster deployment
+- Single replica (stateless app — no database, no sidecars, no PVCs)
+- Leverage existing health probes (`/health`, `/health/ready`) and graceful shutdown
+- Reference wiki for Podman/Docker deployment alongside new K8s docs
 
 ### Issues Included
 - [#30](https://github.com/olaoluthomas/timezone-app/issues/30) - Create Kubernetes manifest files (3-4h)
 
 ### Deliverables
-1. **Base Manifests (Kustomize):**
-   - `k8s/base/deployment.yaml` - Base deployment
-   - `k8s/base/service.yaml` - ClusterIP service
-   - `k8s/base/configmap.yaml` - Environment config
-   - `k8s/base/hpa.yaml` - HorizontalPodAutoscaler (2-10 pods, 70% CPU)
+1. **Kubernetes Manifests (flat `k8s/` directory):**
+   - `k8s/deployment.yaml` - Single replica deployment with security context
+   - `k8s/service.yaml` - ClusterIP service (port 80 → 3000)
+   - `k8s/ingress.yaml` - Optional ingress with TLS placeholder
 
-2. **Environment Overlays:**
-   - `k8s/overlays/staging/*` - Staging patches (2 replicas, lower resources)
-   - `k8s/overlays/production/*` - Production patches (3 replicas, HA setup)
+2. **Documentation:**
+   - Updated `README.md` with K8s deployment commands
+   - Cross-reference to [Container Deployment Guide](https://github.com/olaoluthomas/timezone-app/wiki/Container-Deployment-Guide) wiki for Podman/Docker path
 
-3. **Documentation:**
-   - `k8s/README.md` - Deployment guide with kubectl commands
-   - Updated `docs/ARCHITECTURE.md` - K8s deployment architecture
+### Deployment Options Summary
+
+| Option | Status | Documentation |
+|--------|--------|---------------|
+| Podman (rootless) | ✅ Operational | [Container Deployment Guide wiki](https://github.com/olaoluthomas/timezone-app/wiki/Container-Deployment-Guide) |
+| Docker | ✅ Operational | [Container Deployment Guide wiki](https://github.com/olaoluthomas/timezone-app/wiki/Container-Deployment-Guide) |
+| Kubernetes (baremetal) | 📋 M12 deliverable | `k8s/` manifests (to be created) |
 
 ### Success Metrics
-- ✅ Manifests validated with `kubectl apply --dry-run`
-- ✅ Kustomize builds work (`kustomize build`)
+- ✅ Manifests validated with `kubectl apply --dry-run=server`
 - ✅ Health probes configured (liveness/readiness)
-- ✅ HPA auto-scaling verified (2-10 pods)
-- ✅ Local testing successful (minikube/kind)
-- ✅ Documentation includes deployment examples
+- ✅ Security context set (`runAsNonRoot`, `readOnlyRootFilesystem`, dropped capabilities)
+- ✅ Rolling update strategy configured
+- ✅ README cross-references wiki for Podman/Docker path
 
 ### Why This Matters
-- **Production Deployment:** Ready for K8s clusters (AWS EKS, GKE, AKS)
-- **High Availability:** Multi-replica with auto-scaling
-- **Environment Parity:** Consistent staging/production configs
-- **Operations:** Leverages health probes and graceful shutdown from M9
+- **Deployment Flexibility:** Operators can choose Podman/Docker (VM) or K8s (cluster) depending on their infrastructure
+- **Operations:** Leverages health probes and graceful shutdown already in place from M9
+- **Baremetal Ready:** Targets existing clusters — no cloud-provider dependency
+
+---
+
+## Phase 3: Feature Enhancements 📋 PLANNED
+
+**Status:** 0/3 milestones complete (0%)
+**Estimated Start:** After Phase 2
+**Focus:** User-facing features leveraging the improved Phase 2 codebase
+
+### Milestones Overview
+
+| Milestone | Theme | Duration | Impact | Status |
+|-----------|-------|----------|--------|--------|
+| M13 | Globe View Integration | TBD | ⭐⭐⭐⭐⭐ | 📋 Planned |
+| M14 | App Analytics Integration | TBD | ⭐⭐⭐⭐ | 📋 Planned |
+| M15 | Weather Integration | TBD | ⭐⭐⭐⭐ | 📋 Planned |
+
+---
+
+## Milestone 13: Globe View Integration
+
+**Duration:** TBD
+**Impact:** ⭐⭐⭐⭐⭐ High (user experience, visual appeal, feature differentiation)
+
+### Focus Areas
+- Interactive 3D globe visualization with user location pin
+- Tooltip on hover showing IP address and coordinates
+- Multiple view modes (3D, map, terrain)
+
+### Issues Included
+- [#71](https://github.com/olaoluthomas/timezone-app/issues/71) - Integrate globe view of location
+- [#72](https://github.com/olaoluthomas/timezone-app/issues/72) - Create globe in UI
+- [#73](https://github.com/olaoluthomas/timezone-app/issues/73) - Make globe 3D
+- [#74](https://github.com/olaoluthomas/timezone-app/issues/74) - Integrate map view and terrain view
+- [#75](https://github.com/olaoluthomas/timezone-app/issues/75) - Integrate tooltip that engages on user click
+
+### Deliverables
+1. **Globe Component:**
+   - 3D globe (Three.js or similar) with location pin
+   - Interactive tooltip (IP, lat/long on hover)
+2. **View Modes:**
+   - 3D globe, map view, terrain view
+3. **Frontend Integration:**
+   - Responsive globe rendering
+   - Tests for globe components
+
+### Success Metrics
+- ✅ 3D globe renders across browsers with location pin
+- ✅ Tooltip displays IP and coordinates correctly
+- ✅ Multiple view modes functional
+- ✅ Performance maintained (60fps target)
+- ✅ All tests passing
+
+---
+
+## Milestone 14: App Analytics Integration
+
+**Duration:** TBD
+**Impact:** ⭐⭐⭐⭐ High (product insights, performance monitoring)
+
+### Focus Areas
+- Database infrastructure for user interaction data and performance metrics
+- Analytics dashboard
+- Privacy-compliant tracking (GDPR/CCPA)
+
+### Issues Included
+- [#76](https://github.com/olaoluthomas/timezone-app/issues/76) - Integrate App Metrics & Dashboard
+- [#77](https://github.com/olaoluthomas/timezone-app/issues/77) - App DB deployment
+- [#78](https://github.com/olaoluthomas/timezone-app/issues/78) - User interaction collection
+- [#79](https://github.com/olaoluthomas/timezone-app/issues/79) - Dashboard deployment
+
+### Deliverables
+1. **Data Infrastructure:**
+   - Analytics database (PostgreSQL/MongoDB)
+   - User interaction tracking service
+   - Performance metrics collection
+2. **Dashboard:**
+   - Analytics API endpoints
+   - Dashboard UI with real-time data
+
+### Success Metrics
+- ✅ Database deployed and collecting data
+- ✅ Dashboard displays real-time analytics
+- ✅ Privacy compliance ensured (anonymization, opt-out)
+- ✅ <5ms performance overhead
+
+---
+
+## Milestone 15: Weather Integration
+
+**Duration:** TBD
+**Impact:** ⭐⭐⭐⭐ High (user experience, leverages existing geolocation data)
+
+### Focus Areas
+- Integrate current weather data using existing geolocation coordinates
+- Use Open-Meteo API (free, no API key required)
+- Add weather card to frontend alongside existing time/location info
+- Graceful degradation — weather failure does not break the app
+
+### Issues Included
+- [#127](https://github.com/olaoluthomas/timezone-app/issues/127) - Integrate current weather data using geolocation coordinates
+
+### Deliverables
+1. **Weather Service:**
+   - `src/services/weather.js` — Open-Meteo API client with WMO code mapping
+   - Weather data cached with 15-30 min TTL (shorter than 24h geolocation TTL)
+2. **API Response:**
+   - `weather` object added to `GET /api/timezone` response
+   - `null` on weather fetch failure (graceful degradation)
+3. **Frontend:**
+   - Weather card in UI (temperature, condition, wind, humidity)
+   - Hidden gracefully if `weather` is null
+4. **Tests:**
+   - Unit tests for weather service (mocked API responses)
+   - Integration test for weather field in API response
+
+### Success Metrics
+- ✅ Weather data displayed alongside existing location/time info
+- ✅ Weather fetch failure does not break the app
+- ✅ Weather cached with appropriate TTL
+- ✅ All existing tests still pass
 
 ---
 
@@ -211,21 +349,28 @@ The timezone-app project is organized into two distinct phases:
 
 ### Sequential Dependencies
 ```
-Phase 1 (Complete) → Phase 2
+Phase 1 (Complete) → Phase 2 → Phase 3
 
 Within Phase 2:
-M10 (Code Quality) → M11 (MVC Architecture) → M12 (K8s)
+M10 (Code Quality) → M11 (MVC Architecture) → M12 (Container Deployment)
+
+Phase 3 (can start after Phase 2):
+M13 (Globe View) — independent of M14/M15
+M14 (Analytics) — depends on M11 (MVC, clean service layer)
+M15 (Weather) — depends on M11 (geolocation service refactor complete)
 ```
 
 **Rationale:**
 - **M10 first:** Clean up duplication and improve tests before architectural changes
 - **M11 second:** Establish MVC pattern and config management
-- **M12 last:** Deploy the improved, well-architected codebase to K8s
+- **M12 last in Phase 2:** Deploy the improved codebase (Podman/Docker already operational via wiki)
+- **Phase 3 after Phase 2:** Feature work benefits from clean MVC architecture
 
 ### Why This Order Matters
 1. **M10 reduces technical debt** before making architectural changes
 2. **M11 establishes patterns** that future features will follow
-3. **M12 deploys the best version** of the codebase to K8s
+3. **M12 completes the deployment story** (K8s manifests alongside existing Podman/Docker wiki)
+4. **M13/M14/M15 build on the clean Phase 2 codebase**
 
 ---
 
@@ -234,13 +379,19 @@ M10 (Code Quality) → M11 (MVC Architecture) → M12 (K8s)
 ### Issues Remaining as Standalone
 - **#37** - Remove Promise.resolve() wrapper (5min, PR #51 open) - Too small for milestone
 - **#52** - Prevent direct commits to main (PR #53 open) - Workflow improvement, not feature
-- **#32** - Upgrade nock v13→v14 (PR #13 open) - Dependency upgrade, single task
+- **#141** - Smoke tests excessive ipapi.co calls - Bug fix, will be addressed outside milestones
 
 ### Rationale
 - **Too Small:** #37 takes 5 minutes, not worth milestone overhead
-- **Already In Progress:** #37, #52, #32 all have open PRs
-- **Process/Workflow:** #52 is not a feature milestone
-- **Single Task:** #32 is a single dependency upgrade with no thematic grouping
+- **Already In Progress:** #37, #52 have open PRs
+- **Process/Workflow:** #52 and #141 are infrastructure/tooling fixes, not feature milestones
+
+### Previously Standalone, Now Assigned (2026-02-23)
+- **#32** → M10 (test infrastructure dependency)
+- **#111** → M10 (Jest dependency security)
+- **#133** → M10 (developer experience: API key support)
+- **#135** → M10 (error handling UX)
+- **#127** → M15 (Weather Integration, new milestone)
 
 ---
 
@@ -259,8 +410,12 @@ M10 (Code Quality) → M11 (MVC Architecture) → M12 (K8s)
 - [ ] <100 lines of duplicated code
 - [ ] Clean MVC architecture established
 - [ ] Professional error handling
-- [ ] K8s manifests validated and documented
-- [ ] Multi-environment deployment support
+- [ ] K8s manifests validated and documented (alongside existing Podman/Docker wiki)
+
+### Phase 3 Success (Target)
+- [ ] Interactive 3D globe with location pin
+- [ ] Analytics dashboard operational
+- [ ] Weather data displayed in UI
 
 ---
 
@@ -271,20 +426,26 @@ M10 (Code Quality) → M11 (MVC Architecture) → M12 (K8s)
 ████████████████████████████████████████ 100% (9/9 milestones)
 ```
 
-### Phase 2 Progress
+### Phase 2 Progress (M10–M12)
+```
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% (0/3 milestones)
+```
+
+### Phase 3 Progress (M13–M15)
 ```
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% (0/3 milestones)
 ```
 
 ### Overall Project Progress
 ```
-Phase 1: ████████████████████████████████████████ 100%
-Phase 2: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
-         ────────────────────────────────────────
-Overall: ███████████████████░░░░░░░░░░░░░░░░░░░░░  75%
+Phase 1:  ████████████████████████████████████████ 100% (9/9)
+Phase 2:  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% (0/3)
+Phase 3:  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% (0/3)
+          ────────────────────────────────────────
+Overall:  ██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░  60% (9/15)
 ```
 
-**Current Status:** Production-ready, Phase 2 improvements planned
+**Current Status:** Production-ready, Phase 2 and Phase 3 improvements planned
 
 ---
 
