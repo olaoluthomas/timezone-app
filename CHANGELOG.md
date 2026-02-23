@@ -1,3 +1,9 @@
+## [1.4.1](https://github.com/olaoluthomas/timezone-app/compare/v1.4.0...v1.4.1) (2026-02-23)
+
+### Bug Fixes
+
+* recalculate currentTime on cache hits for accurate time display ([#126](https://github.com/olaoluthomas/timezone-app/issues/126)) ([a4b471e](https://github.com/olaoluthomas/timezone-app/commit/a4b471e433f714b9c9811dfbdcc7137e878ea6b4)), closes [#107](https://github.com/olaoluthomas/timezone-app/issues/107)
+
 ## [1.4.0](https://github.com/olaoluthomas/timezone-app/compare/v1.3.3...v1.4.0) (2026-02-23)
 
 ### Features
