@@ -97,9 +97,19 @@ if echo "$CHANGED_FILES" | grep -q "^docs/\|README\.md\|\.md$\|\.env\.example$";
   fi
 fi
 
-# Dependency updates
-if echo "$CHANGED_FILES" | grep -q "package\.json\|package-lock\.json"; then
+# Dependency updates (package manifests, Dockerfile base image, lock files)
+if echo "$CHANGED_FILES" | grep -q "package\.json\|package-lock\.json\|Dockerfile"; then
   LABELS+=("dependencies")
+fi
+
+# CI/CD changes (GitHub Actions workflows, scripts used by CI)
+if echo "$CHANGED_FILES" | grep -q "^\.github/workflows/\|^\.github/actions/"; then
+  LABELS+=("ci-cd")
+fi
+
+# Infrastructure changes (Docker, Compose, container config)
+if echo "$CHANGED_FILES" | grep -q "Dockerfile\|docker-compose\|\.dockerignore"; then
+  LABELS+=("infrastructure")
 fi
 
 # Middleware changes
