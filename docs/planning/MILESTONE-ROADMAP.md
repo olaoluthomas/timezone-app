@@ -345,6 +345,43 @@ M12 extends this to **Kubernetes**, creating manifest files for baremetal cluste
 
 ---
 
+## Milestone 15: Weather Integration
+
+**Duration:** TBD
+**Impact:** ⭐⭐⭐⭐ High (user-facing feature, leverages existing geolocation data)
+
+### Focus Areas
+- Integrate current weather data using existing geolocation coordinates
+- Use Open-Meteo API (free, no API key required)
+- Add weather card to frontend alongside existing time/location info
+- Graceful degradation — weather failure should not break the app
+
+### Issues Included
+- [#127](https://github.com/olaoluthomas/timezone-app/issues/127) - Integrate current weather data using geolocation coordinates
+
+### Deliverables
+1. **Weather Service:**
+   - `src/services/weather.js` — Open-Meteo API client with WMO code mapping
+   - Weather data cached with shorter TTL (15-30 min)
+2. **API Response:**
+   - `weather` object added to `GET /api/timezone` response
+   - `null` on weather fetch failure (graceful degradation)
+3. **Frontend:**
+   - Weather card in UI (temperature, condition, wind, humidity)
+   - Handle missing weather data gracefully
+4. **Tests:**
+   - Unit tests for weather service (mocked API)
+   - Integration test for weather field in API response
+
+### Success Metrics
+- ✅ Weather data displayed alongside existing location/time info
+- ✅ Weather fetch failure does not break the app
+- ✅ Weather cached with appropriate TTL
+- ✅ All existing tests still pass
+- ✅ New unit and integration tests added
+
+---
+
 ## Roadmap Dependencies
 
 ### Sequential Dependencies

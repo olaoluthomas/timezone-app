@@ -694,12 +694,14 @@ The following milestones focus on user-facing features and visual enhancements t
 - [ ] Weather card in frontend UI (temperature, condition, wind, humidity)
 - [ ] Unit tests for weather service (mocked API responses)
 - [ ] Integration test for weather field in API response
+- [ ] Updated API documentation
 
 **Success Criteria:**
 - ✅ Weather displayed alongside existing location/time info
 - ✅ Weather fetch failure does not break the app (graceful degradation)
 - ✅ Weather data cached appropriately
 - ✅ All existing tests still pass
+- ✅ New unit and integration tests added
 
 **Impact:** ⭐⭐⭐⭐ High (user experience, leverages existing geolocation data)
 
@@ -817,16 +819,17 @@ After each milestone, verify:
 
 ## Next Steps
 
-### Current Status (2026-02-09)
+### Current Status (2026-02-23)
 1. ✅ All 9 core milestones complete (Milestones 1-9)
-2. ✅ Production-ready with 213 tests passing (96.68% coverage)
+2. ✅ Production-ready with 292 tests passing (98%+ coverage)
 3. ✅ GitHub Actions CI/CD active (7 jobs on every push/PR)
 4. ✅ Multi-version testing (Node 18.x & 20.x)
 5. ✅ Graceful shutdown implemented (Milestone 9 complete)
 6. ✅ Winston Logger, Constants, Compression implemented
-7. 📋 Post-production milestones identified (10-12)
-8. 📋 Feature enhancement milestones identified (13-14)
-9. 📋 20 open issues organized into milestones (8 Phase 2, 9 Feature Enhancements, 3 with PRs)
+7. ✅ Upstream rate-limit retry + 503 handling (PR #134)
+8. 📋 Post-production milestones identified (10-12)
+9. 📋 Feature enhancement milestones identified (13-15)
+10. 📋 All 18 open issues organized into milestones (7 in Phase 2, 10 in Feature Enhancements, 1 in K8s)
 
 ### Post-Production Roadmap (Phase 2 - Code Quality & Infrastructure)
 
@@ -847,7 +850,7 @@ After each milestone, verify:
 
 **Total Phase 2 Effort:** ~18-19 hours
 
-### Feature Enhancement Roadmap (Phase 3 - User Experience & Analytics)
+### Feature Enhancement Roadmap (Phase 3 - User Experience, Analytics & Weather)
 
 **Milestone 13: Globe View Integration** (TBD)
 - Focus: Interactive 3D globe visualization
@@ -859,6 +862,11 @@ After each milestone, verify:
 - Issues: #76, #77, #78, #79 (4 issues)
 - Impact: ⭐⭐⭐⭐ High (insights, monitoring, data-driven decisions)
 
+**Milestone 15: Weather Integration** (TBD)
+- Focus: Current weather data via Open-Meteo API
+- Issues: #127 (1 issue)
+- Impact: ⭐⭐⭐⭐ High (UX, leverages existing geolocation)
+
 **Total Phase 3 Effort:** TBD (requires estimation after Phase 2)
 
 ### Recent Improvements
@@ -866,7 +874,7 @@ After each milestone, verify:
 - **Constants Extraction**: Centralized config for timeouts, rate limits, cache
 - **Compression**: Gzip for responses >1KB
 - **Graceful Shutdown**: Zero-downtime deployments (Milestone 9)
-- **Milestone Organization**: 20 open issues grouped into 5 new milestones (2026-02-09)
+- **Milestone Organization**: 18 open issues grouped into 6 milestones (2026-02-23, corrected from 2026-02-09)
 - **Documentation Reorganization**: Docs restructured into logical subdirectories (2026-02-09)
 
 **Note:** With automated workflow, Winston logger, and CI/CD in place, all work benefits from:
