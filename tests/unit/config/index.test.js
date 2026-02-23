@@ -52,6 +52,12 @@ describe('Configuration', () => {
       const config = require('../../../src/config');
       expect(config.logLevel).toBe('debug');
     });
+
+    test('should default geolocationApiKey to null when not set', () => {
+      delete process.env.GEOLOCATION_API_KEY;
+      const config = require('../../../src/config');
+      expect(config.geolocationApiKey).toBeNull();
+    });
   });
 
   describe('environment variable parsing', () => {
@@ -112,6 +118,12 @@ describe('Configuration', () => {
       delete process.env.ALLOWED_ORIGINS;
       const config = require('../../../src/config');
       expect(config.allowedOrigins).toEqual([]);
+    });
+
+    test('should read GEOLOCATION_API_KEY from env', () => {
+      process.env.GEOLOCATION_API_KEY = 'test-api-key-123';
+      const config = require('../../../src/config');
+      expect(config.geolocationApiKey).toBe('test-api-key-123');
     });
   });
 
