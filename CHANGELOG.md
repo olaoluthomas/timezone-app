@@ -1,3 +1,9 @@
+## [1.4.2](https://github.com/olaoluthomas/timezone-app/compare/v1.4.1...v1.4.2) (2026-02-23)
+
+### Bug Fixes
+
+* resolve 9 Trivy CVEs and isolate dev compose service ([#129](https://github.com/olaoluthomas/timezone-app/issues/129)) ([cba7c17](https://github.com/olaoluthomas/timezone-app/commit/cba7c17e5aaa079e7adbb4c4c61e49ff55022f1b)), closes [#128](https://github.com/olaoluthomas/timezone-app/issues/128)
+
 ## [1.4.1](https://github.com/olaoluthomas/timezone-app/compare/v1.4.0...v1.4.1) (2026-02-23)
 
 ### Bug Fixes
