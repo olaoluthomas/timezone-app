@@ -276,6 +276,8 @@ jobs:
         run: npm ci
 
       - name: Run smoke tests
+        env:
+          GEOLOCATION_API_KEY: ${{ secrets.GEOLOCATION_API_KEY }}
         run: npm run test:smoke
 
   # Job 6: Full Coverage Report
@@ -305,6 +307,8 @@ jobs:
         run: npm ci
 
       - name: Generate coverage report
+        env:
+          GEOLOCATION_API_KEY: ${{ secrets.GEOLOCATION_API_KEY }}
         run: npm test
 
       - name: Upload coverage artifact

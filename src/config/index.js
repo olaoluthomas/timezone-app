@@ -37,6 +37,9 @@ class Config {
     this.corsOrigin = process.env.CORS_ORIGIN || '*';
     this.allowedOrigins = this.parseAllowedOrigins(process.env.ALLOWED_ORIGINS);
 
+    // Geolocation API Key (optional - unlocks paid tier)
+    this.geolocationApiKey = process.env.GEOLOCATION_API_KEY || null;
+
     // Validate configuration
     this.validate();
   }

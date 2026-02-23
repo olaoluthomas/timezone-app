@@ -12,6 +12,8 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - LOG_LEVEL=info
+      # Optional: ipapi.co paid-tier API key (removes free-tier rate limits)
+      # - GEOLOCATION_API_KEY=your_key_here
     restart: unless-stopped
     stop_grace_period: 30s
     read_only: true

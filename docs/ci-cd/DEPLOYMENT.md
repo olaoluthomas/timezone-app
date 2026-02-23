@@ -47,6 +47,7 @@ docker-compose --profile dev up timezone-app-dev
 | `NODE_ENV` | production | Environment mode (development/production) |
 | `LOG_LEVEL` | info | Logging verbosity (debug/info/warn/error) |
 | `ALLOWED_ORIGINS` | (empty) | CORS whitelist (comma-separated, production only) |
+| `GEOLOCATION_API_KEY` | (unset) | Optional ipapi.co paid-tier API key; omit to use free tier |
 
 ### Health Checks
 

@@ -86,7 +86,9 @@ const DEV_FALLBACK_DATA = {
  * @returns {Promise<Object>} API response data
  */
 async function fetchFromAPI(lookupIP) {
-  const url = lookupIP ? `https://ipapi.co/${lookupIP}/json/` : 'https://ipapi.co/json/';
+  const apiKey = config.geolocationApiKey;
+  const base = lookupIP ? `https://ipapi.co/${lookupIP}/json/` : 'https://ipapi.co/json/';
+  const url = apiKey ? `${base}?key=${apiKey}` : base;
 
   const response = await axios.get(url);
   return response.data;
