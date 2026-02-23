@@ -2,7 +2,7 @@
 
 **Purpose:** Track completion status and key deliverables for each milestone. Reference this file along with `CLAUDE.md` when resuming sessions.
 
-**Last Updated:** 2026-02-09
+**Last Updated:** 2026-02-23
 
 ---
 
@@ -11,15 +11,15 @@
 **Project:** Timezone Web App
 **Core Milestones:** 9/9 Complete ✅
 **Post-Production Milestones:** 3 Planned (10-12) 📋
-**Feature Enhancement Milestones:** 2 Planned (13-14) 🎨
+**Feature Enhancement Milestones:** 3 Planned (13-15) 🎨
 **Current Phase:** Phase 2 - Code Quality & Infrastructure + Feature Enhancements
 **Next Milestone:** Milestone 10 - Code Quality & Developer Experience
-**Last Updated:** 2026-02-09
+**Last Updated:** 2026-02-23
 
-**Test Status:** ✅ 213/213 tests passing
-**Coverage:** ✅ 96.68%
+**Test Status:** ✅ 292/292 tests passing
+**Coverage:** ✅ 98%+
 **Linting:** ✅ 0 errors, 0 warnings
-**Open Issues:** 20 total (17 organized into milestones: 8 in Phase 2, 9 in Feature Enhancements)
+**Open Issues:** 20 total (all organized into milestones or tracked as standalone)
 **Refactoring:** 4 opportunities completed (Winston Logger, Constants, Compression, Graceful Shutdown)
 
 ---
@@ -476,6 +476,10 @@ The following milestones focus on code quality, architecture, and deployment inf
 - [#56](https://github.com/olaoluthomas/timezone-app/issues/56) - Address 6 high-severity dev dependency vulnerabilities (1h)
 - [#57](https://github.com/olaoluthomas/timezone-app/issues/57) - Address 2 medium-severity dev dependency vulnerabilities (30min)
 - ~~[#58](https://github.com/olaoluthomas/timezone-app/issues/58)~~ - Dependabot already configured (closed as duplicate)
+- [#32](https://github.com/olaoluthomas/timezone-app/issues/32) - Upgrade nock from v13 to v14
+- [#111](https://github.com/olaoluthomas/timezone-app/issues/111) - Resolve Jest dependency vulnerabilities (minimatch via glob)
+- [#133](https://github.com/olaoluthomas/timezone-app/issues/133) - Support GEOLOCATION_API_KEY for dev and production deployments
+- [#135](https://github.com/olaoluthomas/timezone-app/issues/135) - Differentiate frontend error messages by HTTP status
 
 **Planned Deliverables:**
 - [ ] `src/utils/ip-validator.js` + 15 tests (IP validation utility class)
@@ -537,33 +541,36 @@ The following milestones focus on code quality, architecture, and deployment inf
 
 ---
 
-### Milestone 12: Kubernetes Deployment Infrastructure
+### Milestone 12: Container Deployment Infrastructure
 **Status:** 📋 PLANNED
-**Estimated Duration:** 3-4 hours
-**Theme:** Production-ready Kubernetes deployment
+**Estimated Duration:** 3-4 hours (K8s manifests; Podman/Docker already operational)
+**Theme:** Complete the deployment story — K8s manifests alongside existing Podman/Docker documentation
+
+**Context:** Podman (rootless) and Docker deployment are already operational and documented in the [Container Deployment Guide](https://github.com/olaoluthomas/timezone-app/wiki/Container-Deployment-Guide) wiki (systemd, Watchtower, Caddy, firewall). M12 adds Kubernetes manifests for baremetal cluster deployment.
+
+**Deployment Options:**
+
+| Option | Status | Where |
+|--------|--------|-------|
+| Podman (rootless) | ✅ Operational | [Container Deployment Guide wiki](https://github.com/olaoluthomas/timezone-app/wiki/Container-Deployment-Guide) |
+| Docker | ✅ Operational | [Container Deployment Guide wiki](https://github.com/olaoluthomas/timezone-app/wiki/Container-Deployment-Guide) |
+| Kubernetes (baremetal) | 📋 M12 deliverable | `k8s/` manifests (to be created) |
 
 **Issues:**
-- [#30](https://github.com/olaoluthomas/timezone-app/issues/30) - Kubernetes manifest files (3-4h)
+- [#30](https://github.com/olaoluthomas/timezone-app/issues/30) - Kubernetes manifest files for baremetal cluster (3-4h)
 
 **Planned Deliverables:**
-- [ ] `k8s/base/deployment.yaml` (base deployment configuration)
-- [ ] `k8s/base/service.yaml` (ClusterIP service)
-- [ ] `k8s/base/configmap.yaml` (environment configuration)
-- [ ] `k8s/base/hpa.yaml` (HorizontalPodAutoscaler)
-- [ ] `k8s/overlays/staging/*` (staging patches: 2 replicas, lower resources)
-- [ ] `k8s/overlays/production/*` (production patches: 3 replicas, HA setup)
-- [ ] `k8s/README.md` (deployment guide with kubectl commands)
-- [ ] Updated `docs/ARCHITECTURE.md` (K8s deployment architecture)
+- [ ] `k8s/deployment.yaml` (single replica, security context, rolling update strategy)
+- [ ] `k8s/service.yaml` (ClusterIP, port 80 → 3000)
+- [ ] `k8s/ingress.yaml` (optional, with TLS placeholder and ingress class)
+- [ ] Updated `README.md` with K8s deployment commands and cross-reference to wiki
 
 **Success Criteria:**
-- ✅ Base K8s manifests created and validated (kubectl apply --dry-run)
-- ✅ Staging overlay configured (2 replicas, lower resources)
-- ✅ Production overlay configured (3 replicas, HA setup)
-- ✅ Kustomize configuration working (kustomize build)
-- ✅ Health probes configured correctly (liveness/readiness)
-- ✅ HPA tested (2-10 pods based on CPU 70%)
+- ✅ Manifests validated (`kubectl apply --dry-run=server`)
+- ✅ Health probes configured (liveness `/health`, readiness `/health/ready`)
+- ✅ Security context set (`runAsNonRoot`, `readOnlyRootFilesystem`, dropped capabilities)
+- ✅ README links to Container Deployment Guide wiki for Podman/Docker path
 - ✅ Local testing successful (minikube or kind)
-- ✅ Documentation complete with deployment examples
 
 **Impact:** ⭐⭐⭐⭐ High (deployment infrastructure, operations)
 
@@ -579,7 +586,7 @@ The following milestones focus on user-facing features and visual enhancements t
 **Estimated Duration:** TBD
 **Theme:** Interactive 3D globe visualization for location display
 
-**GitHub Milestone:** [Globe view integration](https://github.com/olaoluthomas/timezone-app/milestone/1)
+**GitHub Milestone:** [Milestone 13: Globe View Integration](https://github.com/olaoluthomas/timezone-app/milestone/1)
 
 **Issues:**
 - [#71](https://github.com/olaoluthomas/timezone-app/issues/71) - Integrate globe view of location `enhancement`
@@ -626,7 +633,7 @@ The following milestones focus on user-facing features and visual enhancements t
 **Estimated Duration:** TBD
 **Theme:** Analytics infrastructure for user interaction tracking and performance monitoring
 
-**GitHub Milestone:** [App Analytics Integration](https://github.com/olaoluthomas/timezone-app/milestone/2)
+**GitHub Milestone:** [Milestone 14: App Analytics Integration](https://github.com/olaoluthomas/timezone-app/milestone/2)
 
 **Issues:**
 - [#76](https://github.com/olaoluthomas/timezone-app/issues/76) - Integrate App Metrics & Dashboard `infrastructure`
@@ -662,6 +669,39 @@ The following milestones focus on user-facing features and visual enhancements t
 - ✅ Documentation complete
 
 **Impact:** ⭐⭐⭐⭐ High (product insights, user behavior understanding, performance monitoring)
+
+---
+
+### Milestone 15: Weather Integration
+**Status:** 📋 PLANNED
+**Created:** 2026-02-23
+**Estimated Duration:** TBD
+**Theme:** Current weather data using existing geolocation coordinates
+
+**GitHub Milestone:** [Milestone 15: Weather Integration](https://github.com/olaoluthomas/timezone-app/milestone/6)
+
+**Issues:**
+- [#127](https://github.com/olaoluthomas/timezone-app/issues/127) - Integrate current weather data using geolocation coordinates `enhancement`
+  - Use Open-Meteo API (free, no key required)
+  - Weather card in frontend alongside location/time info
+  - Graceful degradation (weather failure doesn't break app)
+  - Shorter cache TTL (15-30 min vs 24h for geolocation)
+
+**Planned Deliverables:**
+- [ ] `src/services/weather.js` — Open-Meteo API client with WMO code mapping
+- [ ] Weather data cached with 15-30 min TTL
+- [ ] `weather` object added to `GET /api/timezone` response (`null` on failure)
+- [ ] Weather card in frontend UI (temperature, condition, wind, humidity)
+- [ ] Unit tests for weather service (mocked API responses)
+- [ ] Integration test for weather field in API response
+
+**Success Criteria:**
+- ✅ Weather displayed alongside existing location/time info
+- ✅ Weather fetch failure does not break the app (graceful degradation)
+- ✅ Weather data cached appropriately
+- ✅ All existing tests still pass
+
+**Impact:** ⭐⭐⭐⭐ High (user experience, leverages existing geolocation data)
 
 ---
 
