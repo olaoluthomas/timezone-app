@@ -16,10 +16,10 @@
 **Next Milestone:** Milestone 10 - Code Quality & Developer Experience
 **Last Updated:** 2026-02-23
 
-**Test Status:** ✅ 213/213 tests passing
-**Coverage:** ✅ 96.68%
+**Test Status:** ✅ 292/292 tests passing
+**Coverage:** ✅ 98%+
 **Linting:** ✅ 0 errors, 0 warnings
-**Open Issues:** 18 total (all organized into milestones: 8 in Phase 2, 10 in Feature Enhancements)
+**Open Issues:** 20 total (all organized into milestones or tracked as standalone)
 **Refactoring:** 4 opportunities completed (Winston Logger, Constants, Compression, Graceful Shutdown)
 
 ---
@@ -541,33 +541,36 @@ The following milestones focus on code quality, architecture, and deployment inf
 
 ---
 
-### Milestone 12: Kubernetes Deployment Infrastructure
+### Milestone 12: Container Deployment Infrastructure
 **Status:** 📋 PLANNED
-**Estimated Duration:** 3-4 hours
-**Theme:** Production-ready Kubernetes deployment
+**Estimated Duration:** 3-4 hours (K8s manifests; Podman/Docker already operational)
+**Theme:** Complete the deployment story — K8s manifests alongside existing Podman/Docker documentation
+
+**Context:** Podman (rootless) and Docker deployment are already operational and documented in the [Container Deployment Guide](https://github.com/olaoluthomas/timezone-app/wiki/Container-Deployment-Guide) wiki (systemd, Watchtower, Caddy, firewall). M12 adds Kubernetes manifests for baremetal cluster deployment.
+
+**Deployment Options:**
+
+| Option | Status | Where |
+|--------|--------|-------|
+| Podman (rootless) | ✅ Operational | [Container Deployment Guide wiki](https://github.com/olaoluthomas/timezone-app/wiki/Container-Deployment-Guide) |
+| Docker | ✅ Operational | [Container Deployment Guide wiki](https://github.com/olaoluthomas/timezone-app/wiki/Container-Deployment-Guide) |
+| Kubernetes (baremetal) | 📋 M12 deliverable | `k8s/` manifests (to be created) |
 
 **Issues:**
-- [#30](https://github.com/olaoluthomas/timezone-app/issues/30) - Kubernetes manifest files (3-4h)
+- [#30](https://github.com/olaoluthomas/timezone-app/issues/30) - Kubernetes manifest files for baremetal cluster (3-4h)
 
 **Planned Deliverables:**
-- [ ] `k8s/base/deployment.yaml` (base deployment configuration)
-- [ ] `k8s/base/service.yaml` (ClusterIP service)
-- [ ] `k8s/base/configmap.yaml` (environment configuration)
-- [ ] `k8s/base/hpa.yaml` (HorizontalPodAutoscaler)
-- [ ] `k8s/overlays/staging/*` (staging patches: 2 replicas, lower resources)
-- [ ] `k8s/overlays/production/*` (production patches: 3 replicas, HA setup)
-- [ ] `k8s/README.md` (deployment guide with kubectl commands)
-- [ ] Updated `docs/ARCHITECTURE.md` (K8s deployment architecture)
+- [ ] `k8s/deployment.yaml` (single replica, security context, rolling update strategy)
+- [ ] `k8s/service.yaml` (ClusterIP, port 80 → 3000)
+- [ ] `k8s/ingress.yaml` (optional, with TLS placeholder and ingress class)
+- [ ] Updated `README.md` with K8s deployment commands and cross-reference to wiki
 
 **Success Criteria:**
-- ✅ Base K8s manifests created and validated (kubectl apply --dry-run)
-- ✅ Staging overlay configured (2 replicas, lower resources)
-- ✅ Production overlay configured (3 replicas, HA setup)
-- ✅ Kustomize configuration working (kustomize build)
-- ✅ Health probes configured correctly (liveness/readiness)
-- ✅ HPA tested (2-10 pods based on CPU 70%)
+- ✅ Manifests validated (`kubectl apply --dry-run=server`)
+- ✅ Health probes configured (liveness `/health`, readiness `/health/ready`)
+- ✅ Security context set (`runAsNonRoot`, `readOnlyRootFilesystem`, dropped capabilities)
+- ✅ README links to Container Deployment Guide wiki for Podman/Docker path
 - ✅ Local testing successful (minikube or kind)
-- ✅ Documentation complete with deployment examples
 
 **Impact:** ⭐⭐⭐⭐ High (deployment infrastructure, operations)
 
@@ -688,17 +691,15 @@ The following milestones focus on user-facing features and visual enhancements t
 - [ ] `src/services/weather.js` — Open-Meteo API client with WMO code mapping
 - [ ] Weather data cached with 15-30 min TTL
 - [ ] `weather` object added to `GET /api/timezone` response (`null` on failure)
-- [ ] Weather card in frontend UI
+- [ ] Weather card in frontend UI (temperature, condition, wind, humidity)
 - [ ] Unit tests for weather service (mocked API responses)
 - [ ] Integration test for weather field in API response
-- [ ] Updated API documentation
 
 **Success Criteria:**
 - ✅ Weather displayed alongside existing location/time info
 - ✅ Weather fetch failure does not break the app (graceful degradation)
 - ✅ Weather data cached appropriately
 - ✅ All existing tests still pass
-- ✅ New unit and integration tests added
 
 **Impact:** ⭐⭐⭐⭐ High (user experience, leverages existing geolocation data)
 
@@ -816,17 +817,16 @@ After each milestone, verify:
 
 ## Next Steps
 
-### Current Status (2026-02-23)
+### Current Status (2026-02-09)
 1. ✅ All 9 core milestones complete (Milestones 1-9)
-2. ✅ Production-ready with 292 tests passing (98%+ coverage)
+2. ✅ Production-ready with 213 tests passing (96.68% coverage)
 3. ✅ GitHub Actions CI/CD active (7 jobs on every push/PR)
 4. ✅ Multi-version testing (Node 18.x & 20.x)
 5. ✅ Graceful shutdown implemented (Milestone 9 complete)
 6. ✅ Winston Logger, Constants, Compression implemented
-7. ✅ Upstream rate-limit retry + 503 handling (PR #134)
-8. 📋 Post-production milestones identified (10-12)
-9. 📋 Feature enhancement milestones identified (13-15)
-10. 📋 All 18 open issues organized into milestones (7 in Phase 2, 10 in Feature Enhancements, 1 in K8s)
+7. 📋 Post-production milestones identified (10-12)
+8. 📋 Feature enhancement milestones identified (13-14)
+9. 📋 20 open issues organized into milestones (8 Phase 2, 9 Feature Enhancements, 3 with PRs)
 
 ### Post-Production Roadmap (Phase 2 - Code Quality & Infrastructure)
 
@@ -847,7 +847,7 @@ After each milestone, verify:
 
 **Total Phase 2 Effort:** ~18-19 hours
 
-### Feature Enhancement Roadmap (Phase 3 - User Experience, Analytics & Weather)
+### Feature Enhancement Roadmap (Phase 3 - User Experience & Analytics)
 
 **Milestone 13: Globe View Integration** (TBD)
 - Focus: Interactive 3D globe visualization
@@ -859,11 +859,6 @@ After each milestone, verify:
 - Issues: #76, #77, #78, #79 (4 issues)
 - Impact: ⭐⭐⭐⭐ High (insights, monitoring, data-driven decisions)
 
-**Milestone 15: Weather Integration** (TBD)
-- Focus: Current weather data via Open-Meteo API
-- Issues: #127 (1 issue)
-- Impact: ⭐⭐⭐⭐ High (UX, leverages existing geolocation)
-
 **Total Phase 3 Effort:** TBD (requires estimation after Phase 2)
 
 ### Recent Improvements
@@ -871,7 +866,7 @@ After each milestone, verify:
 - **Constants Extraction**: Centralized config for timeouts, rate limits, cache
 - **Compression**: Gzip for responses >1KB
 - **Graceful Shutdown**: Zero-downtime deployments (Milestone 9)
-- **Milestone Organization**: 18 open issues grouped into 6 milestones (2026-02-23, corrected from 2026-02-09)
+- **Milestone Organization**: 20 open issues grouped into 5 new milestones (2026-02-09)
 - **Documentation Reorganization**: Docs restructured into logical subdirectories (2026-02-09)
 
 **Note:** With automated workflow, Winston logger, and CI/CD in place, all work benefits from:
