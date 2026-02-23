@@ -133,6 +133,20 @@ describe('GeolocationService', () => {
       expect(result2.timestamp).not.toBe(result1.timestamp);
     });
 
+    test('should include currentTime on cache hits', async () => {
+      nock('https://ipapi.co').get('/8.8.8.8/json/').reply(200, mockApiResponse);
+
+      // First call - cache miss
+      const result1 = await getTimezoneByIP('8.8.8.8');
+      expect(result1.cached).toBe(false);
+      expect(result1.currentTime).toBeDefined();
+
+      // Second call - cache hit should also have currentTime
+      const result2 = await getTimezoneByIP('8.8.8.8');
+      expect(result2.cached).toBe(true);
+      expect(result2.currentTime).toBeDefined();
+    });
+
     test('should cache different IPs separately', async () => {
       nock('https://ipapi.co').get('/8.8.8.8/json/').reply(200, mockApiResponse);
 

@@ -138,9 +138,12 @@ async function getTimezoneByIP(ip) {
     // Check cache first
     const cachedData = cache.get(cacheKey);
     if (cachedData) {
-      // Return cached data with fresh timestamp
+      // Recalculate current time from cached timezone (time changes between requests)
+      const localTime = formatTimezone(cachedData.timezone);
+
       return {
         ...cachedData,
+        currentTime: localTime,
         timestamp: new Date().toISOString(),
         cached: true,
       };
