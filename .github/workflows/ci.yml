@@ -359,7 +359,7 @@ jobs:
   ci-status-check:
     name: CI Status Check
     runs-on: ubuntu-latest
-    needs: [validate-pr, lint, build, test-unit, test-integration, test-smoke, coverage]
+    needs: [validate-pr, lint, security, build, test-unit, test-integration, test-smoke, coverage]
     if: always()
     steps:
       - name: Check all required jobs passed
@@ -368,6 +368,7 @@ jobs:
 
           VALIDATE_STATUS="${{ needs.validate-pr.result }}"
           LINT_STATUS="${{ needs.lint.result }}"
+          SECURITY_STATUS="${{ needs.security.result }}"
           BUILD_STATUS="${{ needs.build.result }}"
           TEST_UNIT_STATUS="${{ needs.test-unit.result }}"
           TEST_INTEGRATION_STATUS="${{ needs.test-integration.result }}"
@@ -376,6 +377,7 @@ jobs:
 
           echo "Validate PR: $VALIDATE_STATUS"
           echo "Lint: $LINT_STATUS"
+          echo "Security: $SECURITY_STATUS"
           echo "Build: $BUILD_STATUS"
           echo "Unit Tests: $TEST_UNIT_STATUS"
           echo "Integration Tests: $TEST_INTEGRATION_STATUS"
@@ -390,7 +392,7 @@ jobs:
 
           # Check CI jobs (success or skipped are OK)
           FAILED=false
-          for STATUS in "$LINT_STATUS" "$BUILD_STATUS" "$TEST_UNIT_STATUS" \
+          for STATUS in "$LINT_STATUS" "$SECURITY_STATUS" "$BUILD_STATUS" "$TEST_UNIT_STATUS" \
                         "$TEST_INTEGRATION_STATUS" "$TEST_SMOKE_STATUS" "$COVERAGE_STATUS"; do
             if [[ "$STATUS" == "failure" ]]; then
               FAILED=true
