@@ -84,4 +84,20 @@ module.exports = {
    * Prevents large payload attacks
    */
   REQUEST_SIZE_LIMIT: '1kb',
+
+  // ============================================
+  // Upstream API Retry Configuration
+  // ============================================
+
+  /**
+   * Maximum number of retries for upstream API rate limiting (429)
+   * Uses exponential backoff: baseDelay * 2^attempt
+   */
+  UPSTREAM_MAX_RETRIES: 3,
+
+  /**
+   * Base delay between retries in milliseconds
+   * Doubles each attempt: 1s → 2s → 4s
+   */
+  UPSTREAM_BASE_DELAY: 1000, // 1 second
 };

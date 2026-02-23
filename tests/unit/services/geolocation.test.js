@@ -84,6 +84,15 @@ describe('GeolocationService', () => {
       );
     });
 
+    test('should not retry on non-429 errors (e.g., 500)', async () => {
+      // Only one nock interceptor — if a retry happened, nock would throw
+      nock('https://ipapi.co').get('/8.8.8.8/json/').reply(500, { error: 'Server Error' });
+
+      await expect(getTimezoneByIP('8.8.8.8')).rejects.toThrow(
+        'Unable to determine location from IP address'
+      );
+    });
+
     test('should include all required fields in response', async () => {
       nock('https://ipapi.co').get('/8.8.8.8/json/').reply(200, mockApiResponse);
 
@@ -280,6 +289,66 @@ describe('GeolocationService', () => {
     });
   });
 
+  describe('upstream retry on 429', () => {
+    let CONSTANTS;
+
+    beforeEach(() => {
+      clearCache();
+      nock.cleanAll();
+      // Use minimal delays for fast tests
+      CONSTANTS = require('../../../src/config/constants');
+      CONSTANTS.UPSTREAM_BASE_DELAY = 10; // 10ms instead of 1s
+      CONSTANTS.UPSTREAM_MAX_RETRIES = 3;
+    });
+
+    afterEach(() => {
+      // Restore original values
+      CONSTANTS.UPSTREAM_BASE_DELAY = 1000;
+    });
+
+    test('should retry on 429 and succeed on subsequent attempt', async () => {
+      nock('https://ipapi.co').get('/8.8.8.8/json/').reply(429, { error: 'Rate limited' });
+
+      nock('https://ipapi.co').get('/8.8.8.8/json/').reply(200, mockApiResponse);
+
+      const result = await getTimezoneByIP('8.8.8.8');
+
+      expect(result).toHaveProperty('ip', '8.8.8.8');
+      expect(result).toHaveProperty('city', 'Mountain View');
+      expect(result.cached).toBe(false);
+    });
+
+    test('should retry up to max retries on persistent 429', async () => {
+      // 1 initial + 3 retries = 4 total requests
+      nock('https://ipapi.co').get('/8.8.8.8/json/').times(4).reply(429, { error: 'Rate limited' });
+
+      await expect(getTimezoneByIP('8.8.8.8')).rejects.toThrow(
+        'Upstream geolocation API rate limited'
+      );
+    });
+
+    test('should set rateLimited flag on persistent 429', async () => {
+      nock('https://ipapi.co').get('/8.8.8.8/json/').times(4).reply(429, { error: 'Rate limited' });
+
+      await expect(getTimezoneByIP('8.8.8.8')).rejects.toMatchObject({
+        rateLimited: true,
+      });
+    });
+
+    test('should respect Retry-After header', async () => {
+      CONSTANTS.UPSTREAM_BASE_DELAY = 10;
+
+      nock('https://ipapi.co')
+        .get('/8.8.8.8/json/')
+        .reply(429, { error: 'Rate limited' }, { 'Retry-After': '1' });
+
+      nock('https://ipapi.co').get('/8.8.8.8/json/').reply(200, mockApiResponse);
+
+      const result = await getTimezoneByIP('8.8.8.8');
+      expect(result).toHaveProperty('ip', '8.8.8.8');
+    }, 10000);
+  });
+
   describe('development fallback', () => {
     const originalEnv = process.env.NODE_ENV;
 
@@ -301,7 +370,7 @@ describe('GeolocationService', () => {
       jest.resetModules();
       const { getTimezoneByIP } = require('../../../src/services/geolocation');
 
-      nock('https://ipapi.co').get('/json/').reply(429, { error: 'Rate limited' });
+      nock('https://ipapi.co').get('/json/').reply(500, { error: 'Server error' });
 
       const result = await getTimezoneByIP('127.0.0.1');
 
@@ -332,7 +401,7 @@ describe('GeolocationService', () => {
       jest.resetModules();
       const { getTimezoneByIP } = require('../../../src/services/geolocation');
 
-      nock('https://ipapi.co').get('/8.8.8.8/json/').reply(429);
+      nock('https://ipapi.co').get('/8.8.8.8/json/').reply(500);
 
       const result = await getTimezoneByIP('8.8.8.8');
 
@@ -346,7 +415,7 @@ describe('GeolocationService', () => {
       jest.resetModules();
       const { getTimezoneByIP } = require('../../../src/services/geolocation');
 
-      nock('https://ipapi.co').get('/json/').reply(429);
+      nock('https://ipapi.co').get('/json/').reply(500);
 
       await expect(getTimezoneByIP('127.0.0.1')).rejects.toThrow(
         'Unable to determine location from IP address'
@@ -359,7 +428,7 @@ describe('GeolocationService', () => {
       jest.resetModules();
       const { getTimezoneByIP } = require('../../../src/services/geolocation');
 
-      nock('https://ipapi.co').get('/json/').reply(429);
+      nock('https://ipapi.co').get('/json/').reply(500);
 
       await expect(getTimezoneByIP('127.0.0.1')).rejects.toThrow(
         'Unable to determine location from IP address'
@@ -372,7 +441,7 @@ describe('GeolocationService', () => {
       jest.resetModules();
       const { getTimezoneByIP } = require('../../../src/services/geolocation');
 
-      nock('https://ipapi.co').get('/json/').reply(429);
+      nock('https://ipapi.co').get('/json/').reply(500);
 
       await expect(getTimezoneByIP('127.0.0.1')).rejects.toThrow(
         'Unable to determine location from IP address'
@@ -385,7 +454,7 @@ describe('GeolocationService', () => {
       jest.resetModules();
       const { getTimezoneByIP } = require('../../../src/services/geolocation');
 
-      nock('https://ipapi.co').get('/json/').reply(429);
+      nock('https://ipapi.co').get('/json/').reply(500);
 
       // First call uses fallback
       const result1 = await getTimezoneByIP('127.0.0.1');
@@ -404,7 +473,7 @@ describe('GeolocationService', () => {
       jest.resetModules();
       const { getTimezoneByIP } = require('../../../src/services/geolocation');
 
-      nock('https://ipapi.co').get('/json/').reply(429);
+      nock('https://ipapi.co').get('/json/').reply(500);
 
       const result = await getTimezoneByIP('127.0.0.1');
 

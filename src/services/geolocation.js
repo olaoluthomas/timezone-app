@@ -44,6 +44,7 @@ const axios = require('axios');
 const cache = require('./cache');
 const logger = require('../utils/logger');
 const config = require('../config');
+const CONSTANTS = require('../config/constants');
 const { determineLookupIP } = require('../utils/ip-validator');
 const { formatTimezone } = require('../utils/date-formatter');
 
@@ -89,6 +90,54 @@ async function fetchFromAPI(lookupIP) {
 
   const response = await axios.get(url);
   return response.data;
+}
+
+/**
+ * Wraps fetchFromAPI with retry logic for 429 (rate limit) responses.
+ * Uses exponential backoff and respects Retry-After headers.
+ *
+ * @param {string} lookupIP - The IP address to lookup
+ * @returns {Promise<Object>} API response data
+ * @throws {Error} With rateLimited=true if all retries exhausted on 429
+ */
+async function fetchWithRetry(lookupIP) {
+  let lastError;
+
+  for (let attempt = 0; attempt <= CONSTANTS.UPSTREAM_MAX_RETRIES; attempt++) {
+    try {
+      return await fetchFromAPI(lookupIP);
+    } catch (error) {
+      lastError = error;
+
+      const is429 = error.response && error.response.status === 429;
+      if (!is429 || attempt === CONSTANTS.UPSTREAM_MAX_RETRIES) {
+        break;
+      }
+
+      const retryAfter = error.response.headers?.['retry-after'];
+      const delay = retryAfter
+        ? Math.min(parseInt(retryAfter, 10) * 1000, 10000)
+        : CONSTANTS.UPSTREAM_BASE_DELAY * Math.pow(2, attempt);
+
+      logger.warn('ipapi.co rate limited, retrying', {
+        attempt: attempt + 1,
+        maxRetries: CONSTANTS.UPSTREAM_MAX_RETRIES,
+        delayMs: delay,
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+
+  // Tag rate-limit errors so route handler can return 503
+  if (lastError.response && lastError.response.status === 429) {
+    const rateLimitError = new Error('Upstream geolocation API rate limited');
+    rateLimitError.rateLimited = true;
+    rateLimitError.cause = lastError;
+    throw rateLimitError;
+  }
+
+  throw lastError;
 }
 
 /**
@@ -149,8 +198,8 @@ async function getTimezoneByIP(ip) {
       };
     }
 
-    // Cache miss - fetch from API
-    const data = await fetchFromAPI(ipInfo.lookupIP);
+    // Cache miss - fetch from API (with retry for rate limiting)
+    const data = await fetchWithRetry(ipInfo.lookupIP);
 
     // Store base data in cache (without timestamp to avoid staleness)
     const cacheableData = {
@@ -177,6 +226,11 @@ async function getTimezoneByIP(ip) {
     };
   } catch (error) {
     logger.error('Geolocation API error', { error: error.message, stack: error.stack });
+
+    // Rate-limit errors should propagate directly so the route handler returns 503
+    if (error.rateLimited) {
+      throw error;
+    }
 
     // In development, try fallback (works for any IP)
     const fallbackData = getDevFallback();

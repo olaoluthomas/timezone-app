@@ -48,6 +48,7 @@ app.use(
   helmet({
     contentSecurityPolicy: false, // Allow inline scripts for frontend
     crossOriginEmbedderPolicy: false, // Allow cross-origin resources
+    crossOriginOpenerPolicy: false, // Avoid COOP warning on HTTP origins
   })
 );
 
@@ -108,7 +109,13 @@ app.get('/api/timezone', apiLimiter, async (req, res) => {
     res.json(timezoneInfo);
   } catch (error) {
     logger.error('Timezone API error', { error: error.message, ip: req.ip });
-    res.status(500).json({ error: 'Failed to fetch timezone information' });
+    if (error.rateLimited) {
+      res.status(503).set('Retry-After', '60').json({
+        error: 'Geolocation service temporarily unavailable',
+      });
+    } else {
+      res.status(500).json({ error: 'Failed to fetch timezone information' });
+    }
   }
 });
 
