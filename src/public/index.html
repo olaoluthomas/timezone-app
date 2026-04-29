@@ -122,6 +122,16 @@
             text-align: center;
         }
 
+        .error--warning {
+            background: #fff8e1;
+            color: #92400e;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .error--critical {
+            border-left: 4px solid #ef4444;
+        }
+
         .coordinates {
             display: flex;
             gap: 10px;
@@ -164,19 +174,34 @@
 
     <script>
         async function fetchTimezoneInfo() {
+            let errorMessage = null;
+            let errorClass = 'error error--critical';
+
             try {
                 const response = await fetch('/api/timezone');
-                if (!response.ok) throw new Error('Failed to fetch timezone data');
-
+                if (!response.ok) {
+                    if (response.status === 503) {
+                        errorMessage = "Service temporarily unavailable — the geolocation provider's monthly limit has been reached. Please try again later or contact the administrator.";
+                        errorClass = 'error error--warning';
+                    } else if (response.status === 429) {
+                        errorMessage = "You're making requests too quickly. Please wait a few minutes and try again.";
+                        errorClass = 'error error--warning';
+                    } else if (response.status === 500) {
+                        errorMessage = "Something went wrong while loading your timezone information. Please try again later.";
+                    } else {
+                        errorMessage = "Unable to load timezone information. Please try again later.";
+                    }
+                    throw new Error(errorMessage);
+                }
                 const data = await response.json();
                 displayTimezoneInfo(data);
-
-                // Update time every second
                 setInterval(() => updateCurrentTime(data.timezone), 1000);
             } catch (error) {
+                const displayMessage = errorMessage
+                    || 'Unable to reach the server. Please check your connection and try again.';
                 document.getElementById('content').innerHTML = `
-                    <div class="error">
-                        ⚠️ Unable to load timezone information. Please try again later.
+                    <div class="${errorClass}">
+                        ⚠️ ${displayMessage}
                     </div>
                 `;
             }
