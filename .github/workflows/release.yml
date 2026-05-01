@@ -47,6 +47,37 @@ jobs:
       issues: write
       pull-requests: write
     steps:
+      - name: Wait for CI to succeed on this commit
+        if: github.event_name != 'workflow_dispatch'
+        timeout-minutes: 15
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHA: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          while :; do
+            RUN=$(gh run list --repo "$REPO" --commit "$SHA" --workflow CI --limit 1 \
+              --json status,conclusion --jq '.[0]')
+            if [ -z "$RUN" ] || [ "$RUN" = "null" ]; then
+              echo "No CI run registered yet for $SHA; waiting..."
+              sleep 20
+              continue
+            fi
+            STATUS=$(echo "$RUN" | jq -r .status)
+            if [ "$STATUS" = "completed" ]; then
+              break
+            fi
+            echo "CI status: $STATUS; waiting..."
+            sleep 20
+          done
+          CONCLUSION=$(echo "$RUN" | jq -r .conclusion)
+          echo "CI conclusion: $CONCLUSION"
+          if [ "$CONCLUSION" != "success" ]; then
+            echo "CI did not succeed on $SHA. Aborting release."
+            exit 1
+          fi
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
