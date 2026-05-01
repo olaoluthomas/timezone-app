@@ -15,6 +15,7 @@ module.exports = {
         'perf', // Performance improvements
         'ci', // CI configuration
         'revert', // Revert previous commit
+        'deps', // Dependency updates
       ],
     ],
     'subject-case': [0], // Allow any case for subject
