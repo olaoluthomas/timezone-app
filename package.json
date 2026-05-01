@@ -56,11 +56,6 @@
     "@commitlint/cli": "^20.5.3",
     "@commitlint/config-conventional": "^20.5.3",
     "@eslint/js": "^10.0.1",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/commit-analyzer": "^13.0.0",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^12.0.6",
-    "@semantic-release/release-notes-generator": "^14.0.0",
     "eslint": "^10.2.1",
     "globals": "^17.5.0",
     "husky": "^9.1.7",
@@ -68,7 +63,6 @@
     "nock": "^13.4.0",
     "nodemon": "^3.0.0",
     "prettier": "^3.8.3",
-    "semantic-release": "^25.0.3",
     "supertest": "^7.2.2"
   }
 }

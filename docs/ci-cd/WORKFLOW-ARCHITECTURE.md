@@ -106,6 +106,8 @@ This is the sole required check. It aggregates all CI job results:
 
 **Token:** Uses `GITHUB_TOKEN` (or `RELEASE_TOKEN` if configured for protected branch pushes).
 
+**Tooling install:** `semantic-release` and its plugins are **not** in the project's `devDependencies`. They are installed transiently in CI via `npx -p` directly in `release.yml`, so they never appear in `package-lock.json` or Dependabot's scope. Plugin versions are pinned in `release.yml` and must be bumped manually when upgrades are needed.
+
 **Plugin order** (in `.releaserc.json`):
 1. `@semantic-release/commit-analyzer` — determine version bump
 2. `@semantic-release/release-notes-generator` — generate release notes
