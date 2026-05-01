@@ -4,37 +4,10 @@ on:
   release:
     types: [published]
 
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*'
-    paths-ignore:
-      # Documentation
-      - '**.md'
-      - 'docs/**'
-      - '.github/pull_request_template.md'
-
-      # License and legal
-      - 'LICENSE'
-      - 'AUTHORS'
-      - 'NOTICE'
-
-      # Git configuration
-      - '.gitignore'
-      - '.gitattributes'
-
-      # Code quality configs (don't affect versioning)
-      - '.eslintrc*'
-      - 'eslint.config.*'
-      - '.prettierrc*'
-      - '.prettierignore'
-      - 'commitlint.config.*'
-      - '.editorconfig'
-
-      # Editor directories
-      - '.vscode/**'
-      - '.idea/**'
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
+    branches: [main]
 
   workflow_dispatch:
 
@@ -45,7 +18,9 @@ env:
 jobs:
   scan-main:
     name: Scan main image (no push)
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: |
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -82,7 +57,7 @@ jobs:
 
   build-and-push:
     name: Build and Push Container Image
-    if: github.event_name == 'release' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: read
