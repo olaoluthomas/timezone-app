@@ -1,3 +1,18 @@
+## [1.6.3](https://github.com/olaoluthomas/timezone-app/compare/v1.6.2...v1.6.3) (2026-05-01)
+
+## [1.6.2](https://github.com/olaoluthomas/timezone-app/compare/v1.6.1...v1.6.2) (2026-05-01)
+
+### Bug Fixes
+
+* upgrade to node:24-alpine and pin npm@11.13 in Dockerfile ([#155](https://github.com/olaoluthomas/timezone-app/issues/155)) ([89dd1ab](https://github.com/olaoluthomas/timezone-app/commit/89dd1ab527468f81eb4e05e5bac695367a07cd22)), closes [#154](https://github.com/olaoluthomas/timezone-app/issues/154)
+
+## [1.6.1](https://github.com/olaoluthomas/timezone-app/compare/v1.6.0...v1.6.1) (2026-04-29)
+
+### Bug Fixes
+
+* differentiate frontend error messages by HTTP status ([#142](https://github.com/olaoluthomas/timezone-app/issues/142)) ([5d1005f](https://github.com/olaoluthomas/timezone-app/commit/5d1005f3ef0b7de93c39911c4a7ab8cdd4765796)), closes [#139](https://github.com/olaoluthomas/timezone-app/issues/139) [#135](https://github.com/olaoluthomas/timezone-app/issues/135)
+* make smoke tests resilient to ipapi.co rate limiting ([#141](https://github.com/olaoluthomas/timezone-app/issues/141)) ([#144](https://github.com/olaoluthomas/timezone-app/issues/144)) ([5c26fb9](https://github.com/olaoluthomas/timezone-app/commit/5c26fb94838b37ceefc304866a856955d8ae2d24))
+
 ## [1.6.0](https://github.com/olaoluthomas/timezone-app/compare/v1.5.1...v1.6.0) (2026-02-23)
 
 ### Features
