@@ -1,3 +1,9 @@
+## [1.6.2](https://github.com/olaoluthomas/timezone-app/compare/v1.6.1...v1.6.2) (2026-05-01)
+
+### Bug Fixes
+
+* upgrade to node:24-alpine and pin npm@11.13 in Dockerfile ([#155](https://github.com/olaoluthomas/timezone-app/issues/155)) ([89dd1ab](https://github.com/olaoluthomas/timezone-app/commit/89dd1ab527468f81eb4e05e5bac695367a07cd22)), closes [#154](https://github.com/olaoluthomas/timezone-app/issues/154)
+
 ## [1.6.1](https://github.com/olaoluthomas/timezone-app/compare/v1.6.0...v1.6.1) (2026-04-29)
 
 ### Bug Fixes
