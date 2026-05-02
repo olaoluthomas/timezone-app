@@ -308,8 +308,6 @@ jobs:
         run: npm ci
 
       - name: Generate coverage report
-        env:
-          GEOLOCATION_API_KEY: ${{ secrets.GEOLOCATION_API_KEY }}
         run: npm test
 
       - name: Upload coverage artifact

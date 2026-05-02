@@ -18,6 +18,7 @@ The application uses the following environment variables:
 | `RATE_LIMIT_HEALTH` | 300 | Health endpoint rate limit (requests per 15 minutes) |
 | `TIMEOUT` | 30000 | Request timeout in milliseconds |
 | `MAX_PAYLOAD_SIZE` | 1024 | Maximum request payload size in bytes |
+| `GEOLOCATION_API_KEY` | (unset) | ipapi.co API key. In `development`, `test`, and `local` environments the free tier is tried first; the key is only used if a 429 is returned. In production the key is used on every request if set. |
 
 ## Logging Configuration
 
