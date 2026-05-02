@@ -58,10 +58,17 @@ function mockGeolocationRateLimit(ip, options = {}) {
   return interceptor.reply(429, { error: 'Rate limited' }, headers);
 }
 
-// error: string error code or Error/object passed directly to replyWithError
+// error: string error code, Error instance, or plain object — nock v14 requires a real Error
 function mockGeolocationNetworkError(ip, error) {
   const path = ip ? `/${ip}/json/` : '/json/';
-  const errorArg = typeof error === 'string' ? { code: error } : error;
+  let errorArg;
+  if (typeof error === 'string') {
+    errorArg = Object.assign(new Error(error), { code: error });
+  } else if (error instanceof Error) {
+    errorArg = error;
+  } else {
+    errorArg = Object.assign(new Error(error.code || 'Unknown'), error);
+  }
   return nock(IPAPI_BASE).get(path).replyWithError(errorArg);
 }
 
