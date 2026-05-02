@@ -2,9 +2,13 @@ const nock = require('nock');
 const { cleanMocks } = require('./nock-mocks');
 
 function setupGeolocationTests(clearCacheFn) {
-  beforeEach(() => {
+  beforeEach(async () => {
     clearCacheFn();
     cleanMocks();
+    // nock v14 fires replyWithError() via setImmediate; drain the queue so the
+    // error fires and exhausts within the current test boundary rather than
+    // leaking into the next test under coverage instrumentation.
+    await new Promise((resolve) => setImmediate(resolve));
   });
   afterAll(() => nock.restore());
 }
