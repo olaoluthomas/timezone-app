@@ -512,7 +512,7 @@ describe('GeolocationService', () => {
       expect(scope.isDone()).toBe(true);
     });
 
-    test('should append ?key= to URL when GEOLOCATION_API_KEY is set', async () => {
+    test('should use free tier first when API key is set in test/dev environment', async () => {
       jest.resetModules();
       const freshConfig = require('../../../src/config');
       const {
@@ -522,13 +522,88 @@ describe('GeolocationService', () => {
       freshClear();
       freshConfig.geolocationApiKey = 'test-key-abc';
       try {
-        const scope = nock('https://ipapi.co')
+        const freeScope = nock('https://ipapi.co')
+          .get('/8.8.8.8/json/')
+          .reply(200, mockApiResponse);
+        const keyScope = nock('https://ipapi.co')
           .get('/8.8.8.8/json/?key=test-key-abc')
           .reply(200, mockApiResponse);
         await freshGet('8.8.8.8');
-        expect(scope.isDone()).toBe(true);
+        expect(freeScope.isDone()).toBe(true);
+        expect(keyScope.isDone()).toBe(false); // key not used when free tier succeeds
       } finally {
         freshConfig.geolocationApiKey = null;
+        nock.cleanAll();
+      }
+    });
+
+    test('should fall back to API key when free tier returns 429', async () => {
+      jest.resetModules();
+      const freshConfig = require('../../../src/config');
+      const {
+        getTimezoneByIP: freshGet,
+        clearCache: freshClear,
+      } = require('../../../src/services/geolocation');
+      freshClear();
+      freshConfig.geolocationApiKey = 'test-key-abc';
+      try {
+        nock('https://ipapi.co').get('/8.8.8.8/json/').reply(429, { error: 'Rate limited' });
+        const keyScope = nock('https://ipapi.co')
+          .get('/8.8.8.8/json/?key=test-key-abc')
+          .reply(200, mockApiResponse);
+        const result = await freshGet('8.8.8.8');
+        expect(keyScope.isDone()).toBe(true);
+        expect(result.city).toBe('Mountain View');
+      } finally {
+        freshConfig.geolocationApiKey = null;
+      }
+    });
+
+    test('should propagate 429 to retry logic when both free tier and API key are rate limited', async () => {
+      jest.resetModules();
+      const freshConfig = require('../../../src/config');
+      const {
+        getTimezoneByIP: freshGet,
+        clearCache: freshClear,
+      } = require('../../../src/services/geolocation');
+      freshClear();
+      freshConfig.geolocationApiKey = 'test-key-abc';
+      try {
+        // fetchWithRetry retries fetchFromAPI up to UPSTREAM_MAX_RETRIES (3) times = 4 total attempts
+        nock('https://ipapi.co')
+          .get('/8.8.8.8/json/')
+          .times(4)
+          .reply(429, { error: 'Rate limited' }, { 'Retry-After': '0' });
+        nock('https://ipapi.co')
+          .get('/8.8.8.8/json/?key=test-key-abc')
+          .times(4)
+          .reply(429, { error: 'Rate limited' }, { 'Retry-After': '0' });
+        await expect(freshGet('8.8.8.8')).rejects.toMatchObject({ rateLimited: true });
+      } finally {
+        freshConfig.geolocationApiKey = null;
+      }
+    });
+
+    test('should use API key on first request in production environment', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+      jest.resetModules();
+      const freshConfig = require('../../../src/config');
+      const {
+        getTimezoneByIP: freshGet,
+        clearCache: freshClear,
+      } = require('../../../src/services/geolocation');
+      freshClear();
+      freshConfig.geolocationApiKey = 'test-key-abc';
+      try {
+        const keyScope = nock('https://ipapi.co')
+          .get('/8.8.8.8/json/?key=test-key-abc')
+          .reply(200, mockApiResponse);
+        await freshGet('8.8.8.8');
+        expect(keyScope.isDone()).toBe(true); // key used on first request in production
+      } finally {
+        freshConfig.geolocationApiKey = null;
+        process.env.NODE_ENV = originalEnv;
       }
     });
   });

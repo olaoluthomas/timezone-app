@@ -20,8 +20,10 @@
  *
  * API Integration:
  * - Provider: ipapi.co
- * - Free Tier: 30,000 requests/month
- * - No API key required
+ * - Free Tier: 1,000 requests/day (unauthenticated)
+ * - Optional API key (GEOLOCATION_API_KEY) for higher limits
+ * - In development/test/local: free tier attempted first; key used only on 429
+ * - In production: key used on every request if set
  * - Response Time: 200-500ms (uncached)
  *
  * Cache Strategy:
@@ -81,15 +83,39 @@ const DEV_FALLBACK_DATA = {
 };
 
 /**
- * Fetches timezone and location information from the API (uncached)
+ * Fetches timezone and location information from the API (uncached).
+ *
+ * In development, test, and local environments: attempts the free (unauthenticated)
+ * endpoint first. If a 429 is returned and GEOLOCATION_API_KEY is configured, retries
+ * immediately with the key appended — paid quota is only consumed when necessary.
+ *
+ * In all other environments (production, staging, qa): uses the key on every request
+ * if set, otherwise uses the free endpoint.
+ *
  * @param {string} lookupIP - The IP address to lookup
  * @returns {Promise<Object>} API response data
  */
 async function fetchFromAPI(lookupIP) {
   const apiKey = config.geolocationApiKey;
   const base = lookupIP ? `https://ipapi.co/${lookupIP}/json/` : 'https://ipapi.co/json/';
-  const url = apiKey ? `${base}?key=${apiKey}` : base;
+  const useKeyAsFallback =
+    (config.isDevelopment || config.isTest || config.nodeEnv === 'local') && apiKey;
 
+  if (useKeyAsFallback) {
+    try {
+      const response = await axios.get(base);
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 429) {
+        logger.debug('Free tier rate limit hit; retrying with API key', { lookupIP });
+        const response = await axios.get(`${base}?key=${apiKey}`);
+        return response.data;
+      }
+      throw error;
+    }
+  }
+
+  const url = apiKey ? `${base}?key=${apiKey}` : base;
   const response = await axios.get(url);
   return response.data;
 }
