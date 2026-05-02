@@ -1,3 +1,4 @@
+const axios = require('axios');
 const {
   checkGeolocationAPI,
   checkCache,
@@ -8,7 +9,6 @@ const {
   MOCK_RESPONSES,
   mockGeolocationSuccess,
   mockGeolocationError,
-  mockGeolocationNetworkError,
 } = require('../../helpers/nock-mocks');
 const { setupGeolocationTests } = require('../../helpers/test-setup');
 
@@ -46,7 +46,8 @@ describe('Health Service', () => {
     });
 
     test('should return unhealthy on network error', async () => {
-      mockGeolocationNetworkError(null, 'ECONNREFUSED');
+      const axiosError = Object.assign(new Error('connect ECONNREFUSED'), { code: 'ECONNREFUSED' });
+      jest.spyOn(axios, 'get').mockRejectedValueOnce(axiosError);
 
       const result = await checkGeolocationAPI();
 
