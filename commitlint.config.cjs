@@ -14,6 +14,7 @@ module.exports = {
         'chore', // Build process, dependencies
         'perf', // Performance improvements
         'ci', // CI configuration
+        'build', // Build system changes
         'revert', // Revert previous commit
         'deps', // Dependency updates
       ],
