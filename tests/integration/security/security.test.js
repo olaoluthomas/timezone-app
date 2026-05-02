@@ -1,44 +1,20 @@
 const request = require('supertest');
-const nock = require('nock');
 const app = require('../../../src/app');
+const {
+  MOCK_RESPONSES,
+  mockGeolocationRegex,
+  mockGeolocationSuccess,
+} = require('../../helpers/nock-mocks');
+const { setupSecurityTests } = require('../../helpers/test-setup');
 
 describe('Security Middleware Integration', () => {
   // Mock the external geolocation API for all tests
   beforeEach(() => {
-    nock('https://ipapi.co')
-      .get(/\/.*\/json\//)
-      .reply(200, {
-        ip: '203.0.113.1',
-        city: 'Test City',
-        region: 'Test Region',
-        country_name: 'Test Country',
-        country_code: 'TC',
-        latitude: 40.7128,
-        longitude: -74.006,
-        timezone: 'America/New_York',
-        utc_offset: '-0500',
-      })
-      .persist();
-
-    nock('https://ipapi.co')
-      .get('/json/')
-      .reply(200, {
-        ip: '203.0.113.1',
-        city: 'Test City',
-        region: 'Test Region',
-        country_name: 'Test Country',
-        country_code: 'TC',
-        latitude: 40.7128,
-        longitude: -74.006,
-        timezone: 'America/New_York',
-        utc_offset: '-0500',
-      })
-      .persist();
+    mockGeolocationRegex();
+    mockGeolocationSuccess(null, MOCK_RESPONSES.SECURITY, { persist: true });
   });
 
-  afterEach(() => {
-    nock.cleanAll();
-  });
+  setupSecurityTests();
 
   describe('Security Headers', () => {
     it('should include X-Content-Type-Options header', async () => {

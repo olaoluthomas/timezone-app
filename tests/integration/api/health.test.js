@@ -1,15 +1,15 @@
 const request = require('supertest');
-const nock = require('nock');
 const app = require('../../../src/app');
+const {
+  MOCK_RESPONSES,
+  mockGeolocationSuccess,
+  mockGeolocationError,
+  mockGeolocationNetworkError,
+} = require('../../helpers/nock-mocks');
+const { setupIntegrationTests } = require('../../helpers/test-setup');
 
 describe('Health Check Endpoints', () => {
-  beforeEach(() => {
-    nock.cleanAll();
-  });
-
-  afterAll(() => {
-    nock.restore();
-  });
+  setupIntegrationTests();
 
   describe('GET /health', () => {
     test('should return 200 with health status', async () => {
@@ -52,7 +52,7 @@ describe('Health Check Endpoints', () => {
 
   describe('GET /health/ready', () => {
     test('should return 200 when all dependencies healthy', async () => {
-      nock('https://ipapi.co').get('/json/').reply(200, { ip: '8.8.8.8' });
+      mockGeolocationSuccess(null, MOCK_RESPONSES.MINIMAL);
 
       const response = await request(app).get('/health/ready');
 
@@ -61,7 +61,7 @@ describe('Health Check Endpoints', () => {
     });
 
     test('should return 503 when API is down', async () => {
-      nock('https://ipapi.co').get('/json/').reply(500, {});
+      mockGeolocationError(null, 500);
 
       const response = await request(app).get('/health/ready');
 
@@ -70,7 +70,7 @@ describe('Health Check Endpoints', () => {
     });
 
     test('should include detailed check results', async () => {
-      nock('https://ipapi.co').get('/json/').reply(200, {});
+      mockGeolocationSuccess(null, MOCK_RESPONSES.EMPTY);
 
       const response = await request(app).get('/health/ready');
 
@@ -80,7 +80,7 @@ describe('Health Check Endpoints', () => {
     });
 
     test('should include response time metrics', async () => {
-      nock('https://ipapi.co').get('/json/').reply(200, {});
+      mockGeolocationSuccess(null, MOCK_RESPONSES.EMPTY);
 
       const response = await request(app).get('/health/ready');
 
@@ -90,7 +90,7 @@ describe('Health Check Endpoints', () => {
     });
 
     test('should handle API timeout gracefully', async () => {
-      nock('https://ipapi.co').get('/json/').delayConnection(3000).reply(200, {});
+      mockGeolocationSuccess(null, MOCK_RESPONSES.EMPTY, { delayConnection: 3000 });
 
       const response = await request(app).get('/health/ready');
 
@@ -99,7 +99,7 @@ describe('Health Check Endpoints', () => {
     });
 
     test('should handle network errors', async () => {
-      nock('https://ipapi.co').get('/json/').replyWithError({ code: 'ENOTFOUND' });
+      mockGeolocationNetworkError(null, 'ENOTFOUND');
 
       const response = await request(app).get('/health/ready');
 
@@ -108,7 +108,7 @@ describe('Health Check Endpoints', () => {
     });
 
     test('should complete within acceptable time', async () => {
-      nock('https://ipapi.co').get('/json/').reply(200, {});
+      mockGeolocationSuccess(null, MOCK_RESPONSES.EMPTY);
 
       const startTime = Date.now();
       await request(app).get('/health/ready');
@@ -118,7 +118,7 @@ describe('Health Check Endpoints', () => {
     });
 
     test('should include timestamp and uptime', async () => {
-      nock('https://ipapi.co').get('/json/').reply(200, {});
+      mockGeolocationSuccess(null, MOCK_RESPONSES.EMPTY);
 
       const response = await request(app).get('/health/ready');
 
@@ -128,7 +128,7 @@ describe('Health Check Endpoints', () => {
     });
 
     test('should show cache statistics when healthy', async () => {
-      nock('https://ipapi.co').get('/json/').reply(200, {});
+      mockGeolocationSuccess(null, MOCK_RESPONSES.EMPTY);
 
       const response = await request(app).get('/health/ready');
 
@@ -137,7 +137,7 @@ describe('Health Check Endpoints', () => {
     });
 
     test('should handle multiple simultaneous requests', async () => {
-      nock('https://ipapi.co').get('/json/').times(3).reply(200, {});
+      mockGeolocationSuccess(null, MOCK_RESPONSES.EMPTY, { times: 3 });
 
       const requests = [
         request(app).get('/health/ready'),
@@ -157,7 +157,7 @@ describe('Health Check Endpoints', () => {
   describe('Health Endpoints Error Handling', () => {
     test('/health should never return error even if other issues exist', async () => {
       // Simulate some external issue
-      nock('https://ipapi.co').get('/json/').reply(500, {});
+      mockGeolocationError(null, 500);
 
       const response = await request(app).get('/health');
 
@@ -168,7 +168,7 @@ describe('Health Check Endpoints', () => {
 
     test('/health/ready should catch unexpected errors', async () => {
       // Don't mock anything - let it fail naturally
-      nock('https://ipapi.co').get('/json/').replyWithError(new Error('Catastrophic failure'));
+      mockGeolocationNetworkError(null, new Error('Catastrophic failure'));
 
       const response = await request(app).get('/health/ready');
 
