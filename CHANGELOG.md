@@ -1,3 +1,9 @@
+## [1.7.0](https://github.com/olaoluthomas/timezone-app/compare/v1.6.4...v1.7.0) (2026-05-02)
+
+### Features
+
+* **geolocation:** use API key as fallback when free tier is rate-limited ([#170](https://github.com/olaoluthomas/timezone-app/issues/170)) ([553d5e1](https://github.com/olaoluthomas/timezone-app/commit/553d5e1bd7ebf183b89f0e248f6e31ff3ece391e)), closes [#169](https://github.com/olaoluthomas/timezone-app/issues/169)
+
 ## [1.6.4](https://github.com/olaoluthomas/timezone-app/compare/v1.6.3...v1.6.4) (2026-05-01)
 
 ## [1.6.3](https://github.com/olaoluthomas/timezone-app/compare/v1.6.2...v1.6.3) (2026-05-01)
