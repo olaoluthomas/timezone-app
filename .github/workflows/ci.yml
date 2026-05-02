@@ -211,8 +211,6 @@ jobs:
         run: npm ci
 
       - name: Run unit tests with coverage
-        env:
-          GEOLOCATION_API_KEY: ${{ secrets.GEOLOCATION_API_KEY }}
         run: npm run test:unit -- --coverage
 
   # Job 4: Integration Tests (Node 20.x, 22.x, and 24.x)
@@ -246,8 +244,6 @@ jobs:
         run: npm ci
 
       - name: Run integration tests
-        env:
-          GEOLOCATION_API_KEY: ${{ secrets.GEOLOCATION_API_KEY }}
         run: npm run test:integration
 
   # Job 5: Smoke Tests (Node 20.x, 22.x, and 24.x)
@@ -312,8 +308,6 @@ jobs:
         run: npm ci
 
       - name: Generate coverage report
-        env:
-          GEOLOCATION_API_KEY: ${{ secrets.GEOLOCATION_API_KEY }}
         run: npm test
 
       - name: Upload coverage artifact
