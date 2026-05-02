@@ -46,9 +46,14 @@ feat: add user authentication
 fix: resolve CORS issue on localhost
 docs: update API documentation
 test: add integration tests for health endpoint
-refactor: extract constants to config module
+test(refactor): extract nock helpers into tests/helpers
+refactor(services): extract constants from geolocation service
 chore: update dependencies
+ci: add security audit step to workflow
+build: switch from ts-node to tsx
 ```
+
+> **Rule**: if every changed file is under `tests/`, the type **must** be `test:` — even when the work is structural (e.g. extracting test helpers). `test:` does not trigger a release. `refactor:` does (patch).
 
 ## ⛔ What NOT to Do
 
