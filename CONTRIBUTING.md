@@ -116,10 +116,14 @@ git commit -m "test: add integration tests for health endpoint"
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
-- `test`: Adding or updating tests
-- `refactor`: Code refactoring
+- `test`: Adding or updating tests — **use this when only test files change**
+- `refactor`: Code refactoring in `src/` — triggers a patch release
 - `style`: Formatting changes
 - `chore`: Build/config changes
+- `ci`: CI/CD pipeline changes
+- `build`: Build system changes
+
+> **Rule**: if every changed file is under `tests/`, the type **must** be `test:` — even when the work is structural (e.g. extracting test helpers). `test:` does not trigger a release. `refactor:` does.
 
 ### 5. Automated Git Workflow
 
