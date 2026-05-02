@@ -1,24 +1,23 @@
-const nock = require('nock');
 const {
   checkGeolocationAPI,
   checkCache,
   performHealthCheck,
 } = require('../../../src/services/health');
 const cache = require('../../../src/services/cache');
+const {
+  MOCK_RESPONSES,
+  mockGeolocationSuccess,
+  mockGeolocationError,
+  mockGeolocationNetworkError,
+} = require('../../helpers/nock-mocks');
+const { setupGeolocationTests } = require('../../helpers/test-setup');
 
 describe('Health Service', () => {
-  beforeEach(() => {
-    nock.cleanAll();
-    cache.flush();
-  });
-
-  afterAll(() => {
-    nock.restore();
-  });
+  setupGeolocationTests(() => cache.flush());
 
   describe('checkGeolocationAPI', () => {
     test('should return healthy when API is accessible', async () => {
-      nock('https://ipapi.co').get('/json/').reply(200, { ip: '8.8.8.8' });
+      mockGeolocationSuccess(null, MOCK_RESPONSES.MINIMAL);
 
       const result = await checkGeolocationAPI();
 
@@ -28,10 +27,7 @@ describe('Health Service', () => {
     });
 
     test('should return unhealthy when API times out', async () => {
-      nock('https://ipapi.co')
-        .get('/json/')
-        .delayConnection(3000) // Delay longer than timeout
-        .reply(200, {});
+      mockGeolocationSuccess(null, MOCK_RESPONSES.EMPTY, { delayConnection: 3000 });
 
       const result = await checkGeolocationAPI();
 
@@ -41,7 +37,7 @@ describe('Health Service', () => {
     });
 
     test('should return unhealthy when API returns 500', async () => {
-      nock('https://ipapi.co').get('/json/').reply(500, { error: 'Server Error' });
+      mockGeolocationError(null, 500, { error: 'Server Error' });
 
       const result = await checkGeolocationAPI();
 
@@ -50,7 +46,7 @@ describe('Health Service', () => {
     });
 
     test('should return unhealthy on network error', async () => {
-      nock('https://ipapi.co').get('/json/').replyWithError({ code: 'ECONNREFUSED' });
+      mockGeolocationNetworkError(null, 'ECONNREFUSED');
 
       const result = await checkGeolocationAPI();
 
@@ -59,7 +55,7 @@ describe('Health Service', () => {
     });
 
     test('should complete check within timeout period', async () => {
-      nock('https://ipapi.co').get('/json/').reply(200, {});
+      mockGeolocationSuccess(null, MOCK_RESPONSES.EMPTY);
 
       const startTime = Date.now();
       await checkGeolocationAPI();
@@ -111,7 +107,7 @@ describe('Health Service', () => {
 
   describe('performHealthCheck', () => {
     test('should return healthy when all checks pass', async () => {
-      nock('https://ipapi.co').get('/json/').reply(200, {});
+      mockGeolocationSuccess(null, MOCK_RESPONSES.EMPTY);
 
       const result = await performHealthCheck();
 
@@ -124,7 +120,7 @@ describe('Health Service', () => {
     });
 
     test('should return degraded when API check fails', async () => {
-      nock('https://ipapi.co').get('/json/').reply(500, {});
+      mockGeolocationError(null, 500);
 
       const result = await performHealthCheck();
 
@@ -134,7 +130,7 @@ describe('Health Service', () => {
     });
 
     test('should return degraded when cache check fails', async () => {
-      nock('https://ipapi.co').get('/json/').reply(200, {});
+      mockGeolocationSuccess(null, MOCK_RESPONSES.EMPTY);
 
       jest.spyOn(cache, 'getStats').mockImplementation(() => {
         throw new Error('Cache error');
@@ -150,7 +146,7 @@ describe('Health Service', () => {
     });
 
     test('should run checks in parallel', async () => {
-      nock('https://ipapi.co').get('/json/').delay(500).reply(200, {});
+      mockGeolocationSuccess(null, MOCK_RESPONSES.EMPTY, { delay: 500 });
 
       const startTime = Date.now();
       await performHealthCheck();
@@ -161,7 +157,7 @@ describe('Health Service', () => {
     });
 
     test('should include all required fields', async () => {
-      nock('https://ipapi.co').get('/json/').reply(200, {});
+      mockGeolocationSuccess(null, MOCK_RESPONSES.EMPTY);
 
       const result = await performHealthCheck();
 
