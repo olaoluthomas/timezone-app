@@ -1,3 +1,8 @@
+## [1.7.3](https://github.com/olaoluthomas/timezone-app/compare/v1.7.2...v1.7.3) (2026-05-03)
+
+### Code Refactoring
+
+* MVC controller layer and centralized error handler (Closes [#35](https://github.com/olaoluthomas/timezone-app/issues/35), [#36](https://github.com/olaoluthomas/timezone-app/issues/36)) ([#180](https://github.com/olaoluthomas/timezone-app/issues/180)) ([1b27f3e](https://github.com/olaoluthomas/timezone-app/commit/1b27f3e01f2f0885625d7b60819322399db6da87))
 
 ## [1.7.2](https://github.com/olaoluthomas/timezone-app/compare/v1.7.1...v1.7.2) (2026-05-02)
 
