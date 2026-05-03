@@ -114,7 +114,7 @@ git commit -m "test(controllers): add unit tests for healthController and timezo
 - ✅ **Commit Message**: Validates conventional commit format
 
 ### Pre-Push Hook (Automatic)
-- ✅ **Full Test Suite**: Runs all 213 tests (~15 seconds)
+- ✅ **Full Test Suite**: Runs all 345 tests (~60 seconds)
 - ✅ **Code Coverage**: Verifies 96%+ coverage maintained
 - ✅ **Security Audit**: Checks for vulnerabilities
 - ✅ **Build Validation**: Ensures code compiles

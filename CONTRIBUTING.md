@@ -174,7 +174,7 @@ When you push, the pre-push hook automatically runs:
 3. **Linting** checks
 4. **Security audit**
 
-**The push is blocked if any check fails** (~15 seconds total).
+**The push is blocked if any check fails** (~60 seconds total).
 
 ```bash
 git push origin feature/my-feature
