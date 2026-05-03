@@ -15,7 +15,6 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: #0a0a2e;
-            /* 100dvh respects mobile browser chrome retraction; 100vh is the fallback */
             height: 100vh;
             height: 100dvh;
             overflow: hidden;
@@ -60,7 +59,6 @@
             background: #0a0a2e;
         }
 
-        /* Starts invisible; Globe.GL fades it in via .ready once texture is loaded */
         #globe-container {
             width: 100%;
             height: 100%;
@@ -72,7 +70,6 @@
             opacity: 1;
         }
 
-        /* "Detecting your location…" centred in the globe area */
         .globe-loading {
             position: absolute;
             inset: 0;
@@ -85,7 +82,51 @@
             pointer-events: none;
         }
 
-        /* Error banner anchored to the bottom of the globe area */
+        /* ── Globe floating location label ── */
+        .globe-label {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 8px;
+            padding: 9px 13px;
+            border-left: 3px solid #667eea;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+            /* Centre horizontally and sit above the pin */
+            transform: translate(-50%, calc(-100% - 14px));
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        /* Downward arrow connecting label to pin */
+        .globe-label::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-bottom: none;
+            border-top-color: rgba(255, 255, 255, 0.96);
+        }
+
+        .globe-label-city {
+            font-size: 0.88em;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 2px;
+        }
+
+        .globe-label-country {
+            font-size: 0.72em;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .globe-label-time {
+            font-size: 0.78em;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        /* ── Error banner ── */
         .error-banner {
             position: absolute;
             bottom: 0;
@@ -108,10 +149,10 @@
         /* ── Info strip ── */
         .info-strip {
             background: white;
-            padding: 14px 20px;
+            padding: 16px 24px;
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 14px;
             align-items: stretch;
             border-top: 3px solid #667eea;
             flex-shrink: 0;
@@ -121,11 +162,12 @@
             background: #f7f7f7;
             border-left: 3px solid #667eea;
             border-radius: 8px;
-            padding: 10px 14px;
+            padding: 12px 16px;
             display: flex;
             flex-direction: column;
             flex: 1;
-            min-width: 110px;
+            /* Wide enough to avoid truncation on typical screens */
+            min-width: 140px;
         }
 
         .chip-label {
@@ -133,28 +175,27 @@
             color: #666;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
+            white-space: nowrap;
         }
 
         .chip-value {
             font-size: 1em;
             font-weight: 600;
             color: #333;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            /* Allow natural line breaks; break-anywhere as a last resort for IPs */
+            overflow-wrap: anywhere;
+            line-height: 1.3;
         }
 
         /* ── Mobile (≤600px) ── */
         @media (max-width: 600px) {
             body {
-                /* Allow scroll on small screens so info strip is reachable */
                 height: auto;
                 overflow: auto;
             }
 
             .globe-hero {
-                /* Fixed height on mobile so globe doesn't dominate the entire screen */
                 flex: none;
                 height: 60vw;
                 min-height: 240px;
@@ -162,13 +203,20 @@
 
             h1 { font-size: 1em; }
 
-            /* Switch from flex-wrap to 3-column grid for predictable info strip height */
+            /* 2 columns × 2 rows for the 4 remaining chips */
             .info-strip {
                 display: grid;
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
+                padding: 14px 16px;
+                gap: 10px;
             }
 
-            .chip-value { font-size: 0.88em; }
+            .info-chip {
+                min-width: 0;
+                padding: 10px 12px;
+            }
+
+            .chip-value { font-size: 0.9em; }
         }
     </style>
 </head>
@@ -184,19 +232,11 @@
         <div id="error-banner" class="error-banner" hidden></div>
     </div>
 
+    <!--
+        4 chips — location & time moved to the globe floating label.
+        Remaining technical fields: Timezone, UTC Offset, Coordinates, IP Address.
+    -->
     <div id="info-strip" class="info-strip" hidden>
-        <div class="info-chip">
-            <span class="chip-label">Local Time</span>
-            <span class="chip-value" id="info-time">--</span>
-        </div>
-        <div class="info-chip">
-            <span class="chip-label">Location</span>
-            <span class="chip-value" id="info-location">--</span>
-        </div>
-        <div class="info-chip">
-            <span class="chip-label">Country</span>
-            <span class="chip-value" id="info-country">--</span>
-        </div>
         <div class="info-chip">
             <span class="chip-label">Timezone</span>
             <span class="chip-value" id="info-timezone">--</span>
@@ -217,9 +257,9 @@
 
     <!--
         Globe.GL loaded synchronously before the inline script.
-        CDN sources to whitelist when Helmet CSP is eventually enabled:
+        CSP sources to whitelist when Helmet CSP is eventually enabled:
           script-src: cdn.jsdelivr.net
-          img-src:    unpkg.com  (Earth day texture, night-sky background)
+          img-src:    unpkg.com  (earth-day.jpg, night-sky.png)
     -->
     <script src="https://cdn.jsdelivr.net/npm/globe.gl@2/dist/globe.gl.min.js"></script>
     <script>
@@ -253,8 +293,7 @@
                 const message = errorMessage
                     || 'Unable to reach the server. Please check your connection and try again.';
                 showError(message, isWarning);
-                // Render a placeholder globe even when the API fails (no location zoom)
-                initGlobe(null, null);
+                initGlobe(null);
             }
         }
 
@@ -262,18 +301,15 @@
             const latDir = data.latitude  >= 0 ? 'N' : 'S';
             const lngDir = data.longitude >= 0 ? 'E' : 'W';
 
-            document.getElementById('info-location').textContent =
-                `${data.city}, ${data.region}`;
-            document.getElementById('info-country').textContent  = data.country;
             document.getElementById('info-timezone').textContent = data.timezone;
             document.getElementById('info-utc').textContent      = data.utcOffset;
             document.getElementById('info-coords').textContent   =
-                `${Math.abs(data.latitude)}°${latDir}, ${Math.abs(data.longitude)}°${lngDir}`;
+                `${Math.abs(data.latitude).toFixed(4)}°${latDir}, ${Math.abs(data.longitude).toFixed(4)}°${lngDir}`;
             document.getElementById('info-ip').textContent       = data.ip;
 
             document.getElementById('info-strip').removeAttribute('hidden');
             updateCurrentTime(data.timezone);
-            initGlobe(data.latitude, data.longitude);
+            initGlobe(data);
         }
 
         function showError(message, isWarning) {
@@ -284,8 +320,11 @@
             document.getElementById('globe-loading')?.remove();
         }
 
-        function initGlobe(lat, lng) {
-            // Re-use existing instance — just pan to the new location
+        function initGlobe(data) {
+            const lat = data ? data.latitude  : null;
+            const lng = data ? data.longitude : null;
+
+            // Re-use existing instance — pan to the new location
             if (globeInstance) {
                 if (lat !== null) {
                     globeInstance.pointOfView({ lat, lng, altitude: 0.5 }, 1500);
@@ -304,8 +343,7 @@
                 return;
             }
 
-            // Defer init to the next frame so that any DOM layout changes
-            // (e.g. info strip appearing) are reflected in clientWidth/clientHeight
+            // Defer init one frame so layout dimensions (flex: 1) are settled
             requestAnimationFrame(() => {
                 const container = document.getElementById('globe-container');
 
@@ -313,19 +351,20 @@
                     .globeImageUrl('//unpkg.com/three-globe/example/img/earth-day.jpg')
                     .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
                     .onGlobeReady(() => {
-                        // Fade the canvas in once the Earth texture is loaded
                         container.classList.add('ready');
                         document.getElementById('globe-loading')?.remove();
 
-                        // Disable auto-rotation so the globe stays on the user's location
+                        // Keep the globe stationary on the user's location
                         globeInstance.controls().autoRotate = false;
 
                         if (lat !== null && lng !== null) {
-                            // Snap to user's hemisphere, then animate zoom-in over 2 s
+                            // Snap to hemisphere, then animate zoom-in over 2 s
                             globeInstance.pointOfView({ lat, lng, altitude: 2.5 }, 0);
                             setTimeout(() => {
                                 globeInstance.pointOfView({ lat, lng, altitude: 0.5 }, 2000);
                             }, 300);
+
+                            addLocationMarker(data);
                         }
                     })
                     .width(container.clientWidth)
@@ -340,20 +379,54 @@
             });
         }
 
+        function addLocationMarker(data) {
+            const { latitude: lat, longitude: lng, city, region, country } = data;
+
+            // Pulsing ripple rings around the pin
+            globeInstance
+                .ringsData([{ lat, lng }])
+                .ringColor(() => 'rgba(102, 126, 234, 0.75)')
+                .ringMaxRadius(4)
+                .ringPropagationSpeed(2)
+                .ringRepeatPeriod(900);
+
+            // Solid marker dot at the location
+            globeInstance
+                .pointsData([{ lat, lng }])
+                .pointColor(() => '#667eea')
+                .pointAltitude(0.015)
+                .pointRadius(0.4);
+
+            // Floating info label positioned above the pin
+            const label = document.createElement('div');
+            label.className = 'globe-label';
+            label.innerHTML =
+                `<div class="globe-label-city">${city}, ${region}</div>` +
+                `<div class="globe-label-country">${country}</div>` +
+                `<div class="globe-label-time" id="globe-time">--</div>`;
+
+            globeInstance
+                .htmlElementsData([{ lat, lng }])
+                .htmlElement(() => label);
+        }
+
         function updateCurrentTime(timezone) {
             const formatted = new Intl.DateTimeFormat('en-US', {
-                timeZone:  timezone,
-                month:     'short',
-                day:       'numeric',
-                year:      'numeric',
-                hour:      '2-digit',
-                minute:    '2-digit',
-                second:    '2-digit',
-                hour12:    false,
+                timeZone: timezone,
+                month:    'short',
+                day:      'numeric',
+                year:     'numeric',
+                hour:     '2-digit',
+                minute:   '2-digit',
+                second:   '2-digit',
+                hour12:   false,
             }).format(new Date());
 
-            const el = document.getElementById('info-time');
-            if (el) el.textContent = formatted;
+            const infoTime  = document.getElementById('info-time');
+            if (infoTime)  infoTime.textContent  = formatted;
+            // Also update the time shown inside the globe floating label
+            const globeTime = document.getElementById('globe-time');
+            if (globeTime) globeTime.textContent = formatted;
         }
 
         fetchTimezoneInfo();
