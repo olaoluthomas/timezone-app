@@ -237,6 +237,17 @@ All PRs **MUST**:
 - ✅ Maintain or improve code coverage (96%+)
 - ✅ Have appropriate labels applied (automatic via script)
 
+### Merge Method by PR Direction
+
+> ⚠️ **The merge method is critical for correct CHANGELOG generation.**
+
+| PR direction | Required method | Forbidden |
+|---|---|---|
+| feature / fix / docs → `dev` | **Squash and merge** | — |
+| `dev` → `main` | **Create a merge commit** | ❌ Squash, ❌ Rebase |
+
+Squash-merging `dev` into `main` collapses all commits into one — semantic-release sees a single commit and produces one CHANGELOG line instead of individual entries per feature/fix.
+
 ## Common Mistakes
 
 ### ❌ Mistake: Committing to main
