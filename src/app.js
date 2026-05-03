@@ -31,9 +31,8 @@ const corsMiddleware = require('./middleware/cors');
 const { apiLimiter, healthLimiter } = require('./middleware/rate-limit');
 const timeoutMiddleware = require('./middleware/timeout');
 const requestLogger = require('./middleware/request-logger');
-const geolocationService = require('./services/geolocation');
-const healthService = require('./services/health');
-const logger = require('./utils/logger');
+const healthController = require('./controllers/healthController');
+const timezoneController = require('./controllers/timezoneController');
 const CONSTANTS = require('./config/constants');
 
 const app = express();
@@ -75,60 +74,11 @@ app.use(timeoutMiddleware(CONSTANTS.REQUEST_TIMEOUT));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 8. Health check endpoints with lenient rate limiting
-app.get('/health', healthLimiter, (req, res) => {
-  res.status(200).json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-  });
-});
-
-app.get('/health/ready', healthLimiter, async (req, res) => {
-  try {
-    const healthStatus = await healthService.performHealthCheck();
-    const statusCode = healthStatus.status === 'healthy' ? 200 : 503;
-    res.status(statusCode).json(healthStatus);
-  } catch (error) {
-    res.status(503).json({
-      status: 'unhealthy',
-      timestamp: new Date().toISOString(),
-      error: 'Health check failed',
-      message: error.message,
-    });
-  }
-});
+app.get('/health', healthLimiter, healthController.getLiveness);
+app.get('/health/ready', healthLimiter, healthController.getReadiness);
 
 // 9. API routes with strict rate limiting
-app.get('/api/timezone', apiLimiter, async (req, res) => {
-  // Handle socket timeout: send 503 instead of letting the socket be destroyed.
-  // Without this listener, Node.js auto-destroys the socket after REQUEST_TIMEOUT,
-  // causing clients to receive a "socket hang up" rather than a proper error response.
-  res.on('timeout', () => {
-    if (!res.headersSent) {
-      res.status(503).set('Retry-After', '60').json({
-        error: 'Geolocation service temporarily unavailable',
-      });
-    }
-  });
-
-  try {
-    // Get client IP - trust proxy setting handles X-Forwarded-For parsing
-    // req.ip is automatically parsed by Express when trust proxy is enabled
-    const clientIP = req.ip;
-
-    const timezoneInfo = await geolocationService.getTimezoneByIP(clientIP);
-    res.json(timezoneInfo);
-  } catch (error) {
-    logger.error('Timezone API error', { error: error.message, ip: req.ip });
-    if (error.rateLimited) {
-      res.status(503).set('Retry-After', '60').json({
-        error: 'Geolocation service temporarily unavailable',
-      });
-    } else {
-      res.status(500).json({ error: 'Failed to fetch timezone information' });
-    }
-  }
-});
+app.get('/api/timezone', apiLimiter, timezoneController.getTimezone);
 
 module.exports = app;
 // Test PR issue closing validation - Test 1: issue-N format
