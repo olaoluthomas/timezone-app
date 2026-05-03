@@ -327,7 +327,7 @@
             // Re-use existing instance — pan to the new location
             if (globeInstance) {
                 if (lat !== null) {
-                    globeInstance.pointOfView({ lat, lng, altitude: 0.5 }, 1500);
+                    globeInstance.pointOfView({ lat, lng, altitude: 0.35 }, 1500);
                 }
                 return;
             }
@@ -348,7 +348,7 @@
                 const container = document.getElementById('globe-container');
 
                 globeInstance = Globe()
-                    .globeImageUrl('//unpkg.com/three-globe/example/img/earth-day.jpg')
+                    .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
                     .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
                     .onGlobeReady(() => {
                         container.classList.add('ready');
@@ -357,11 +357,16 @@
                         // Keep the globe stationary on the user's location
                         globeInstance.controls().autoRotate = false;
 
+                        // Prevent zooming closer than altitude 0.15 — texture degrades below this
+                        const MIN_ALTITUDE = 0.15;
+                        globeInstance.controls().minDistance =
+                            globeInstance.getGlobeRadius() * (1 + MIN_ALTITUDE);
+
                         if (lat !== null && lng !== null) {
                             // Snap to hemisphere, then animate zoom-in over 2 s
                             globeInstance.pointOfView({ lat, lng, altitude: 2.5 }, 0);
                             setTimeout(() => {
-                                globeInstance.pointOfView({ lat, lng, altitude: 0.5 }, 2000);
+                                globeInstance.pointOfView({ lat, lng, altitude: 0.35 }, 2000);
                             }, 300);
 
                             addLocationMarker(data);
