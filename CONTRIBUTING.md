@@ -123,7 +123,21 @@ git commit -m "test: add integration tests for health endpoint"
 - `ci`: CI/CD pipeline changes
 - `build`: Build system changes
 
-> **Rule**: if every changed file is under `tests/`, the type **must** be `test:` — even when the work is structural (e.g. extracting test helpers). `test:` does not trigger a release. `refactor:` does.
+> **Rule 1 — type by directory**: if every changed file is under `tests/`, the type **must** be `test:` — even when the work is structural (e.g. extracting test helpers). `test:` does not trigger a release. `refactor:` does.
+
+> **Rule 2 — split `src/` and `tests/` into separate commits**: when a change touches both `src/` and `tests/`, stage and commit them in two separate commits. The `src/` commit uses the appropriate type; the `tests/` commit uses `test:`. This keeps the CHANGELOG accurate — a `refactor:` commit correctly triggers a patch release and appears in the release notes, while the accompanying `test:` commit does not.
+>
+> ```bash
+> # ✅ Correct
+> git add src/
+> git commit -m "refactor(controllers): extract route handlers to controller layer"
+> git add tests/
+> git commit -m "test(controllers): add unit tests for healthController and timezoneController"
+>
+> # ❌ Wrong — CHANGELOG entry will show "refactor" but the diff includes test files
+> git add src/ tests/
+> git commit -m "refactor(controllers): extract route handlers and add tests"
+> ```
 
 ### 5. Automated Git Workflow
 

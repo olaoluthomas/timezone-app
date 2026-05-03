@@ -53,7 +53,21 @@ ci: add security audit step to workflow
 build: switch from ts-node to tsx
 ```
 
-> **Rule**: if every changed file is under `tests/`, the type **must** be `test:` — even when the work is structural (e.g. extracting test helpers). `test:` does not trigger a release. `refactor:` does (patch).
+> **Rule 1 — type by directory**: if every changed file is under `tests/`, the type **must** be `test:` — even when the work is structural (e.g. extracting test helpers). `test:` does not trigger a release. `refactor:` does (patch).
+
+> **Rule 2 — split `src/` and `tests/` into separate commits**: when a change touches both `src/` and `tests/`, stage and commit them independently. The `src/` commit uses the appropriate type (`feat:`, `fix:`, `refactor:`, etc.); the `tests/` commit uses `test:`. This keeps the CHANGELOG accurate and ensures `test:` commits (which don't trigger releases) are never bundled with types that do.
+>
+> ```bash
+> # ✅ Correct — two commits
+> git add src/controllers/
+> git commit -m "refactor(controllers): extract route handlers to controller layer"
+> git add tests/unit/controllers/
+> git commit -m "test(controllers): add unit tests for healthController and timezoneController"
+>
+> # ❌ Wrong — one commit mixing src/ and tests/
+> git add src/controllers/ tests/unit/controllers/
+> git commit -m "refactor(controllers): extract route handlers and add tests"
+> ```
 
 ## ⛔ What NOT to Do
 
@@ -72,6 +86,19 @@ git commit -m "some changes"
 
 # Good PR title
 "docs: update README with API examples (Fixes #88)"
+```
+
+**❌ DO NOT mix `src/` and `tests/` in a single commit:**
+```bash
+# Bad — one commit bundles implementation and tests
+git add src/controllers/ tests/unit/controllers/
+git commit -m "refactor(controllers): extract route handlers and add tests"
+
+# Good — two commits, each with the right type
+git add src/controllers/
+git commit -m "refactor(controllers): extract route handlers to controller layer"
+git add tests/unit/controllers/
+git commit -m "test(controllers): add unit tests for healthController and timezoneController"
 ```
 
 **❌ DO NOT skip creating issues:**
@@ -152,11 +179,14 @@ git checkout -b refactor/issue-37-remove-promise-resolve
 # 3. Refactor and verify tests still pass
 npm test
 
-# 4. Commit and push
-git commit -m "refactor: remove unnecessary Promise.resolve() wrapper"
-git push -u origin refactor/issue-37-remove-promise-resolve
+# 4. Commit src/ and tests/ separately
+git add src/
+git commit -m "refactor: remove unnecessary Promise.resolve() wrapper (Closes #37)"
+git add tests/
+git commit -m "test: update geolocation tests for Promise.resolve removal"
 
-# 5. Create PR
+# 5. Push and create PR
+git push -u origin refactor/issue-37-remove-promise-resolve
 # Preferred: GitHub MCP create_pull_request | Fallback: npm run create-pr
 ```
 
