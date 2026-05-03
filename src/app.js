@@ -19,6 +19,7 @@
  * 8. Static files (no rate limiting)
  * 9. Health endpoints (lenient rate limiting)
  * 10. API endpoints (strict rate limiting)
+ * 11. Centralized error handler (must be last)
  *
  * @module app
  */
@@ -33,6 +34,7 @@ const timeoutMiddleware = require('./middleware/timeout');
 const requestLogger = require('./middleware/request-logger');
 const healthController = require('./controllers/healthController');
 const timezoneController = require('./controllers/timezoneController');
+const { errorHandler } = require('./middleware/error-handler');
 const CONSTANTS = require('./config/constants');
 
 const app = express();
@@ -79,6 +81,9 @@ app.get('/health/ready', healthLimiter, healthController.getReadiness);
 
 // 9. API routes with strict rate limiting
 app.get('/api/timezone', apiLimiter, timezoneController.getTimezone);
+
+// 10. Centralized error handler (must be registered after all routes)
+app.use(errorHandler);
 
 module.exports = app;
 // Test PR issue closing validation - Test 1: issue-N format

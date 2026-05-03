@@ -1,12 +1,11 @@
 const { getTimezone } = require('../../../src/controllers/timezoneController');
+const { APIError } = require('../../../src/middleware/error-handler');
 const geolocationService = require('../../../src/services/geolocation');
-const logger = require('../../../src/utils/logger');
 
 jest.mock('../../../src/services/geolocation');
-jest.mock('../../../src/utils/logger', () => ({
-  error: jest.fn(),
-  warn: jest.fn(),
-}));
+// error-handler uses config and logger; mock both to keep unit test isolated
+jest.mock('../../../src/config', () => ({ isDevelopment: false }));
+jest.mock('../../../src/utils/logger', () => ({ error: jest.fn(), warn: jest.fn() }));
 
 const MOCK_TIMEZONE_RESULT = {
   ip: '8.8.8.8',
@@ -61,27 +60,36 @@ describe('Timezone Controller', () => {
   });
 
   describe('timeout handling', () => {
-    test('sends 503 with Retry-After when timeout fires', async () => {
+    test('calls next(APIError) with 503 when timeout fires', async () => {
       geolocationService.getTimezoneByIP.mockResolvedValue(MOCK_TIMEZONE_RESULT);
       await getTimezone(req, res, next);
 
       res._timeoutCb();
 
-      expect(res.status).toHaveBeenCalledWith(503);
-      expect(res.set).toHaveBeenCalledWith('Retry-After', '60');
-      expect(res.json).toHaveBeenCalledWith({
-        error: 'Geolocation service temporarily unavailable',
-      });
+      expect(next).toHaveBeenCalledWith(expect.any(APIError));
+      const apiErr = next.mock.calls[0][0];
+      expect(apiErr.statusCode).toBe(503);
+      expect(apiErr.details.retryAfter).toBe(60);
     });
 
-    test('does not double-send if headers already sent on timeout', async () => {
+    test('timeout APIError has correct message', async () => {
+      geolocationService.getTimezoneByIP.mockResolvedValue(MOCK_TIMEZONE_RESULT);
+      await getTimezone(req, res, next);
+
+      res._timeoutCb();
+
+      const apiErr = next.mock.calls[0][0];
+      expect(apiErr.message).toBe('Geolocation service temporarily unavailable');
+    });
+
+    test('does not call next on timeout if headers already sent', async () => {
       geolocationService.getTimezoneByIP.mockResolvedValue(MOCK_TIMEZONE_RESULT);
       await getTimezone(req, res, next);
 
       res.headersSent = true;
       res._timeoutCb();
 
-      expect(res.status).not.toHaveBeenCalledWith(503);
+      expect(next).not.toHaveBeenCalled();
     });
   });
 
@@ -93,41 +101,38 @@ describe('Timezone Controller', () => {
       expect(next).toHaveBeenCalledWith(err);
     });
 
-    test('logs error for generic failures', async () => {
-      const err = new Error('Network failure');
-      geolocationService.getTimezoneByIP.mockRejectedValue(err);
-      await getTimezone(req, res, next);
-      expect(logger.error).toHaveBeenCalledWith(
-        'Timezone API error',
-        expect.objectContaining({ error: 'Network failure', ip: '8.8.8.8' })
-      );
-    });
-
-    test('returns 503 with Retry-After for rate-limited errors', async () => {
+    test('calls next(APIError) for rate-limited errors', async () => {
       const err = Object.assign(new Error('rate limited'), { rateLimited: true });
       geolocationService.getTimezoneByIP.mockRejectedValue(err);
       await getTimezone(req, res, next);
-      expect(res.status).toHaveBeenCalledWith(503);
-      expect(res.set).toHaveBeenCalledWith('Retry-After', '60');
+      expect(next).toHaveBeenCalledWith(expect.any(APIError));
     });
 
-    test('rate-limited response body has correct error message', async () => {
+    test('rate-limited APIError has statusCode 503 and retryAfter', async () => {
       const err = Object.assign(new Error('rate limited'), { rateLimited: true });
       geolocationService.getTimezoneByIP.mockRejectedValue(err);
       await getTimezone(req, res, next);
-      expect(res.json).toHaveBeenCalledWith({
-        error: 'Geolocation service temporarily unavailable',
-      });
+      const apiErr = next.mock.calls[0][0];
+      expect(apiErr.statusCode).toBe(503);
+      expect(apiErr.details.retryAfter).toBe(60);
     });
 
-    test('does not call next for rate-limited errors', async () => {
+    test('rate-limited APIError has correct message', async () => {
       const err = Object.assign(new Error('rate limited'), { rateLimited: true });
       geolocationService.getTimezoneByIP.mockRejectedValue(err);
       await getTimezone(req, res, next);
-      expect(next).not.toHaveBeenCalled();
+      const apiErr = next.mock.calls[0][0];
+      expect(apiErr.message).toBe('Geolocation service temporarily unavailable');
     });
 
-    test('does not respond if headers already sent on error', async () => {
+    test('does not respond directly for rate-limited errors (delegated to error handler)', async () => {
+      const err = Object.assign(new Error('rate limited'), { rateLimited: true });
+      geolocationService.getTimezoneByIP.mockRejectedValue(err);
+      await getTimezone(req, res, next);
+      expect(res.json).not.toHaveBeenCalled();
+    });
+
+    test('does not respond or call next if headers already sent on error', async () => {
       const err = new Error('Network failure');
       geolocationService.getTimezoneByIP.mockRejectedValue(err);
       res.headersSent = true;

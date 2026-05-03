@@ -1,5 +1,5 @@
 const geolocationService = require('../services/geolocation');
-const logger = require('../utils/logger');
+const { APIError } = require('../middleware/error-handler');
 
 async function getTimezone(req, res, next) {
   // Handle socket timeout: send 503 instead of letting the socket be destroyed.
@@ -7,9 +7,7 @@ async function getTimezone(req, res, next) {
   // causing clients to receive a "socket hang up" rather than a proper error response.
   res.on('timeout', () => {
     if (!res.headersSent) {
-      res.status(503).set('Retry-After', '60').json({
-        error: 'Geolocation service temporarily unavailable',
-      });
+      next(new APIError('Geolocation service temporarily unavailable', 503, { retryAfter: 60 }));
     }
   });
 
@@ -23,14 +21,12 @@ async function getTimezone(req, res, next) {
     }
   } catch (error) {
     if (res.headersSent) return;
-    logger.error('Timezone API error', { error: error.message, ip: req.ip });
     if (error.rateLimited) {
-      res.status(503).set('Retry-After', '60').json({
-        error: 'Geolocation service temporarily unavailable',
-      });
-    } else {
-      next(error);
+      return next(
+        new APIError('Geolocation service temporarily unavailable', 503, { retryAfter: 60 })
+      );
     }
+    next(error);
   }
 }
 
