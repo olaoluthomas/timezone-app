@@ -1,3 +1,9 @@
+## [1.8.0](https://github.com/olaoluthomas/timezone-app/compare/v1.7.3...v1.8.0) (2026-05-03)
+
+### Features
+
+* **ui:** Globe view — Blue Marble texture, location pin, hero layout, max zoom (Closes [#71](https://github.com/olaoluthomas/timezone-app/issues/71), [#72](https://github.com/olaoluthomas/timezone-app/issues/72), [#73](https://github.com/olaoluthomas/timezone-app/issues/73)) ([#188](https://github.com/olaoluthomas/timezone-app/issues/188)) ([5a6664d](https://github.com/olaoluthomas/timezone-app/commit/5a6664dad4d1bd6e663e5100fa30c290a32db0c2)), closes [#183](https://github.com/olaoluthomas/timezone-app/issues/183) [#184](https://github.com/olaoluthomas/timezone-app/issues/184) [#185](https://github.com/olaoluthomas/timezone-app/issues/185) [#186](https://github.com/olaoluthomas/timezone-app/issues/186) [#187](https://github.com/olaoluthomas/timezone-app/issues/187)
+
 ## [1.7.3](https://github.com/olaoluthomas/timezone-app/compare/v1.7.2...v1.7.3) (2026-05-03)
 
 ### Code Refactoring
