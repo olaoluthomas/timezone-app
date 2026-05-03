@@ -14,201 +14,230 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 600px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .header {
+            background: #0a0a2e;
+            /* 100dvh respects mobile browser chrome retraction; 100vh is the fallback */
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
+        }
+
+        /* ── Header ── */
+        .app-header {
+            display: flex;
             align-items: center;
-            margin-bottom: 30px;
+            gap: 12px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+            backdrop-filter: blur(8px);
+            flex-shrink: 0;
+            z-index: 10;
         }
 
         .logo {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 15px;
+            width: 36px;
+            height: 36px;
             animation: fadeIn 0.6s ease-in;
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
-            color: #333;
-            text-align: center;
-            font-size: 2em;
-            margin: 0;
-        }
-
-        .loading {
-            text-align: center;
-            color: #666;
+            color: white;
             font-size: 1.2em;
-        }
-
-        .info-grid {
-            display: grid;
-            gap: 20px;
-        }
-
-        .info-item {
-            background: #f7f7f7;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-        }
-
-        .info-label {
-            font-size: 0.85em;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-        }
-
-        .info-value {
-            font-size: 1.3em;
-            color: #333;
             font-weight: 600;
         }
 
-        .time-display {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .time-display .info-label {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .time-display .info-value {
-            color: white;
-            font-size: 2em;
-            font-weight: 700;
-        }
-
-        .error {
-            background: #fee;
-            color: #c33;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .error--warning {
-            background: #fff8e1;
-            color: #92400e;
-            border-left: 4px solid #f59e0b;
-        }
-
-        .error--critical {
-            border-left: 4px solid #ef4444;
-        }
-
-        .coordinates {
-            display: flex;
-            gap: 10px;
-        }
-
-        .coordinates .info-item {
+        /* ── Globe hero ── */
+        .globe-hero {
             flex: 1;
-        }
-
-        /* Globe section */
-        .globe-section {
-            margin-top: 30px;
-            border-radius: 15px;
-            overflow: hidden;
+            min-height: 0;
+            position: relative;
             background: #0a0a2e;
         }
 
+        /* Starts invisible; Globe.GL fades it in via .ready once texture is loaded */
         #globe-container {
             width: 100%;
-            height: 420px;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.6s ease-in;
         }
 
+        #globe-container.ready {
+            opacity: 1;
+        }
+
+        /* "Detecting your location…" centred in the globe area */
+        .globe-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 1em;
+            letter-spacing: 1px;
+            pointer-events: none;
+        }
+
+        /* Error banner anchored to the bottom of the globe area */
+        .error-banner {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 14px 20px;
+            background: rgba(254, 238, 238, 0.95);
+            color: #c33;
+            text-align: center;
+            font-size: 0.9em;
+            backdrop-filter: blur(4px);
+        }
+
+        .error-banner--warning {
+            background: rgba(255, 248, 225, 0.95);
+            color: #92400e;
+            border-top: 3px solid #f59e0b;
+        }
+
+        /* ── Info strip ── */
+        .info-strip {
+            background: white;
+            padding: 14px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: stretch;
+            border-top: 3px solid #667eea;
+            flex-shrink: 0;
+        }
+
+        .info-chip {
+            background: #f7f7f7;
+            border-left: 3px solid #667eea;
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 110px;
+        }
+
+        .chip-label {
+            font-size: 0.72em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 3px;
+        }
+
+        .chip-value {
+            font-size: 1em;
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ── Mobile (≤600px) ── */
         @media (max-width: 600px) {
-            .container {
-                padding: 20px;
+            body {
+                /* Allow scroll on small screens so info strip is reachable */
+                height: auto;
+                overflow: auto;
             }
 
-            .logo {
-                width: 60px;
-                height: 60px;
+            .globe-hero {
+                /* Fixed height on mobile so globe doesn't dominate the entire screen */
+                flex: none;
+                height: 60vw;
+                min-height: 240px;
             }
 
-            h1 {
-                font-size: 1.5em;
+            h1 { font-size: 1em; }
+
+            /* Switch from flex-wrap to 3-column grid for predictable info strip height */
+            .info-strip {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
             }
 
-            .time-display .info-value {
-                font-size: 1.5em;
-            }
-
-            #globe-container {
-                height: 300px;
-            }
+            .chip-value { font-size: 0.88em; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <img src="logo.svg" alt="Timezone App Logo" class="logo">
-            <h1>Timezone Detector</h1>
+    <header class="app-header">
+        <img src="logo.svg" alt="Timezone App" class="logo">
+        <h1>Timezone Detector</h1>
+    </header>
+
+    <div class="globe-hero">
+        <div id="globe-container"></div>
+        <div class="globe-loading" id="globe-loading">Detecting your location…</div>
+        <div id="error-banner" class="error-banner" hidden></div>
+    </div>
+
+    <div id="info-strip" class="info-strip" hidden>
+        <div class="info-chip">
+            <span class="chip-label">Local Time</span>
+            <span class="chip-value" id="info-time">--</span>
         </div>
-        <div id="content">
-            <div class="loading">Loading your location...</div>
+        <div class="info-chip">
+            <span class="chip-label">Location</span>
+            <span class="chip-value" id="info-location">--</span>
         </div>
-        <div id="globe-section" class="globe-section" hidden>
-            <div id="globe-container"></div>
+        <div class="info-chip">
+            <span class="chip-label">Country</span>
+            <span class="chip-value" id="info-country">--</span>
+        </div>
+        <div class="info-chip">
+            <span class="chip-label">Timezone</span>
+            <span class="chip-value" id="info-timezone">--</span>
+        </div>
+        <div class="info-chip">
+            <span class="chip-label">UTC Offset</span>
+            <span class="chip-value" id="info-utc">--</span>
+        </div>
+        <div class="info-chip">
+            <span class="chip-label">Coordinates</span>
+            <span class="chip-value" id="info-coords">--</span>
+        </div>
+        <div class="info-chip">
+            <span class="chip-label">IP Address</span>
+            <span class="chip-value" id="info-ip">--</span>
         </div>
     </div>
 
+    <!--
+        Globe.GL loaded synchronously before the inline script.
+        CDN sources to whitelist when Helmet CSP is eventually enabled:
+          script-src: cdn.jsdelivr.net
+          img-src:    unpkg.com  (Earth day texture, night-sky background)
+    -->
     <script src="https://cdn.jsdelivr.net/npm/globe.gl@2/dist/globe.gl.min.js"></script>
     <script>
         let globeInstance = null;
 
         async function fetchTimezoneInfo() {
             let errorMessage = null;
-            let errorClass = 'error error--critical';
+            let isWarning = false;
 
             try {
                 const response = await fetch('/api/timezone');
                 if (!response.ok) {
                     if (response.status === 503) {
-                        errorMessage = "Service temporarily unavailable — the geolocation provider's monthly limit has been reached. Please try again later or contact the administrator.";
-                        errorClass = 'error error--warning';
+                        errorMessage = "Service temporarily unavailable — the geolocation provider's monthly limit has been reached. Please try again later.";
+                        isWarning = true;
                     } else if (response.status === 429) {
                         errorMessage = "You're making requests too quickly. Please wait a few minutes and try again.";
-                        errorClass = 'error error--warning';
+                        isWarning = true;
                     } else if (response.status === 500) {
                         errorMessage = "Something went wrong while loading your timezone information. Please try again later.";
                     } else {
@@ -216,113 +245,117 @@
                     }
                     throw new Error(errorMessage);
                 }
+
                 const data = await response.json();
                 displayTimezoneInfo(data);
                 setInterval(() => updateCurrentTime(data.timezone), 1000);
             } catch (error) {
-                const displayMessage = errorMessage
+                const message = errorMessage
                     || 'Unable to reach the server. Please check your connection and try again.';
-                document.getElementById('content').innerHTML = `
-                    <div class="${errorClass}">
-                        ⚠️ ${displayMessage}
-                    </div>
-                `;
+                showError(message, isWarning);
+                // Render a placeholder globe even when the API fails (no location zoom)
+                initGlobe(null, null);
             }
         }
 
         function displayTimezoneInfo(data) {
-            const content = document.getElementById('content');
-            content.innerHTML = `
-                <div class="time-display">
-                    <div class="info-label">Current Time</div>
-                    <div class="info-value" id="current-time">Loading...</div>
-                </div>
+            const latDir = data.latitude  >= 0 ? 'N' : 'S';
+            const lngDir = data.longitude >= 0 ? 'E' : 'W';
 
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Location</div>
-                        <div class="info-value">${data.city}, ${data.region}</div>
-                    </div>
+            document.getElementById('info-location').textContent =
+                `${data.city}, ${data.region}`;
+            document.getElementById('info-country').textContent  = data.country;
+            document.getElementById('info-timezone').textContent = data.timezone;
+            document.getElementById('info-utc').textContent      = data.utcOffset;
+            document.getElementById('info-coords').textContent   =
+                `${Math.abs(data.latitude)}°${latDir}, ${Math.abs(data.longitude)}°${lngDir}`;
+            document.getElementById('info-ip').textContent       = data.ip;
 
-                    <div class="info-item">
-                        <div class="info-label">Country</div>
-                        <div class="info-value">${data.country}</div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-label">Timezone</div>
-                        <div class="info-value">${data.timezone}</div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-label">UTC Offset</div>
-                        <div class="info-value">${data.utcOffset}</div>
-                    </div>
-
-                    <div class="coordinates">
-                        <div class="info-item">
-                            <div class="info-label">Latitude</div>
-                            <div class="info-value">${data.latitude}°</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Longitude</div>
-                            <div class="info-value">${data.longitude}°</div>
-                        </div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="info-label">IP Address</div>
-                        <div class="info-value">${data.ip}</div>
-                    </div>
-                </div>
-            `;
-
+            document.getElementById('info-strip').removeAttribute('hidden');
             updateCurrentTime(data.timezone);
-            initGlobe();
+            initGlobe(data.latitude, data.longitude);
         }
 
-        function initGlobe() {
-            const section = document.getElementById('globe-section');
-            section.removeAttribute('hidden');
+        function showError(message, isWarning) {
+            const banner = document.getElementById('error-banner');
+            banner.textContent = `⚠️ ${message}`;
+            banner.className   = `error-banner${isWarning ? ' error-banner--warning' : ''}`;
+            banner.removeAttribute('hidden');
+            document.getElementById('globe-loading')?.remove();
+        }
 
+        function initGlobe(lat, lng) {
+            // Re-use existing instance — just pan to the new location
+            if (globeInstance) {
+                if (lat !== null) {
+                    globeInstance.pointOfView({ lat, lng, altitude: 0.5 }, 1500);
+                }
+                return;
+            }
+
+            // Globe.GL CDN may be blocked by ad blockers or firewalls
+            if (typeof Globe === 'undefined') {
+                const container = document.getElementById('globe-container');
+                container.style.cssText =
+                    'opacity:1;display:flex;align-items:center;justify-content:center;' +
+                    'color:rgba(255,255,255,0.4);font-size:0.9em;';
+                container.textContent = 'Globe view unavailable';
+                document.getElementById('globe-loading')?.remove();
+                return;
+            }
+
+            // Defer init to the next frame so that any DOM layout changes
+            // (e.g. info strip appearing) are reflected in clientWidth/clientHeight
             requestAnimationFrame(() => {
                 const container = document.getElementById('globe-container');
+
                 globeInstance = Globe()
                     .globeImageUrl('//unpkg.com/three-globe/example/img/earth-day.jpg')
                     .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+                    .onGlobeReady(() => {
+                        // Fade the canvas in once the Earth texture is loaded
+                        container.classList.add('ready');
+                        document.getElementById('globe-loading')?.remove();
+
+                        // Disable auto-rotation so the globe stays on the user's location
+                        globeInstance.controls().autoRotate = false;
+
+                        if (lat !== null && lng !== null) {
+                            // Snap to user's hemisphere, then animate zoom-in over 2 s
+                            globeInstance.pointOfView({ lat, lng, altitude: 2.5 }, 0);
+                            setTimeout(() => {
+                                globeInstance.pointOfView({ lat, lng, altitude: 0.5 }, 2000);
+                            }, 300);
+                        }
+                    })
                     .width(container.clientWidth)
                     .height(container.clientHeight)(container);
 
                 window.addEventListener('resize', () => {
                     if (globeInstance) {
-                        globeInstance.width(container.clientWidth);
+                        const c = document.getElementById('globe-container');
+                        globeInstance.width(c.clientWidth).height(c.clientHeight);
                     }
                 });
             });
         }
 
         function updateCurrentTime(timezone) {
-            const now = new Date();
-            const options = {
-                timeZone: timezone,
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                weekday: 'long',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            };
+            const formatted = new Intl.DateTimeFormat('en-US', {
+                timeZone:  timezone,
+                month:     'short',
+                day:       'numeric',
+                year:      'numeric',
+                hour:      '2-digit',
+                minute:    '2-digit',
+                second:    '2-digit',
+                hour12:    false,
+            }).format(new Date());
 
-            const formatter = new Intl.DateTimeFormat('en-US', options);
-            const timeElement = document.getElementById('current-time');
-            if (timeElement) {
-                timeElement.textContent = formatter.format(now);
-            }
+            const el = document.getElementById('info-time');
+            if (el) el.textContent = formatted;
         }
 
-        // Load timezone info on page load
         fetchTimezoneInfo();
     </script>
 </body>
