@@ -2,7 +2,14 @@
 
 ### Features
 
-* **ui:** Globe view — Blue Marble texture, location pin, hero layout, max zoom (Closes [#71](https://github.com/olaoluthomas/timezone-app/issues/71), [#72](https://github.com/olaoluthomas/timezone-app/issues/72), [#73](https://github.com/olaoluthomas/timezone-app/issues/73)) ([#188](https://github.com/olaoluthomas/timezone-app/issues/188)) ([5a6664d](https://github.com/olaoluthomas/timezone-app/commit/5a6664dad4d1bd6e663e5100fa30c290a32db0c2)), closes [#183](https://github.com/olaoluthomas/timezone-app/issues/183) [#184](https://github.com/olaoluthomas/timezone-app/issues/184) [#185](https://github.com/olaoluthomas/timezone-app/issues/185) [#186](https://github.com/olaoluthomas/timezone-app/issues/186) [#187](https://github.com/olaoluthomas/timezone-app/issues/187)
+* **ui:** create globe component using Globe.GL (Closes [#72](https://github.com/olaoluthomas/timezone-app/issues/72)) ([#183](https://github.com/olaoluthomas/timezone-app/issues/183)) ([4065c44](https://github.com/olaoluthomas/timezone-app/commit/4065c447d7466e84b14c85eaea16b3095180c241))
+* **ui:** redesign layout with globe as hero, zoom to user location (Closes [#71](https://github.com/olaoluthomas/timezone-app/issues/71)) ([#184](https://github.com/olaoluthomas/timezone-app/issues/184)) ([82fbf2e](https://github.com/olaoluthomas/timezone-app/commit/82fbf2e6306db1732115af4f9be6ecaaad2ea662))
+* **ui:** add location pin with floating label, simplify info strip to 4 chips ([#185](https://github.com/olaoluthomas/timezone-app/issues/185)) ([e7e9a91](https://github.com/olaoluthomas/timezone-app/commit/e7e9a91f2507e42707c142da81e316edd917e223))
+* **ui:** improve globe texture resolution and enforce max zoom (Closes [#73](https://github.com/olaoluthomas/timezone-app/issues/73)) ([#186](https://github.com/olaoluthomas/timezone-app/issues/186)) ([626b759](https://github.com/olaoluthomas/timezone-app/commit/626b759431589c972875b7b1a56ba718ce31ea1d))
+
+### Bug Fixes
+
+* **ui:** tighten globe max zoom floor to altitude 0.35 ([#187](https://github.com/olaoluthomas/timezone-app/issues/187)) ([6656063](https://github.com/olaoluthomas/timezone-app/commit/6656063f4a6de2cfbd8911afa69b72e3fe361d7e))
 
 ## [1.7.3](https://github.com/olaoluthomas/timezone-app/compare/v1.7.2...v1.7.3) (2026-05-03)
 
