@@ -12,7 +12,7 @@ A production-ready application that automatically detects and displays timezone 
 
 ## Overview
 
-Built entirely with [Claude Code](https://github.com/anthropics/claude-code) as a PoC for AI-assisted software development. Features comprehensive testing (96.68% coverage), intelligent caching, health monitoring, and security hardening—demonstrating that AI agents can build production-ready applications following industry best practices.
+Built entirely with [Claude Code](https://github.com/anthropics/claude-code) as a PoC for AI-assisted software development. Features comprehensive testing (98.14% coverage), intelligent caching, health monitoring, and security hardening—demonstrating that AI agents can build production-ready applications following industry best practices.
 
 ## Features
 
