@@ -357,8 +357,8 @@
                         // Keep the globe stationary on the user's location
                         globeInstance.controls().autoRotate = false;
 
-                        // Prevent zooming closer than altitude 0.15 — texture degrades below this
-                        const MIN_ALTITUDE = 0.15;
+                        // Prevent zooming closer than altitude 0.35 — texture degrades below this
+                        const MIN_ALTITUDE = 0.35;
                         globeInstance.controls().minDistance =
                             globeInstance.getGlobeRadius() * (1 + MIN_ALTITUDE);
 
