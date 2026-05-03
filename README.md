@@ -20,7 +20,7 @@ Built entirely with [Claude Code](https://github.com/anthropics/claude-code) as 
 - **Intelligent caching** (24h TTL, 80-90% hit rate) reduces API calls
 - **Health monitoring** with liveness/readiness probes
 - **Security hardened** (rate limiting, CORS, Helmet.js)
-- **96.68% test coverage** with 213 passing tests
+- **96.68% test coverage** with 345 passing tests
 - **Production-ready** with Docker, CI/CD, graceful shutdown
 
 ## Quick Start
