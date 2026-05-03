@@ -456,23 +456,28 @@ Before merging any PR, verify:
 
 #### Merge Methods
 
-This project uses **squash merging** for all PRs to maintain a clean git history.
+The merge method depends on the PR direction:
 
-**Squash Merge (Default):**
+| PR direction | Method | Why |
+|---|---|---|
+| feature / fix / docs → `dev` | **Squash and merge** | Collapses WIP commits into one clean logical commit on dev |
+| `dev` → `main` | **Create a merge commit** | Preserves all individual commits so semantic-release generates correct CHANGELOG entries |
+
+> ⚠️ **Never squash-merge `dev` into `main`.** Squashing collapses all commits into one, so semantic-release sees only a single entry and generates a one-line CHANGELOG instead of individual entries per feature/fix.
+
+**Feature/fix → dev (Squash and merge):**
 ```
 # Preferred: GitHub MCP merge_pull_request (merge_method: squash)
 # Fallback:  gh pr merge <PR-NUMBER> --squash --delete-branch
 ```
 
-**Benefits:**
-- Clean, linear git history
-- Single commit per feature/fix
-- Easier to revert if needed
-- Removes clutter from multiple work-in-progress commits
+**dev → main (Create a merge commit):**
+```
+# Preferred: GitHub MCP merge_pull_request (merge_method: merge)
+# Fallback:  gh pr merge <PR-NUMBER> --merge --delete-branch
+```
 
-**When to use other methods:**
-- **Standard Merge:** Never (creates merge commits, clutters history)
-- **Rebase Merge:** Never (loses PR context, complicates tracking)
+**Rebase Merge:** Never — rewrites commit SHAs, causing hash mismatches between dev and main.
 
 #### Single PR Merge
 
