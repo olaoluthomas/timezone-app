@@ -295,7 +295,7 @@
         <div id="globe-container"></div>
         <div class="globe-loading" id="globe-loading">Detecting your location…</div>
         <div id="weather-overlay" class="weather-overlay" hidden></div>
-        <button id="texture-btn" class="texture-btn" hidden>Satellite ▸</button>
+        <button id="texture-btn" class="texture-btn" hidden>Terrain ▸</button>
         <div id="error-banner" class="error-banner" hidden></div>
     </div>
 
@@ -333,9 +333,8 @@
         let globeInstance = null;
 
         const TEXTURES = [
-            { label: 'Satellite', url: '/textures/earth-satellite.jpg' },
-            { label: 'Terrain',   url: '/textures/earth-terrain.jpg'   },
-            { label: 'Night',     url: '/textures/earth-night.jpg'     },
+            { label: 'Terrain', url: '/textures/earth-satellite.jpg' },
+            { label: 'Night',   url: '/textures/earth-night.jpg'     },
         ];
         let textureIndex = 0;
 
