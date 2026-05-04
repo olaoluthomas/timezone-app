@@ -82,6 +82,29 @@
             pointer-events: none;
         }
 
+        /* ── Globe texture toggle button ── */
+        .texture-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 5;
+            background: rgba(102, 126, 234, 0.85);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.78em;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            letter-spacing: 0.5px;
+            transition: background 0.2s ease;
+        }
+
+        .texture-btn:hover {
+            background: rgba(102, 126, 234, 1);
+        }
+
         /* ── Globe floating location label ── */
         .globe-label {
             background: rgba(255, 255, 255, 0.96);
@@ -228,6 +251,7 @@
     <div class="globe-hero">
         <div id="globe-container"></div>
         <div class="globe-loading" id="globe-loading">Detecting your location…</div>
+        <button id="texture-btn" class="texture-btn" hidden>Satellite ▸</button>
         <div id="error-banner" class="error-banner" hidden></div>
     </div>
 
@@ -263,6 +287,20 @@
     <script src="https://cdn.jsdelivr.net/npm/globe.gl@2/dist/globe.gl.min.js"></script>
     <script>
         let globeInstance = null;
+
+        const TEXTURES = [
+            { label: 'Satellite', url: '//unpkg.com/three-globe/example/img/earth-blue-marble.jpg' },
+            { label: 'Terrain',   url: '//unpkg.com/three-globe/example/img/earth-topology.png'   },
+            { label: 'Night',     url: '//unpkg.com/three-globe/example/img/earth-night.jpg'      },
+        ];
+        let textureIndex = 0;
+
+        function cycleTexture() {
+            textureIndex = (textureIndex + 1) % TEXTURES.length;
+            const { label, url } = TEXTURES[textureIndex];
+            globeInstance.globeImageUrl(url);
+            document.getElementById('texture-btn').textContent = `${label} ▸`;
+        }
 
         async function fetchTimezoneInfo() {
             let errorMessage = null;
@@ -352,6 +390,10 @@
                     .onGlobeReady(() => {
                         container.classList.add('ready');
                         document.getElementById('globe-loading')?.remove();
+
+                        const btn = document.getElementById('texture-btn');
+                        btn.removeAttribute('hidden');
+                        btn.addEventListener('click', cycleTexture);
 
                         // Keep the globe stationary on the user's location
                         globeInstance.controls().autoRotate = false;
