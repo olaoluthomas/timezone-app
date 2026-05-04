@@ -1,8 +1,10 @@
 const { getTimezone } = require('../../../src/controllers/timezoneController');
 const { APIError } = require('../../../src/middleware/error-handler');
 const geolocationService = require('../../../src/services/geolocation');
+const weatherService = require('../../../src/services/weather');
 
 jest.mock('../../../src/services/geolocation');
+jest.mock('../../../src/services/weather');
 // error-handler uses config and logger; mock both to keep unit test isolated
 jest.mock('../../../src/config', () => ({ isDevelopment: false }));
 jest.mock('../../../src/utils/logger', () => ({ error: jest.fn(), warn: jest.fn() }));
@@ -12,6 +14,8 @@ const MOCK_TIMEZONE_RESULT = {
   city: 'Mountain View',
   timezone: 'America/Los_Angeles',
   currentTime: '2026-01-01T12:00:00-08:00',
+  latitude: 37.4056,
+  longitude: -122.0775,
   cached: false,
 };
 
@@ -20,6 +24,7 @@ describe('Timezone Controller', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    weatherService.getWeather.mockResolvedValue(null);
     req = { ip: '8.8.8.8' };
     res = {
       status: jest.fn().mockReturnThis(),
@@ -43,7 +48,7 @@ describe('Timezone Controller', () => {
     test('responds with the timezone result', async () => {
       geolocationService.getTimezoneByIP.mockResolvedValue(MOCK_TIMEZONE_RESULT);
       await getTimezone(req, res, next);
-      expect(res.json).toHaveBeenCalledWith(MOCK_TIMEZONE_RESULT);
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining(MOCK_TIMEZONE_RESULT));
     });
 
     test('registers timeout listener on res', async () => {

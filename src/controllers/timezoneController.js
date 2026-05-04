@@ -1,4 +1,5 @@
 const geolocationService = require('../services/geolocation');
+const { getWeather } = require('../services/weather');
 const { APIError } = require('../middleware/error-handler');
 
 async function getTimezone(req, res, next) {
@@ -17,7 +18,10 @@ async function getTimezone(req, res, next) {
     const clientIP = req.ip;
     const timezoneInfo = await geolocationService.getTimezoneByIP(clientIP);
     if (!res.headersSent) {
-      res.json(timezoneInfo);
+      const weather = await getWeather(timezoneInfo.latitude, timezoneInfo.longitude).catch(
+        () => null
+      );
+      res.json({ ...timezoneInfo, weather });
     }
   } catch (error) {
     if (res.headersSent) return;
