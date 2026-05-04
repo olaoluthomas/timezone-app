@@ -37,6 +37,37 @@ const WMO_CODES = {
   99: 'Thunderstorm with heavy hail',
 };
 
+const WMO_ICONS = {
+  0: '☀️',
+  1: '🌤️',
+  2: '⛅',
+  3: '☁️',
+  45: '🌫️',
+  48: '🌫️',
+  51: '🌦️',
+  53: '🌦️',
+  55: '🌧️',
+  56: '🌨️',
+  57: '🌨️',
+  61: '🌧️',
+  63: '🌧️',
+  65: '🌧️',
+  66: '🌨️',
+  67: '🌨️',
+  71: '🌨️',
+  73: '❄️',
+  75: '❄️',
+  77: '❄️',
+  80: '🌦️',
+  81: '🌧️',
+  82: '🌩️',
+  85: '🌨️',
+  86: '❄️',
+  95: '⛈️',
+  96: '⛈️',
+  99: '⛈️',
+};
+
 async function getWeather(latitude, longitude) {
   const cacheKey = `weather:${latitude},${longitude}`;
   const cached = weatherCache.get(cacheKey);
@@ -60,6 +91,7 @@ async function getWeather(latitude, longitude) {
       temperature: current.temperature_2m,
       temperatureUnit: current_units.temperature_2m,
       condition: WMO_CODES[current.weather_code] ?? 'Unknown',
+      icon: WMO_ICONS[current.weather_code] ?? '🌡️',
       windSpeed: current.wind_speed_10m,
       windUnit: current_units.wind_speed_10m,
       humidity: current.relative_humidity_2m,

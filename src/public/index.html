@@ -146,6 +146,49 @@
             border-top: 3px solid #f59e0b;
         }
 
+        /* ── Weather overlay (top-left of globe) ── */
+        .weather-overlay {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 5;
+            background: rgba(10, 10, 46, 0.75);
+            backdrop-filter: blur(8px);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            pointer-events: none;
+        }
+
+        .weather-top {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 3px;
+        }
+
+        .weather-icon { font-size: 1.8em; line-height: 1; }
+
+        .weather-temp {
+            font-size: 1.3em;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .weather-condition {
+            font-size: 0.7em;
+            color: rgba(255, 255, 255, 0.72);
+            margin-bottom: 5px;
+        }
+
+        .weather-details {
+            font-size: 0.68em;
+            color: rgba(255, 255, 255, 0.55);
+            display: flex;
+            gap: 8px;
+        }
+
         /* ── Info strip ── */
         .info-strip {
             background: white;
@@ -228,6 +271,7 @@
     <div class="globe-hero">
         <div id="globe-container"></div>
         <div class="globe-loading" id="globe-loading">Detecting your location…</div>
+        <div id="weather-overlay" class="weather-overlay" hidden></div>
         <div id="error-banner" class="error-banner" hidden></div>
     </div>
 
@@ -251,10 +295,6 @@
         <div class="info-chip">
             <span class="chip-label">IP Address</span>
             <span class="chip-value" id="info-ip">--</span>
-        </div>
-        <div class="info-chip" id="weather-chip" hidden>
-            <span class="chip-label">Weather</span>
-            <span class="chip-value" id="info-weather">--</span>
         </div>
     </div>
 
@@ -311,9 +351,18 @@
             document.getElementById('info-ip').textContent       = data.ip;
 
             if (data.weather) {
-                document.getElementById('info-weather').textContent =
-                    `${data.weather.temperature}${data.weather.temperatureUnit} · ${data.weather.condition}`;
-                document.getElementById('weather-chip').removeAttribute('hidden');
+                const overlay = document.getElementById('weather-overlay');
+                overlay.innerHTML =
+                    '<div class="weather-top">' +
+                        `<span class="weather-icon">${data.weather.icon}</span>` +
+                        `<span class="weather-temp">${data.weather.temperature}${data.weather.temperatureUnit}</span>` +
+                    '</div>' +
+                    `<div class="weather-condition">${data.weather.condition}</div>` +
+                    '<div class="weather-details">' +
+                        `<span>💨 ${data.weather.windSpeed} ${data.weather.windUnit}</span>` +
+                        `<span>💧 ${data.weather.humidity}%</span>` +
+                    '</div>';
+                overlay.removeAttribute('hidden');
             }
 
             document.getElementById('info-strip').removeAttribute('hidden');
