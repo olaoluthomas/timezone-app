@@ -97,6 +97,9 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
+# Globe textures (large binary assets — download via scripts/download-textures.sh)
+src/public/textures/
+
 # macOS
 .DS_Store
 

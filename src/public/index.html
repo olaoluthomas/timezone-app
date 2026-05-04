@@ -333,9 +333,9 @@
         let globeInstance = null;
 
         const TEXTURES = [
-            { label: 'Satellite', url: '//unpkg.com/three-globe/example/img/earth-blue-marble.jpg' },
-            { label: 'Terrain',   url: '//unpkg.com/three-globe/example/img/earth-topology.png'   },
-            { label: 'Night',     url: '//unpkg.com/three-globe/example/img/earth-night.jpg'      },
+            { label: 'Satellite', url: '/textures/earth-satellite.jpg' },
+            { label: 'Terrain',   url: '/textures/earth-terrain.jpg'   },
+            { label: 'Night',     url: '/textures/earth-night.jpg'     },
         ];
         let textureIndex = 0;
 
@@ -444,7 +444,7 @@
                 const container = document.getElementById('globe-container');
 
                 globeInstance = Globe()
-                    .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+                    .globeImageUrl('/textures/earth-satellite.jpg')
                     .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
                     .onGlobeReady(() => {
                         container.classList.add('ready');
