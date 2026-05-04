@@ -19,6 +19,7 @@ describe('WeatherService', () => {
       expect(result).toHaveProperty('temperature', 18.5);
       expect(result).toHaveProperty('temperatureUnit', '°C');
       expect(result).toHaveProperty('condition', 'Mainly clear');
+      expect(result).toHaveProperty('icon', '🌤️');
       expect(result).toHaveProperty('windSpeed', 5.2);
       expect(result).toHaveProperty('humidity', 65);
       expect(result.cached).toBe(false);
@@ -66,20 +67,22 @@ describe('WeatherService', () => {
       expect(result).toBeNull();
     });
 
-    test('should map known WMO weather codes to descriptions', async () => {
+    test('should map known WMO weather codes to descriptions and icons', async () => {
       mockWeatherSuccess(37.4056, -122.0775, { weather_code: 95 });
 
       const result = await getWeather(37.4056, -122.0775);
 
       expect(result.condition).toBe('Thunderstorm');
+      expect(result.icon).toBe('⛈️');
     });
 
-    test('should return "Unknown" for unrecognised weather codes', async () => {
+    test('should return "Unknown" condition and fallback icon for unrecognised weather codes', async () => {
       mockWeatherSuccess(37.4056, -122.0775, { weather_code: 999 });
 
       const result = await getWeather(37.4056, -122.0775);
 
       expect(result.condition).toBe('Unknown');
+      expect(result.icon).toBe('🌡️');
     });
   });
 });
