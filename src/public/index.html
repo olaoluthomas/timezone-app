@@ -126,6 +126,14 @@
             color: #667eea;
         }
 
+        /* ── Click coordinate tooltip (amber accent) ── */
+        .globe-label--click {
+            border-left-color: #f59e0b;
+            background: rgba(255, 255, 255, 0.88);
+            font-size: 0.82em;
+            padding: 6px 10px;
+        }
+
         /* ── Error banner ── */
         .error-banner {
             position: absolute;
@@ -263,6 +271,10 @@
     <script src="https://cdn.jsdelivr.net/npm/globe.gl@2/dist/globe.gl.min.js"></script>
     <script>
         let globeInstance = null;
+        let locationLabel = null;
+        let userLat = null;
+        let userLng = null;
+        let clickTooltipTimer = null;
 
         async function fetchTimezoneInfo() {
             let errorMessage = null;
@@ -371,6 +383,7 @@
                             addLocationMarker(data);
                         }
                     })
+                    .onGlobeClick(({ lat, lng }) => showClickTooltip(lat, lng))
                     .width(container.clientWidth)
                     .height(container.clientHeight)(container);
 
@@ -385,6 +398,10 @@
 
         function addLocationMarker(data) {
             const { latitude: lat, longitude: lng, city, region, country } = data;
+
+            // Save coordinates for click-tooltip restoration
+            userLat = lat;
+            userLng = lng;
 
             // Pulsing ripple rings around the pin
             globeInstance
@@ -402,16 +419,42 @@
                 .pointRadius(0.4);
 
             // Floating info label positioned above the pin
-            const label = document.createElement('div');
-            label.className = 'globe-label';
-            label.innerHTML =
+            locationLabel = document.createElement('div');
+            locationLabel.className = 'globe-label';
+            locationLabel.innerHTML =
                 `<div class="globe-label-city">${city}, ${region}</div>` +
                 `<div class="globe-label-country">${country}</div>` +
                 `<div class="globe-label-time" id="globe-time">--</div>`;
 
             globeInstance
-                .htmlElementsData([{ lat, lng }])
-                .htmlElement(() => label);
+                .htmlElementsData([{ lat, lng, el: locationLabel }])
+                .htmlElement(d => d.el);
+        }
+
+        function showClickTooltip(lat, lng) {
+            clearTimeout(clickTooltipTimer);
+
+            const latDir = lat >= 0 ? 'N' : 'S';
+            const lngDir = lng >= 0 ? 'E' : 'W';
+            const coordText =
+                `${Math.abs(lat).toFixed(4)}°${latDir}, ${Math.abs(lng).toFixed(4)}°${lngDir}`;
+
+            const clickEl = document.createElement('div');
+            clickEl.className = 'globe-label globe-label--click';
+            clickEl.innerHTML = `<div class="globe-label-city">${coordText}</div>`;
+
+            const items = locationLabel
+                ? [{ lat: userLat, lng: userLng, el: locationLabel }, { lat, lng, el: clickEl }]
+                : [{ lat, lng, el: clickEl }];
+
+            globeInstance.htmlElementsData(items).htmlElement(d => d.el);
+
+            clickTooltipTimer = setTimeout(() => {
+                const baseItems = locationLabel
+                    ? [{ lat: userLat, lng: userLng, el: locationLabel }]
+                    : [];
+                globeInstance.htmlElementsData(baseItems).htmlElement(d => d.el);
+            }, 4000);
         }
 
         function updateCurrentTime(timezone) {
