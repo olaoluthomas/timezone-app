@@ -1,6 +1,7 @@
 const nock = require('nock');
 
 const IPAPI_BASE = 'https://ipapi.co';
+const OPEN_METEO_BASE = 'https://api.open-meteo.com';
 
 const MOCK_RESPONSES = {
   SUCCESS: {
@@ -85,12 +86,49 @@ function cleanMocks() {
   nock.cleanAll();
 }
 
+const MOCK_WEATHER_RESPONSE = {
+  latitude: 37.4056,
+  longitude: -122.0775,
+  current_units: {
+    temperature_2m: '°C',
+    weather_code: 'wmo code',
+    wind_speed_10m: 'mp/h',
+    relative_humidity_2m: '%',
+  },
+  current: {
+    temperature_2m: 18.5,
+    weather_code: 1,
+    wind_speed_10m: 5.2,
+    relative_humidity_2m: 65,
+  },
+};
+
+function mockWeatherSuccess(lat, lng, overrides = {}) {
+  const response = {
+    ...MOCK_WEATHER_RESPONSE,
+    latitude: lat,
+    longitude: lng,
+    current: { ...MOCK_WEATHER_RESPONSE.current, ...overrides },
+  };
+  return nock(OPEN_METEO_BASE).get('/v1/forecast').query(true).reply(200, response);
+}
+
+function mockWeatherError(lat, lng, statusCode = 500) {
+  return nock(OPEN_METEO_BASE)
+    .get('/v1/forecast')
+    .query(true)
+    .reply(statusCode, { error: 'upstream error' });
+}
+
 module.exports = {
   MOCK_RESPONSES,
+  MOCK_WEATHER_RESPONSE,
   mockGeolocationSuccess,
   mockGeolocationError,
   mockGeolocationRateLimit,
   mockGeolocationNetworkError,
   mockGeolocationRegex,
+  mockWeatherSuccess,
+  mockWeatherError,
   cleanMocks,
 };
