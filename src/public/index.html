@@ -253,6 +253,10 @@
             <span class="chip-label">IP Address</span>
             <span class="chip-value" id="info-ip">--</span>
         </div>
+        <div class="info-chip" id="weather-chip" hidden>
+            <span class="chip-label">Weather</span>
+            <span class="chip-value" id="info-weather">--</span>
+        </div>
     </div>
 
     <!--
@@ -306,6 +310,12 @@
             document.getElementById('info-coords').textContent   =
                 `${Math.abs(data.latitude).toFixed(4)}°${latDir}, ${Math.abs(data.longitude).toFixed(4)}°${lngDir}`;
             document.getElementById('info-ip').textContent       = data.ip;
+
+            if (data.weather) {
+                document.getElementById('info-weather').textContent =
+                    `${data.weather.temperature}${data.weather.temperatureUnit} · ${data.weather.condition}`;
+                document.getElementById('weather-chip').removeAttribute('hidden');
+            }
 
             document.getElementById('info-strip').removeAttribute('hidden');
             updateCurrentTime(data.timezone);
